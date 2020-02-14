@@ -1,1 +1,1 @@
-# master_of_Cegaar
+# Repository of the Masterproject Cegaar in Ultimate
