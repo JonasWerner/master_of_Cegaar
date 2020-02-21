@@ -119,11 +119,17 @@ urlcolor=g1          % color of external links
 		
 		\end{center}
 
-\pagebreak
 \section{Introduction}
-\jw{Chapter about motivation, why is Cegaar good to have. Favorably with example}
+If we want to verify a program, meaning we want to check if an undesired state is reachable, we can use a technique called Counterexample-guided Abstract Refinement (CEGAR) that uses possible traces to such an undesired state, proves them wrong and expands an abstract data structure that covers the program. \\
+The problem is, CEGAR may not always terminate. When we assume that the program contains loops of arbitrary length, CEGAR would have to disprove every trace going through that loop. In case of big loops this can take quite long. \\
+How to remedy this? Instead of iterating through the loop, use loop acceleration. An accelerated loop is represented by a formula modeling its transitive closure making it easier to deal with. The combination of loop acceleration and CEGAR is called Counterexample-Guided Accelerated Abstraction Refinement (CEGAAR). \\ \par
+This project aims at implementing a CEGAAR library in the program analysis framework Ultimate. This approach is based on the findings of Hojjat et al. \\ \par
+The remainder of this proposal is structured as follows, the next section will introduce needed background knowledge, like defining CEGAAR and presents a precise way of loop acceleration, section 3 will introduce Ultimate, and last but not least, section 4 will illustrate the goals and schedule of this project.
 
 \section{Background}
+This section will introduce preliminary definitions, like CEGAR, and possible loop acceleration methods.
+\subsection{Basic CEGAR}
+Assume we are given a program P. It is possible to represent this program as a graph, a so called control flowgraph. If this program contains assertion statements, for example $\texttt{assume x > 0}$, it is possible that the variable $\texttt{x}$ is 
 \jw{Introducing all needed preliminaries for Cegaar}
 \subsection{Counterexample-guided Abstract Refinement}
 \jw{Introduction normal Cegar, Showing problems with loops}
