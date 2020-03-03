@@ -1,113 +1,104 @@
 % Encoding: UTF-8
 
 
-@inproceedings{DBLP:conf/vmcai/Bradley11,
-  author    = {Aaron R. Bradley},
-  title     = {SAT-Based Model Checking without Unrolling},
-  booktitle = {{VMCAI}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {6538},
-  pages     = {70--87},
-  publisher = {Springer},
-  year      = {2011}
+@InProceedings{10.1007/978-3-642-33386-6_16,
+author="Hojjat, Hossein
+and Iosif, Radu
+and Kone{\v{c}}n{\'y}, Filip
+and Kuncak, Viktor
+and R{\"u}mmer, Philipp",
+editor="Chakraborty, Supratik
+and Mukund, Madhavan",
+title="Accelerating Interpolants",
+booktitle="Automated Technology for Verification and Analysis",
+year="2012",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="187--202",
+abstract="We present Counterexample-Guided Accelerated Abstraction Refinement (CEGAAR), a new algorithm for verifying infinite-state transition systems. CEGAAR combines interpolation-based predicate discovery in counterexample-guided predicate abstraction with acceleration technique for computing the transitive closure of loops. CEGAAR applies acceleration to dynamically discovered looping patterns in the unfolding of the transition system, and combines overapproximation with underapproximation. It constructs inductive invariants that rule out an infinite family of spurious counterexamples, alleviating the problem of divergence in predicate abstraction without losing its adaptive nature. We present theoretical and experimental justification for the effectiveness of CEGAAR, showing that inductive interpolants can be computed from classical Craig interpolants and transitive closures of loops. We present an implementation of CEGAAR that verifies integer transition systems. We show that the resulting implementation robustly handles a number of difficult transition systems that cannot be handled using interpolation-based predicate abstraction or acceleration alone.",
+isbn="978-3-642-33386-6"
 }
 
-@inproceedings{DBLP:conf/date/WelpK13,
-  author    = {Tobias Welp and
-               Andreas Kuehlmann},
-  title     = {{QF} {BV} model checking with property directed reachability},
-  booktitle = {{DATE}},
-  pages     = {791--796},
-  publisher = {{EDA} Consortium San Jose, CA, {USA} / {ACM} {DL}},
-  year      = {2013}
+@InProceedings{10.1007/978-3-642-39799-8_2,
+author="Heizmann, Matthias
+and Hoenicke, Jochen
+and Podelski, Andreas",
+editor="Sharygina, Natasha
+and Veith, Helmut",
+title="Software Model Checking for People Who Love Automata",
+booktitle="Computer Aided Verification",
+year="2013",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="36--52",
+abstract="In this expository paper, we use automata for software model checking in a new way. The starting point is to fix the alphabet: the set of statements of the given program. We show how automata over the alphabet of statements can help to decompose the main problem in software model checking, which is to find the right abstraction of a program for a given correctness property.",
+isbn="978-3-642-39799-8"
 }
 
-@inproceedings{Heizmann:2013:SMC:2526861.2526864,
-	author = {Heizmann, Matthias and Hoenicke, Jochen and Podelski, Andreas},
-	title = {Software Model Checking for People Who Love Automata},
-	booktitle = {Proceedings of the 25th International Conference on Computer Aided Verification},
-	series = {CAV'13},
-	year = {2013},
-	pages = {36--52},
-	publisher = {Springer},
-} 
-
-
-
-@inproceedings{DBLP:conf/fmcad/EenMB11,
-  author    = {Niklas E{\'{e}}n and
-               Alan Mishchenko and
-               Robert K. Brayton},
-  title     = {Efficient implementation of property directed reachability},
-  booktitle = {{FMCAD}},
-  pages     = {125--134},
-  publisher = {{FMCAD} Inc.},
-  year      = {2011}
+@InProceedings{10.1007/978-3-642-03237-0_7,
+author="Heizmann, Matthias
+and Hoenicke, Jochen
+and Podelski, Andreas",
+editor="Palsberg, Jens
+and Su, Zhendong",
+title="Refinement of Trace Abstraction",
+booktitle="Static Analysis",
+year="2009",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="69--85",
+abstract="We present a new counterexample-guided abstraction refinement scheme. The scheme refines an over-approximation of the set of possible traces. Each refinement step introduces a finite automaton that recognizes a set of infeasible traces. A central idea enabling our approach is to use interpolants (assertions generated, e.g., by the infeasibility proof for an error trace) in order to automatically construct such an automaton. A data base of interpolant automata has an interesting potential for reuse of theorem proving work (from one program to another).",
+isbn="978-3-642-03237-0"
 }
 
-@inproceedings{DBLP:conf/cav/CimattiG12,
-  author    = {Alessandro Cimatti and
-               Alberto Griggio},
-  title     = {Software Model Checking via {IC3}},
-  booktitle = {{CAV}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {7358},
-  pages     = {277--293},
-  publisher = {Springer},
-  year      = {2012}
+@InProceedings{10.1007/978-3-642-14295-6_23,
+author="Bozga, Marius
+and Iosif, Radu
+and Kone{\v{c}}n{\'y}, Filip",
+editor="Touili, Tayssir
+and Cook, Byron
+and Jackson, Paul",
+title="Fast Acceleration of Ultimately Periodic Relations",
+booktitle="Computer Aided Verification",
+year="2010",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="227--242",
+abstract="Computing transitive closures of integer relations is the key to finding precise invariants of integer programs. In this paper, we describe an efficient algorithm for computing the transitive closures of difference bounds, octagonal and finite monoid affine relations. On the theoretical side, this framework provides a common solution to the acceleration problem, for all these three classes of relations. In practice, according to our experiments, the new method performs up to four orders of magnitude better than the previous ones, making it a promising approach for the verification of integer programs.",
+isbn="978-3-642-14295-6"
 }
 
-@inproceedings{DBLP:conf/sat/HoderB12,
-  author    = {Krystof Hoder and
-               Nikolaj Bj{\o}rner},
-  title     = {Generalized Property Directed Reachability},
-  booktitle = {{SAT}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {7317},
-  pages     = {157--171},
-  publisher = {Springer},
-  year      = {2012}
+
+@article{craig_1957, title={Three uses of the Herbrand-Gentzen theorem in relating model theory and proof theory}, volume={22}, DOI={10.2307/2963594}, number={3}, journal={Journal of Symbolic Logic}, publisher={Cambridge University Press}, author={Craig, William}, year={1957}, pages={269–285}}
+
+@inproceedings{McMillan2003InterpolationAS,
+  title={Interpolation and SAT-Based Model Checking},
+  author={Kenneth L. McMillan},
+  booktitle={CAV},
+  year={2003}
 }
 
-@inproceedings{DBLP:conf/fmcad/0001NN15,
-  author    = {Tim Lange and
-               Martin R. Neuh{\"{a}}u{\ss}er and
-               Thomas Noll},
-  title     = {{IC3} Software Model Checking on Control Flow Automata},
-  booktitle = {{FMCAD}},
-  pages     = {97--104},
-  publisher = {{IEEE}},
-  year      = {2015}
+@inproceedings{JillThesis,
+  title={Precise Loop Acceleration of
+		Ultimately Periodic Relations in
+		Ultimate},
+  author={Jill Enke},
+  publisher={Bachelor's Thesis},
+  year={2017}
 }
 
-@inproceedings{DBLP:conf/cav/HeizmannHP13,
-  author    = {Matthias Heizmann and
-               Jochen Hoenicke and
-               Andreas Podelski},
-  title     = {Software Model Checking for People Who Love Automata},
-  booktitle = {{CAV}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {8044},
-  pages     = {36--52},
-  publisher = {Springer},
-  year      = {2013}
+@inproceedings{ClausThesis,
+  title={An Octagon Abstract Domain For Ultimate},
+  author={Claus Schätzle},
+  publisher={Bachelor's Thesis},
+  year={2016}
 }
 
-@inproceedings{DBLP:conf/popl/HenzingerJMS02,
-  author    = {Thomas A. Henzinger and
-               Ranjit Jhala and
-               Rupak Majumdar and
-               Gr{\'{e}}goire Sutre},
-  title     = {Lazy abstraction},
-  booktitle = {{POPL}},
-  pages     = {58--70},
-  publisher = {{ACM}},
-  year      = {2002}
-}
-@Misc{cav,
-  title        = {HWMCC10 results},
-  howpublished = {\url{http://fmv.jku.at/hwmcc10/results.html}},
-  note         = {Accessed: 2018-07-20},
+
+@inproceedings{Dietsch2016AutomatedVO,
+  title={Automated verification of system requirements and software specifications},
+  author={Daniel Dietsch},
+  year={2016}
 }
 
 @Misc{Zitat02,
@@ -122,11 +113,6 @@
 	note         = {Accessed: 2018-07-28},
 }
 
-@Misc{Zitat04,
-	title        = {\textsc{Z3}},
-	howpublished = {\url{https://github.com/Z3Prover/z3}},
-	note         = {Accessed: 2018-07-28},
-}
 
 
 @Comment{jabref-meta: databaseType:bibtex;}

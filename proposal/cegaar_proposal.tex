@@ -23,6 +23,12 @@
 \usepackage{amssymb}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage{pgf}
+\usepackage{slashbox}
+\usepackage{pgfgantt}
+\usepackage{wrapfig}
+\usepackage{pdflscape}
+
 
 
 \usepackage[%disable,%
@@ -110,7 +116,7 @@ urlcolor=g1          % color of external links
 		\begin{center}
 		{\scshape\Large Master Project \par}
 		\vspace{1.5cm}
-		{\huge\bfseries Counterexample-Guided Accelerated Abstraction Refinement in Ultimate \par}
+		{\huge\bfseries Trace Abstraction using Accelerated Interpolants \par}
 		{\Huge\itshape Proposal \par}
 		\vspace{1cm}
 		{\large \scshape Jonas Werner\par}
@@ -120,35 +126,131 @@ urlcolor=g1          % color of external links
 		\end{center}
 
 \section{Introduction}
-If we want to verify a program, meaning we want to check if an undesired state is reachable, we can use a technique called Counterexample-guided Abstract Refinement (CEGAR) that uses possible traces to such an undesired state, proves them wrong and expands an abstract data structure that covers the program. \\
-The problem is, CEGAR may not always terminate. When we assume that the program contains loops of arbitrary length, CEGAR would have to disprove every trace going through that loop. In case of big loops this can take quite long. \\
-How to remedy this? Instead of iterating through the loop, use loop acceleration. An accelerated loop is represented by a formula modeling its transitive closure making it easier to deal with. The combination of loop acceleration and CEGAR is called Counterexample-Guided Accelerated Abstraction Refinement (CEGAAR). \\ \par
-This project aims at implementing a CEGAAR library in the program analysis framework Ultimate. This approach is based on the findings of Hojjat et al. \\ \par
-The remainder of this proposal is structured as follows, the next section will introduce needed background knowledge, like defining CEGAAR and presents a precise way of loop acceleration, section 3 will introduce Ultimate, and last but not least, section 4 will illustrate the goals and schedule of this project.
+Assume we want to verify whether a program is correct or not. A possible method is to construct the program's control-flow graph and using an automata-based instance of the CEGAR scheme, called trace abstraction, on it. Trace abstraction aims at constructing automata \cite{10.1007/978-3-642-39799-8_2} from infeasible traces leading to an error location, so called error traces, such that the language of the union of these automata are a superset of the language created by the program's control-flow graph. \par 
+For each possible error trace check its feasibility first, in case that the trace is feasible, the program is incorrect. If the trace is infeasible it is possible to compute a generalization that can exclude more traces. A common strategy \cite{10.1007/978-3-642-03237-0_7} to calculate a generalization is using Craig interpolation \cite{craig_1957}. \par 
+However these interpolants are not guaranteed to be the most general and with that not guaranteed to exclude many traces. This issue is most notably in program loops. Assume that a given program contains a loop with guard $x < 5000$, where $x$ is a program variable. It is possible that trace abstraction cannot generate an interpolant that excludes every loop iteration, leading to the need of proving every of the 5000 possible error traces individually. \par
+A possible solution for this problem would be accelerating the loop, meaning computing its transitive closure, and applying interpolation on that. This project aims at implementing exactly that. 
+The goal is to combine interpolation and loop acceleration on the basis of the work of Hojjat et al \cite{10.1007/978-3-642-33386-6_16} in the software analysis framework Ultimate \cite{Zitat02}. \par
+The remainder of this proposal is structured as follows, chapter 2 is an overview over needed background information, like a more detailed look at trace abstraction, loop acceleration, and finally the combination of interpolation and acceleration. Chapter 3 will detail the approach this project will take to implement accelerated interpolation in Ultimate, and finally an outline of the project's deliverables and schedule.
 
 \section{Background}
-This section will introduce preliminary definitions, like CEGAR, and possible loop acceleration methods.
-\subsection{Basic CEGAR}
-Assume we are given a program P. It is possible to represent this program as a graph, a so called control flowgraph. If this program contains assertion statements, for example $\texttt{assume x > 0}$, it is possible that the variable $\texttt{x}$ is 
-\jw{Introducing all needed preliminaries for Cegaar}
-\subsection{Counterexample-guided Abstract Refinement}
-\jw{Introduction normal Cegar, Showing problems with loops}
+This project aims at combining loop acceleration and interpolant calculation based on the findings of Hojjat et al \cite{10.1007/978-3-642-33386-6_16}, however, instead of utilizing a CEGAR-scheme with predicate abstraction, it will be implemented as an automata-based trace abstraction algorithm. \par
+This section will introduce the basic ideas behind trace abstraction, loop acceleration, and finally accelerated interpolants.
+
+\subsection{Interpolating Trace Abstraction}
+Given a program $P$ and its control-flow graph $A_P = (Loc, \Delta, \ell_{0}, \ell_E)$, where $Loc$ is a set of control states, $\Delta$ is a set of triples $(\ell, stm, \ell')$ representing program transitions with $\ell, \ell' \in Loc$ and program statement $stm$, $\ell_{init}$ being the initial location, and $\ell_E$ being an error location. One can interpret the control-flow graph as an automaton with $\ell_E$ being an accepting state. \par To check the reachability of $\ell_E$, and with that correctness of $P$, use trace abstraction with interpolation according to the following paradigm:
+\begin{itemize}
+	\item[1.] Get an error trace which starts at $\ell_0$ and ends in $\ell_E$:
+	\begin{equation*}
+			 \ell_{0} \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \cdots \xrightarrow{\text{$stm_{n-1}$}} \ell_{n-1} \xrightarrow{\text{$stm_{n}$}} \ell_{E}
+	\end{equation*}
+	With each $(\ell_i, stm_i, \ell_{i + 1}) \in \Delta$.
+	\item[2.] Construct an infeasibility proof. \\ In case that the trace is proven feasible, then the program is incorrect
+	\item[3.] Use the infeasibility proof to calculate interpolants. \\
+	And construct a new automaton, called interpolant automaton. $\mathcal{A}_i$ from them.
+	\item[4.] If the language $\mathcal{L(A_P)}$ that is recognized by the control-flow graph is a subset of the union of languages recognized by the constructed interpolant automata: $\mathcal{L(A_P)} \subseteq \mathcal{L(A}_1) \cup ... \cup \mathcal{L(A}_i)$ then the program is correct, else start at step 1.
+\end{itemize}
+The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. However, the interpolants are not guaranteed to be general enough to exclude other error traces. Which poses a problem for loops. In the following we introduce a way to exclude an infinite number of traces going through a loop.
+
+\subsection{Trace Schemes}
+To make exclusion of infinitely many traces going through a loop possible, we first need to transform the trace into a so called trace scheme. \\
+Assume we are given the following error trace:
+\begin{equation*}
+\ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \ell_2 \xrightarrow{\text{$stm_3$}} \ell_3 \xrightarrow{\text{$stm_4$}} \ell_2 \xrightarrow{\text{$stm_5$}} \ell_E
+\end{equation*}
+We see there is a loop from $\ell_2$ to $\ell_3$ and back to $\ell_2$.  \\ \\
+To be able to efficiently exclude the loop, calculate the composition of the loop's statements. This composition is called a trace scheme:
+\begin{equation*}
+\ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \overset{stm_3 \circ stm_4}{\overset{\curvearrowright}{\ell_2}} \xrightarrow{\text{$stm_5$}} \ell_E
+\end{equation*}
+It is possible to construct an interpolant sequence from this trace scheme, however it still is not guaranteed that this sequence is useful. This is where the loop acceleration comes into play.
+
 \subsection{Loop Acceleration}
-\jw{What is loop acceleration? loop acceleration possibilities, overapprox, underapprox, precise. \\ Short introduction, explanation why UPR}
-\subsection{Octagons}
-\jw{What are octagons, needed for Fast Upr in next section \\ Refers to Claus' Thesis}
-\subsection{Loop Acceleration using Ultimately Periodic Relations}
-\jw{Precise usage of octagons in ultimately periodic relations \\ Refers to Jill's Thesis}
+To accelerate a loop means computing its transitive closure
+\subsection{Meta Trace Schemes}
+
+\section{Approach}
+We want to implement accelerated interpolation into the software verification framework Ultimate \cite{Zitat02}. Ultimate consists of multiple different libraries that can be executed in serial to form so called toolchains. There are already toolchains implementing trace abstraction as described above. This project extends these toolchains with accelerated interpolation by creating a new interpolating trace checking library. \par 
+This library will be used for step 3 of the trace abstraction technique seen above. For that it has to fulfill several specifications: 
+\begin{itemize}
+	\item Computing loop accelerations using ultimately periodic relations as specified by 
+	\item Use loop accelerations to construct trace schemes and meta schemes
+	\item Check meta schemes' feasibility
+	\item Construct interpolants for meta schemes
+\end{itemize}
+This project is finished when this library has been implemented, tested, and evaluated by testing it on several verification tasks. \\ \\
+Master projects award 12 ECTS points which translates to 12 weeks of work. Resulting in the following approach:
+\begin{itemize}
+	\item[1.] Understanding the Matter: \\
+	Grasp how the combination of loop acceleration and interpolation works. \\
+	Moreover, there have been previous projects that implemented the basis \cite{ClausThesis} and the ultimately periodic acceleration scheme itself \cite{JillThesis} in Ultimate. It is important to understand those implementations before trying to adapt them for the usage of accelerated interpolants. \\ \\
+	Duration in weeks: 1 \\\\
+	Result: Being able to use the previous work and having an understanding on how to implement an accelerated interpolation library.
+	\item[2.] Implement Trace Scheme Transformation \\
+	The accelerated interpolation library should be able to transform a given error trace into a trace scheme. \\\\
+	Duration in weeks: 1 \\\\
+	Result: Given an error trace, accelerated interpolation is able to transform it into a trace scheme.
+	
+	\item[3.] Implementing Own Version of Loop Acceleration: \\
+	Implement a way of using Fast Acceleration of Ultimately Periodic Relations in the accelerated interpolation library. \\ \\
+	Duration in weeks: 3 \\ \\
+	Result: Accelerated interpolation is able to construct the transitive closure of loops to use for interpolant generation
+	
+	\item[4.] Combining Trace Schemes and Loop Acceleration \\
+	Accelerated interpolation can construct meta-schemes from trace schemes by inserting the transitive closure of the loop, prove its feasibility, and furthermore, is able to generate interpolants from the meta-scheme. \\ \\
+	Duration in weeks: 3 \\\\
+	Result: Accelerated interpolation returns a sequence of interpolants for use in the trace abstraction paradigm, or returns that the program is incorrect, depending on the feasibility of an error trace.
+	
+	\item[5.] Evaluating the Library \\
+	Search for possible bugs and compare it to other trace checkers, such as PDR. \\\\
+	Duration in weeks: 2 \\\\
+	Result: A bugfree accelerated interpolation library and data comparing it to other trace checkers.
+	
+	\item[6.] Writing a Documentation about the Project \\
+	Write in more detail than this proposal how accelerated interpolation works, and what new knowledge we discovered during this project \\\\
+	Duration in weeks: 2 \\\\
+	Result: A written documentation about this project.
+\end{itemize}
+\begin{landscape}
+	\section{Schedule}
+	\pagenumbering{gobble}
+	This schedule illustrates the approach and shows the sequence of the individual tasks. \\ \\
+	\hspace*{-4cm}
+	\begin{tikzpicture}
+	\begin{ganttchart}[hgrid, vgrid, x unit=1.7cm, bar height=.6,, title height=1, canvas/.append style={alias=frame}
+	]{1}{12}
+	
+	\gantttitle{Time in weeks}{12} \ganttnewline
+	
+	\gantttitlelist{1,...,12}{1} \\
+	
+	
+	\ganttbar{1. Understanding}{1}{1}
+	
+	% A NEW BAR FOR EACH WITH INLINE
+	
+	\ganttbar[inline]{}{1}{1} \ \\
+	
+	\ganttbar{2. Trace Scheme}{2}{2}
+	\ganttbar[inline]{}{2}{2} \ \\
+	
+	\ganttbar{3. Acceleration}{3}{5}
+	\ganttbar[inline]{}{3}{5} \ \\
+	
+	\ganttbar{4. Combining}{6}{8}
+	\ganttbar[inline]{}{6}{8} \ \\
+	
+	\ganttbar{5. Evaluating}{9}{10}
+	\ganttbar[inline]{}{9}{10} \ \\
+	
+	\ganttbar{6. Writing}{11}{12}
+	\ganttbar[inline]{}{11}{12}
+	\end{ganttchart}
+	\useasboundingbox (frame.south west) rectangle (frame.north east);
+	\end{tikzpicture}
+	
+\end{landscape}
 \pagebreak
-\section{CEGAAR in Ultimate}
-\jw{Section about using octagons/FastUPR library in Ultimate}
-\subsection{Already Existing Libraries}
-\jw{references to implementations done for FastUPR and Octagons}
-\subsection{Implementation}
-\jw{How to use them with CEGAAR loop in Ultimate \\ Question: How do we implement CEGAAR in Ultimate? \\ Predicate Abstraction, Trace Abstraction, SIFA, mega abstraction?}
-\pagebreak
-\section{Course of Project}
-\jw{Section about timetable and so on. \\ What to do and when.}	
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{plain}
 \bibliography{bib}
