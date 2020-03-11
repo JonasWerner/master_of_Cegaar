@@ -126,21 +126,27 @@ urlcolor=g1          % color of external links
 		\end{center}
 
 \section{Introduction}
-Assume we want to verify whether a program is correct or not. A possible method is to construct the program's control-flow graph and using an automata-based instance of the CEGAR scheme, called trace abstraction, on it. Trace abstraction aims at constructing automata \cite{10.1007/978-3-642-39799-8_2} from infeasible traces leading to an error location, so called error traces, such that the language of the union of these automata are a superset of the language recognized by the program's control-flow graph. \par 
-For each possible error trace check its feasibility, in case that the trace is feasible, the program is incorrect. If the trace is infeasible it is possible to compute a generalization that can exclude more error traces. A common strategy \cite{10.1007/978-3-642-03237-0_7} to calculate a generalization is using Craig interpolation \cite{craig_1957}. \par 
-However these interpolants are not guaranteed to be the most general and with that not guaranteed to exclude many traces. This issue is most notably in program loops. Assume that the given program contains a loop with guard $x < 5000$, $x$ being an integer variable. It is possible that trace abstraction cannot generate an interpolant that excludes every loop iteration, leading to the need of proving every of the 5000 possible error traces individually. \par
+Assume we want to verify whether a program fulfills a given safety property. The program's control-flow graph represents every possible trace that can be taken by a program execution. Executions that violate the safety property end in so called error location that model possible executions. The goal is to check if there are feasible traces from the initial node of the control-flow graph to an error location.
+To check reachability, a common technique is to apply an automata-based instance of the CEGAR scheme, called trace abstraction, on the program's control-flow graph. \\
+
+Trace abstraction aims at constructing automata \cite{10.1007/978-3-642-39799-8_2} from infeasible traces leading to an error location, so called error traces. When the language recognized by the program's control-flow graph is a subset of these automata, it means, that every possible trace, and by that execution, that ends in an error location is infeasible. Proving that the program fulfills the safety property. \\
+\par 
+Error traces have their feasibility checked. If it is feasible, the program violates the safety property. If the trace is infeasible there is an infeasibility proof which is used to construct an automaton. This automaton excludes the original error trace. A drawback, however, is that just a singular trace is being excluded. To exclude more, one can try to compute a generalization of the infeasibility proof. \par
+
+A common strategy \cite{10.1007/978-3-642-03237-0_7} to calculate a generalization is using Craig interpolation \cite{craig_1957}, where an SMT-solver computes a sequence of interpolants from an infeasibility proof.\par 
+But, it is not guaranteed that these interpolants are more general. This issue is most notably in program loops. Assume that the given program contains a loop with guard $x < 5000$, $x$ being an integer variable. It is possible that the computed interpolant sequence does not exclude every loop iteration, leading to the need of proving every of the 5000 possible error traces individually. \par
 A possible solution for this problem would be accelerating the loop, meaning computing its transitive closure, and applying interpolation on that. \par This project aims at implementing exactly that. 
 The goal is to combine interpolation and loop acceleration on the basis of the work of Hojjat et al \cite{10.1007/978-3-642-33386-6_16} in the software analysis framework \\ Ultimate \cite{Zitat02}. \par
-The remainder of this proposal is structured as follows, chapter 2 will give an overview over needed background information, like a more detailed look at trace abstraction, loop acceleration, and the combination of interpolation and acceleration. Chapter 3 will detail the approach this project will take to implement accelerated interpolation in Ultimate, and finally an outline of the project's deliverables and schedule.
+The remainder of this proposal is structured as follows. Chapter 2 will give an overview of needed background information, like a more detailed look at trace abstraction, loop acceleration, and the combination of interpolation and acceleration. Chapter 3 will detail the approach this project will take to implement accelerated interpolation in Ultimate, and finally an outline of the project's deliverables and schedule.
 
 \section{Background}
 This project aims at combining loop acceleration and interpolant calculation based on the findings of Hojjat et al \cite{10.1007/978-3-642-33386-6_16}, however, instead of utilizing a CEGAR-scheme with predicate abstraction, it will be implemented as an automata-based CEGAR-scheme, called trace abstraction. \par
 This section will introduce the basic ideas behind trace abstraction, loop acceleration, and finally accelerated interpolants.
 
 \subsection{Interpolating Trace Abstraction}
-Given a program $P$ and its control-flow graph $A_P = (Loc, \Delta, \ell_{0}, \ell_E)$, where $Loc$ is a set of control states, $\Delta$ is a set of triples $(\ell, stm, \ell')$ representing program transitions with $\ell, \ell' \in Loc$ and program statement $stm$, $\ell_{init}$ being the initial location, and $\ell_E$ being an error location. One can interpret the control-flow graph as an automaton with $\ell_E$ being an accepting state. \par To check the reachability of $\ell_E$, and with that correctness of $P$, use trace abstraction with interpolation according to the following paradigm \cite{10.1007/978-3-642-03237-0_7}:
+Given a program $P$ and its control-flow graph $A_P = (Loc, \Delta, \ell_{0}, \ell_E)$, where $Loc$ is a set of program locations, $\Delta$ is a set of triples $(\ell, stm, \ell')$ representing program transitions with $\ell, \ell' \in Loc$ and program statement $stm$, $\ell_{0}$ being the initial location, and $\ell_E$ being an error location. One can interpret the control-flow graph as a nondeterministic automaton with $\ell_E$ being an accepting state. \par To check the reachability of $\ell_E$, and with that correctness of $P$, use trace abstraction with interpolation according to the following paradigm \cite{10.1007/978-3-642-03237-0_7}:
 \begin{itemize}
-	\item[1.] Get an error trace which starts at $\ell_0$ and ends in $\ell_E$:
+	\item[1.] Search the program's control-flow graph for a trace that starts at $\ell_0$ and ends in $\ell_E$:
 	\begin{equation*}
 			 \ell_{0} \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \cdots \xrightarrow{\text{$stm_{n-1}$}} \ell_{n-1} \xrightarrow{\text{$stm_{n}$}} \ell_{E}
 	\end{equation*}
@@ -159,24 +165,33 @@ Assume we are given the following error trace $\tau$:
 \tau: \ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \ell_2 \xrightarrow{\text{$stm_3$}} \ell_3 \xrightarrow{\text{$stm_4$}} \ell_2 \xrightarrow{\text{$stm_5$}} \ell_E
 \end{equation*}
 We see there is a loop from $\ell_2$ to $\ell_3$ and back to $\ell_2$.  \\ \\
-To be able to efficiently exclude the loop, calculate the composition of the loop's statements. \\
+To be able to efficiently accelerate the loop we firstly need to change its representation. We want to merge all loop statements into one. This is done by calculating the composition of the statements. \\
 This composition is then used to remove the loop from the trace, resulting in a trace scheme:
 \begin{equation*}
 \tau':\ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \overset{stm_3\ \circ \ stm_4}{\overset{\curvearrowright}{\ell_2}} \xrightarrow{\text{$stm_5$}} \ell_E
 \end{equation*}
-Assume the trace scheme is infeasible, it is possible to construct an interpolant sequence, that is,
-however, not guaranteed to be useful. This is where the loop acceleration is needed.
+This trace scheme still includes the original trace. It is possible to check the trace scheme's feasibility however it is impossible to compute a sequence of interpolants yet. This is where acceleration is needed.
 
 \subsection{Loop Acceleration}
-The goal of acceleration is to compute a loop's transitive closure. In general, this is not possible as the transitive closure consists of infinitely many disjunctions. There are loops that can be expressed as so called octagon relations \cite{DBLP:journals/corr/abs-cs-0703084}. \\
+\jw{Todo}
+The goal of acceleration is to compute a loop's transitive closure. In general, this is not possible as the transitive closure consists of infinitely many disjunctions. There are three kinds of loop acceleration varying in precision.
+
+\subsubsection{Precise Loop Acceleration}
+Precise loop acceleration
+ There are loops that can be expressed as so called octagon relations \cite{DBLP:journals/corr/abs-cs-0703084}. \\
 These relations have a certain constraint of the following form: 
 \begin{equation*}
 	\pm x_i \pm x_j \leq c_{i,j}
 \end{equation*}
 With integer variables $x_i, x_, c_{i,j}$ \\
 It has been shown, that the transitive closure of an octagonal relation can be efficiently computed \cite{10.1007/978-3-642-14295-6_23}.
-\subsection{Meta Trace Schemes}
-The transitive closure of a loop contains every trace going through it. To make use of a loop acceleration, we need to pull apart the looping location $\ell_2$ by introducing so called meta-transitions of the form:
+
+\subsubsection{Underapproximating Loop Acceleration}
+
+\subsubsection{Overapproximating Loop Acceleration}
+
+\subsection{Meta-Traces}
+The transitive closure of a loop contains every trace going through it. To make use of loop acceleration, we need to pull apart the looping location $\ell_2$ by introducing so called meta-transitions of the form:
 \begin{equation*}
 	\overset{stm_3\ \circ \ stm_4}{\overset{\curvearrowright}{\ell_2}} \Rightarrow \hspace*{1cm} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2''
 \end{equation*}
@@ -185,15 +200,16 @@ Using meta-transitions, we can transform our trace scheme into a meta-trace:
 \begin{equation*}
 	\bar{\tau}: \ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2'' \xrightarrow{\text{$stm_5$}} \ell_E
 \end{equation*}
-The feasibility of the meta-trace is the same as the trace scheme before. When we assume that it is infeasible, we can generate an interpolant sequence:
+The feasibility of the meta-trace is the same as the trace scheme before. If there is an infeasibility proof, we can compute interpolant sequence:
 \begin{equation*}
 I_{\bar{\tau}}: \langle \top, I_1, I_2', I_2'', \bot  \rangle
 \end{equation*}
+\jw{todo: Why?}
 To guarantee inductiveness to the loop, we have to compute the strongest post of each interpolant, that coincide with a location in the loop, and its transitive closure:
 \begin{equation*}
-I_{\bar{\tau}}^{post}: \langle \top, I_1, post(I_2', stm_3 \circ stm_4), I_2'', \bot  \rangle
+I_{\bar{\tau}}^{post}: \langle \top, I_1, post(I_2', stm_3 \circ stm_4), \bot  \rangle
 \end{equation*}
-This sequence is now general enough to exclude infinitely many traces.
+This sequence is now general enough to exclude the loop.
 \section{Approach}
 We want to implement accelerated interpolation into the software verification framework Ultimate \cite{Zitat02}. Ultimate consists of multiple different libraries that can be executed in serial to form so called toolchains. There are already toolchains implementing trace abstraction as described above. This project extends these toolchains with accelerated interpolation by creating a new interpolating trace checking library. \par 
 This library will be used for step 3 of the trace abstraction paradigm. For that it has to fulfill the following specifications: 
@@ -204,7 +220,7 @@ This library will be used for step 3 of the trace abstraction paradigm. For that
 	\item Construct interpolants for infeasible meta schemes to be used in trace abstraction.
 \end{itemize}
 This project is finished when this library has been implemented, tested, and evaluated by using it on several verification tasks. \\ \\
-Master projects award 12 ECTS points which translates to 12 weeks of work. Resulting in the following approach:
+Master projects award 16 ECTS points which translates to 16 weeks of work. Resulting in the following approach:
 \begin{itemize}
 	\item[1.] \textsl{Understanding the Matter:} \\
 	Grasp how the combination of loop acceleration and interpolation works. \\
@@ -213,12 +229,12 @@ Master projects award 12 ECTS points which translates to 12 weeks of work. Resul
 	\textsl{Result}: Being able to use the previous work and having an understanding on how to implement an accelerated interpolation library.
 	\item[2.] \textsl{Implement Trace Scheme Transformation:} \\
 	The accelerated interpolation library should be able to transform a given error trace into a trace scheme. \\\\
-	\textsl{Duration in weeks:} 1 \\\\
+	\textsl{Duration in weeks:} 4 \\\\
 	\textsl{Result}: Given an error trace, accelerated interpolation is able to transform it into a trace scheme.
 	
 	\item[3.] \textsl{Implement Own Version of Loop Acceleration:} \\
 	Implement a way of using Fast Acceleration of Ultimately Periodic Relations in the accelerated interpolation library. \\ \\
-	\textsl{Duration in weeks:} 3 \\ \\
+	\textsl{Duration in weeks:} 4 \\ \\
 	\textsl{Result}: Accelerated interpolation is able to construct the transitive closure of loops to use for interpolant generation
 	
 	\item[4.] \textsl{Combining Trace Schemes and Loop Acceleration:} \\
@@ -242,12 +258,12 @@ Master projects award 12 ECTS points which translates to 12 weeks of work. Resul
 	This schedule illustrates the approach and shows the sequence of the individual tasks. \\ \\
 	\hspace*{-4cm}
 	\begin{tikzpicture}
-	\begin{ganttchart}[hgrid, vgrid, x unit=1.7cm, bar height=.6,, title height=1, canvas/.append style={alias=frame}
-	]{1}{12}
+	\begin{ganttchart}[hgrid, vgrid, x unit=1.25cm, bar height=.6,, title height=1, canvas/.append style={alias=frame}
+	]{1}{16}
 	
-	\gantttitle{Time in weeks}{12} \ganttnewline
+	\gantttitle{Time in weeks}{16} \ganttnewline
 	
-	\gantttitlelist{1,...,12}{1} \\
+	\gantttitlelist{1,...,16}{1} \\
 	
 	
 	\ganttbar{1. Understanding}{1}{1}
@@ -256,20 +272,20 @@ Master projects award 12 ECTS points which translates to 12 weeks of work. Resul
 	
 	\ganttbar[inline]{}{1}{1} \ \\
 	
-	\ganttbar{2. Trace Scheme}{2}{2}
-	\ganttbar[inline]{}{2}{2} \ \\
+	\ganttbar{2. Trace Scheme}{2}{5}
+	\ganttbar[inline]{}{2}{5} \ \\
 	
-	\ganttbar{3. Acceleration}{3}{5}
-	\ganttbar[inline]{}{3}{5} \ \\
+	\ganttbar{3. Acceleration}{6}{9}
+	\ganttbar[inline]{}{6}{9} \ \\
 	
-	\ganttbar{4. Combining}{6}{8}
-	\ganttbar[inline]{}{6}{8} \ \\
+	\ganttbar{4. Combining}{10}{12}
+	\ganttbar[inline]{}{10}{12} \ \\
 	
-	\ganttbar{5. Evaluating}{9}{10}
-	\ganttbar[inline]{}{9}{10} \ \\
+	\ganttbar{5. Evaluating}{13}{14}
+	\ganttbar[inline]{}{13}{14} \ \\
 	
-	\ganttbar{6. Writing}{11}{12}
-	\ganttbar[inline]{}{11}{12}
+	\ganttbar{6. Writing}{15}{16}
+	\ganttbar[inline]{}{15}{16}
 	\end{ganttchart}
 	\useasboundingbox (frame.south west) rectangle (frame.north east);
 	\end{tikzpicture}
