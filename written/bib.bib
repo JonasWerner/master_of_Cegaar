@@ -1,0 +1,132 @@
+% Encoding: UTF-8
+
+
+@InProceedings{10.1007/978-3-642-33386-6_16,
+author="Hojjat, Hossein
+and Iosif, Radu
+and Kone{\v{c}}n{\'y}, Filip
+and Kuncak, Viktor
+and R{\"u}mmer, Philipp",
+editor="Chakraborty, Supratik
+and Mukund, Madhavan",
+title="Accelerating Interpolants",
+booktitle="Automated Technology for Verification and Analysis",
+year="2012",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="187--202",
+abstract="We present Counterexample-Guided Accelerated Abstraction Refinement (CEGAAR), a new algorithm for verifying infinite-state transition systems. CEGAAR combines interpolation-based predicate discovery in counterexample-guided predicate abstraction with acceleration technique for computing the transitive closure of loops. CEGAAR applies acceleration to dynamically discovered looping patterns in the unfolding of the transition system, and combines overapproximation with underapproximation. It constructs inductive invariants that rule out an infinite family of spurious counterexamples, alleviating the problem of divergence in predicate abstraction without losing its adaptive nature. We present theoretical and experimental justification for the effectiveness of CEGAAR, showing that inductive interpolants can be computed from classical Craig interpolants and transitive closures of loops. We present an implementation of CEGAAR that verifies integer transition systems. We show that the resulting implementation robustly handles a number of difficult transition systems that cannot be handled using interpolation-based predicate abstraction or acceleration alone.",
+isbn="978-3-642-33386-6"
+}
+
+@article{DBLP:journals/corr/abs-cs-0703084,
+  author    = {Antoine Min{\'{e}}},
+  title     = {The Octagon Abstract Domain},
+  journal   = {CoRR},
+  volume    = {abs/cs/0703084},
+  year      = {2007},
+  url       = {http://arxiv.org/abs/cs/0703084},
+  archivePrefix = {arXiv},
+  eprint    = {cs/0703084},
+  timestamp = {Mon, 13 Aug 2018 16:47:22 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-cs-0703084.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@InProceedings{10.1007/978-3-642-39799-8_2,
+author="Heizmann, Matthias
+and Hoenicke, Jochen
+and Podelski, Andreas",
+editor="Sharygina, Natasha
+and Veith, Helmut",
+title="Software Model Checking for People Who Love Automata",
+booktitle="Computer Aided Verification",
+year="2013",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="36--52",
+abstract="In this expository paper, we use automata for software model checking in a new way. The starting point is to fix the alphabet: the set of statements of the given program. We show how automata over the alphabet of statements can help to decompose the main problem in software model checking, which is to find the right abstraction of a program for a given correctness property.",
+isbn="978-3-642-39799-8"
+}
+
+@InProceedings{10.1007/978-3-642-03237-0_7,
+author="Heizmann, Matthias
+and Hoenicke, Jochen
+and Podelski, Andreas",
+editor="Palsberg, Jens
+and Su, Zhendong",
+title="Refinement of Trace Abstraction",
+booktitle="Static Analysis",
+year="2009",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="69--85",
+abstract="We present a new counterexample-guided abstraction refinement scheme. The scheme refines an over-approximation of the set of possible traces. Each refinement step introduces a finite automaton that recognizes a set of infeasible traces. A central idea enabling our approach is to use interpolants (assertions generated, e.g., by the infeasibility proof for an error trace) in order to automatically construct such an automaton. A data base of interpolant automata has an interesting potential for reuse of theorem proving work (from one program to another).",
+isbn="978-3-642-03237-0"
+}
+
+@InProceedings{10.1007/978-3-642-14295-6_23,
+author="Bozga, Marius
+and Iosif, Radu
+and Kone{\v{c}}n{\'y}, Filip",
+editor="Touili, Tayssir
+and Cook, Byron
+and Jackson, Paul",
+title="Fast Acceleration of Ultimately Periodic Relations",
+booktitle="Computer Aided Verification",
+year="2010",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="227--242",
+abstract="Computing transitive closures of integer relations is the key to finding precise invariants of integer programs. In this paper, we describe an efficient algorithm for computing the transitive closures of difference bounds, octagonal and finite monoid affine relations. On the theoretical side, this framework provides a common solution to the acceleration problem, for all these three classes of relations. In practice, according to our experiments, the new method performs up to four orders of magnitude better than the previous ones, making it a promising approach for the verification of integer programs.",
+isbn="978-3-642-14295-6"
+}
+
+
+@article{craig_1957, title={Three uses of the Herbrand-Gentzen theorem in relating model theory and proof theory}, volume={22}, DOI={10.2307/2963594}, number={3}, journal={Journal of Symbolic Logic}, publisher={Cambridge University Press}, author={Craig, William}, year={1957}, pages={269–285}}
+
+@inproceedings{McMillan2003InterpolationAS,
+  title={Interpolation and SAT-Based Model Checking},
+  author={Kenneth L. McMillan},
+  booktitle={CAV},
+  year={2003}
+}
+
+@inproceedings{JillThesis,
+  title={Precise Loop Acceleration of
+		Ultimately Periodic Relations in
+		Ultimate},
+  author={Jill Enke},
+  publisher={Bachelor's Thesis},
+  year={2017}
+}
+
+@inproceedings{ClausThesis,
+  title={An Octagon Abstract Domain for Ultimate},
+  author={Claus Schätzle},
+  publisher={Bachelor's Thesis},
+  year={2016}
+}
+
+
+@inproceedings{Dietsch2016AutomatedVO,
+  title={Automated verification of system requirements and software specifications},
+  author={Daniel Dietsch},
+  year={2016}
+}
+
+@Misc{Zitat02,
+  title        = {\textsc{Ultimate}},
+  howpublished = {\url{https://ultimate.informatik.uni-freiburg.de}},
+  note         = {Accessed: 2020-02-14},
+}
+
+@Misc{Zitat03,
+	title        = {SmtInterpol},
+	howpublished = {\url{https://ultimate.informatik.uni-freiburg.de/smtinterpol/}},
+	note         = {Accessed: 2018-07-28},
+}
+
+
+
+@Comment{jabref-meta: databaseType:bibtex;}
