@@ -140,11 +140,82 @@ The goal is to combine interpolation and loop acceleration on the basis of the w
 The remainder of this proposal is structured as follows. Chapter 2 will give an overview of needed background information, like a more detailed look at trace abstraction, loop acceleration, and the combination of interpolation and acceleration. Chapter 3 will detail the approach this project will take to implement accelerated interpolation in Ultimate, and finally an outline of the project's deliverables and schedule.
 
 \section{Background}
-This project aims at combining loop acceleration and interpolant calculation based on the findings of Hojjat et al \cite{10.1007/978-3-642-33386-6_16}, however, instead of utilizing a CEGAR-scheme with predicate abstraction, it will be implemented as an automata-based CEGAR-scheme, called trace abstraction. \par
+This project aims at combining loop acceleration and interpolant calculation based on the findings of Hojjat et al. \cite{10.1007/978-3-642-33386-6_16}, however, instead of utilizing a CEGAR-scheme with predicate abstraction, it will be implemented as an automata-based CEGAR-scheme, called trace abstraction. \par
 This section will introduce the basic ideas behind trace abstraction, loop acceleration, and finally accelerated interpolants.
 
 \subsection{Interpolating Trace Abstraction}
-Given a program $P$ and its control-flow graph $A_P = (Loc, \Delta, \ell_{0}, \ell_E)$, where $Loc$ is a set of program locations, $\Delta$ is a set of triples $(\ell, stm, \ell')$ representing program transitions with $\ell, \ell' \in Loc$ and program statement $stm$, $\ell_{0}$ being the initial location, and $\ell_E$ being the error location. One can interpret the control-flow graph as a nondeterministic automaton with $\ell_E$ as accepting state. \\ \\ To check the reachability of $\ell_E$, and with that correctness of $P$, use trace abstraction with interpolation according to the following paradigm \cite{10.1007/978-3-642-03237-0_7}:
+A program $\texttt{P}$ can be represented by a control-flow graph.
+\begin{mydef}
+	A program $\texttt{P}$'s control-flow graph $G_p = (Loc, \Delta, \ell_{0}, \ell_{Err})$ is a tuple, where
+	 \begin{itemize}
+		\item $Loc$ is a set of program locations
+		\item $\Delta$ is a set of triples $(\ell_i, stm_i, \ell_{i + 1})$ representing program transitions with $\ell_i, \ell_{i + 1} \in Loc$ and program statement $stm_i$
+		\item $\ell_{0}$ represents the initial location
+		\item $\ell_{Err} \subseteq Loc$ a set of error locations
+	\end{itemize}
+\end{mydef}
+It is possible to interpret the control-flow graph as a nondeterministic automaton. \\ 
+
+For example, consider the following program $\texttt{P}$ and its corresponding control-flow graph $G_P$:
+
+\begin{minipage}{.3\textwidth}
+	\centering
+	\begin{align*}
+	&\texttt{1: int x := 0}; \\
+	&\texttt{2: while x <= 4;} \\
+	&\texttt{3: \hspace*{2em} x := x + 3;} \\
+	&\texttt{4: end while} \\
+	&\texttt{5: assert x == 6}
+	\end{align*}
+	\captionof{figure}{Program $\texttt{P}$}
+	\label{fig:square}
+\end{minipage}%
+\hfill
+\begin{minipage}{.6\textwidth}
+	\centering
+	\begin{tikzpicture}[%
+	->,
+	>=stealth', shorten >=1pt, auto,
+	node distance=2.5cm, scale=1, 
+	transform shape, align=center,    
+	smallnode/.style={inner sep=1.4}
+	initial text =]
+	\node[state, initial above](1){$\ell_0$};
+	
+	\node[state] (2) [below of=1] {$\ell_1$};
+	
+	\node[state] (3) [left of=2] {$\ell_2$};
+	
+	\node[state] (4) [right of=2] {$\ell_3$};
+	
+	\node[state] (5) [below of=4] {$\ell_E$};
+	
+	\path (1) edge node {$\texttt{x := 0}$} (2)
+	(2) edge [bend right] node [above]{$\texttt{x <= 4}$} (3)
+	(3) edge [bend right] node [below]{$\texttt{x := x + 3}$} (2)
+	(2) edge node {$\texttt{!x <= 4}$} (4)
+	(4) edge node {$\texttt{x != 6}$} (5)
+	;
+	\end{tikzpicture}
+	\captionof{figure}{$G$}
+	\label{fig:rect}
+\end{minipage}%
+\\ \vspace*{2em}
+
+Through a control-flow graph there are so called program traces characterizing transitions from one program state to another, starting at the initial location. \\
+
+\begin{mydef}
+	A program trace is a sequence of tuples $(\ell_0, \varphi_0, \ell_1), (\ell_1, \varphi_1, \ell_2), ... (\ell_{n - 1}, \varphi_{n - 1}, \ell_n),$ where each tuple $(\ell_i, \varphi_i, \ell_{i + 1})$ consists of
+	\begin{itemize}
+		\item $\ell_i$ the source program location
+		\item $\varphi_i$ a first order formula in single static assignment form defining the changesto the program variables during a state transition, called the transition formula
+		\item  $\ell_{i+1}$ the target location after the transition
+	\end{itemize}
+\end{mydef}
+
+A possible 
+
+ To check reachability of an error location $\ell_E \in \ell_{Err}$, use trace abstraction with interpolation according to the following paradigm \cite{10.1007/978-3-642-03237-0_7}:
 \begin{itemize}
 	\item[1.] Search the program's control-flow graph for a trace that starts at $\ell_0$ and ends in $\ell_E$:
 	\begin{equation*}
@@ -158,53 +229,57 @@ Given a program $P$ and its control-flow graph $A_P = (Loc, \Delta, \ell_{0}, \e
 \end{itemize}
 The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. However, the interpolants are not guaranteed to be general enough to exclude infinitely many error traces. Which poses a problem for loops. In the following we introduce a way to exclude an infinite number of traces going through a loop.
 
-\subsection{Trace Schemes}
-To make the exclusion of error traces through a loop possible, we need to preprocess error traces. \\
-Assume we are given the following error trace $\tau$:
-\begin{equation*}
-\tau: \ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \ell_2 \xrightarrow{\text{$stm_3$}} \ell_3 \xrightarrow{\text{$stm_4$}} \ell_2 \xrightarrow{\text{$stm_5$}} \ell_E
-\end{equation*}
-We see there is a loop from $\ell_2$ to $\ell_3$ and back to $\ell_2$.  \\ \\
-To be able to efficiently accelerate the loop we firstly need to change its representation. We want to merge all loop statements into one transition. This is done by calculating the composition of the statements. \\
-This composition then replaces the loop in the trace, resulting in a trace scheme:
-\begin{equation*}
-\tau':\ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \overset{stm_3\ \circ \ stm_4}{\overset{\curvearrowright}{\ell_2}} \xrightarrow{\text{$stm_5$}} \ell_E
-\end{equation*}
-This trace scheme still includes the original trace. It is possible to check the trace scheme's feasibility however it is impossible to compute a sequence of interpolants yet. This is where acceleration is needed.
+
+\section{Accelerated Interpolation}
+This section will introduce the technique of combining loop acceleration and interpolation computation for usage in trace abstraction. \\\\
+
+
+To check the reachability of $\ell_E$ we use the trace abstraction paradigm: \\
+Firstly, we need a possible error trace $\tau_0$. \\ \\
+
+\begin{figure}[H]
+\begin{tikzpicture}[%
+->,
+>=stealth', shorten >=1pt, auto,
+node distance=2.5cm, scale=1, 
+transform shape, align=center,    
+smallnode/.style={inner sep=1.4}
+initial text =]
+
+\node[state](1){$\ell_0$};
+
+\node[state] (2) [right of=1] {$\ell_1$};
+
+\node[state] (3) [right of=2] {$\ell_2$};
+
+\node[state] (4) [right of=3, xshift=1cm] {$\ell_1$};
+
+\node[state] (5) [right of=4] {$\ell_3$};
+
+\node[state] (6) [right of=5] {$\ell_E$};
+
+\path (1) edge node {$x_0 = 0$} (2); \\
+\path (2) edge node {$x_0 \leq 4$} (3); \\
+\path (3) edge node {$x_1 = x_0 + 3$} (4);\\
+\path (4) edge node {$x_1 > 4$} (5); \\
+\path (5) edge node {$x_1 \neq 6$} (6); \\
+;
+\end{tikzpicture}
+	\captionof{figure}{$\tau_0$}
+\end{figure}
 
 \subsection{Loop Acceleration}
-In program verification, loops introduce the problem of creating large or even infinite state spaces. Resulting in infinitely many error traces that have to be proven infeasible. However, there are two approaches changing the representation of loops to make them easier to deal with: Precise and approximate loop acceleration.
 
-\subsubsection{Precise Loop Acceleration}
-Precise loop acceleration means computing the transitive closure of a given loop:
-\begin{equation*}
-	R^* \equiv R^0\ \lor\ R^1\ \lor ...
-\end{equation*}
-Each relation $R^i$ represents the state of a program after $i$ loop iterations. 
-This transitive closure represents each trace going through the loop. \\
-In practice computing the transitive closure of a loop is not always possible, as it is a disjunction of infinitely many relations. \\ \\
-There is a class of relations whose transitive closure can be computed efficiently: ultimately periodic relations.
-Ultimately periodicity describes sequences that start to repeat after a prefix. \\
-One class of such ultimately periodic relation is the octagon domain \cite{DBLP:journals/corr/abs-cs-0703084}. Octagons are characterized by a guard of the form:
-\begin{equation*}
-	\pm x_i \pm x_j \leq c_{i,j}
-\end{equation*}
-With integer variables $x_i, x_, c_{i,j}$ \\
-This project will mainly focus on this class of ultimately periodic relations for its loop acceleration. Making use of the acceleration algorithm proposed by Bozga et al. \cite{10.1007/978-3-642-14295-6_23}.
-
-\subsubsection{Approximate Loop Acceleration}
-To deal with non-ultimately periodic relations, one can use an approximate loop acceleration method. Approximate loop acceleration, instead of modeling every trace through the loop, represents either an over- or underapproximation of the loop state space. On which one can compute the transitive closure more easily. \\
-A possible future implementation of these loop acceleration techniques will be enabled by this project.
 
 \subsection{Meta-Traces}
 The transitive closure of a loop contains every trace going through it. To make use of loop acceleration, we need to pull apart the looping location $\ell_2$ by introducing so called meta-transitions of the form:
 \begin{equation*}
-	\overset{stm_3\ \circ \ stm_4}{\overset{\curvearrowright}{\ell_2}} \Rightarrow \hspace*{1cm} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2''
+\overset{stm_3\ \circ \ stm_4}{\overset{\curvearrowright}{\ell_2}} \Rightarrow \hspace*{1cm} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2''
 \end{equation*}
 Where $(stm_3 \circ stm_4)^*$ symbolizes the calculated transitive closure of the loop. \par
 Using meta-transitions, we can transform our trace scheme into a meta-trace:
 \begin{equation*}
-	\bar{\tau}: \ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2'' \xrightarrow{\text{$stm_5$}} \ell_E
+\bar{\tau}: \ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2'' \xrightarrow{\text{$stm_5$}} \ell_E
 \end{equation*}
 The feasibility of the meta-trace is the same as the trace scheme before: \\
 \begin{itemize}
@@ -215,12 +290,14 @@ The feasibility of the meta-trace is the same as the trace scheme before: \\
 	\end{equation*}
 \end{itemize}
 
-\jw{todo: Why?}
 To guarantee inductiveness to the loop, we have to compute the strongest post of each interpolant, that coincide with a location in the loop, and its transitive closure:
 \begin{equation*}
 I_{\bar{\tau}}^{post}: \langle \top, I_1, post(I_2', stm_3 \circ stm_4), \bot  \rangle
 \end{equation*}
 This sequence is now general enough for the trace scheme to exclude the loop.
+
+
+
 \section{Approach}
 We want to implement accelerated interpolation into the software verification framework Ultimate \cite{Zitat02}. Ultimate consists of multiple different libraries that can be executed in serial to form so called toolchains. There are already toolchains implementing trace abstraction as described above. This project extends these toolchains with accelerated interpolation by creating a new interpolating trace checking library. \par 
 This library will be used for step 3 of the trace abstraction paradigm. For that it has to fulfill the following specifications: 
