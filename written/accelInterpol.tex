@@ -125,7 +125,7 @@ urlcolor=g1          % color of external links
 		\end{center}
 
 \section{Introduction}
-Assume we want to verify whether a program fulfills a given safety property. The program's control-flow graph represents every possible trace that can be taken by a program execution. Executions that violate the safety property end in a so called error location. Error traces are traces in the control-flow graph that start in the initial node and end in the error location. The goal is to check if there are feasible error traces.
+Assume we want to verify whether a program fulfills a given safety property, for that the program's control-flow graph can be used. The control-flow graph represents every possible trace that can be taken by a program execution. Executions that violate the safety property end in a so called error location. Error traces are traces in the control-flow graph that start in the initial node and end in the error location. The goal is to check if there are feasible error traces.
 For this purpose one can apply an automata-based instance of the CEGAR scheme, called trace abstraction, on the program's control-flow graph. \\
 
 Trace abstraction aims at constructing automata \cite{10.1007/978-3-642-39799-8_2} from infeasible error traces. When the language recognized by the program's control-flow graph is a subset of these automata, it means, every possible error trace, and by that execution which ends in an error location, is infeasible. Proving that the program fulfills the safety property. If there is a single feasible error trace, then the program violates the safety property.\\
