@@ -1,0 +1,153 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{xspace}
+\usepackage{tabu}
+\usepackage[%
+  hyperindex,%
+  plainpages=false,%
+  pdfusetitle]{hyperref}
+\usepackage[all]{hypcap}
+\usepackage{cite}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric, arrows,automata, decorations.pathreplacing, calc}
+\usepackage{pgf}
+\usepackage{slantsc}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{pgf}
+\usepackage{slashbox}
+\usepackage{pgfgantt}
+\usepackage{wrapfig}
+\usepackage{pdflscape}
+
+	
+
+\newcommand{\tf}{\ensuremath{\varphi}\xspace}
+\newcommand{\ctf}{\ensuremath{\widehat{\varphi}}\xspace}
+\newcommand{\invars}{\ensuremath{In}\xspace}
+\newcommand{\outvars}{\ensuremath{Out}\xspace}
+\newcommand{\auxvars}{\ensuremath{Aux}\xspace}
+
+\newcommand{\WidestEntry}{$\psi_{global}$}%
+\newcommand{\SetToWidest}[1]{\makebox[\widthof{\WidestEntry}]{$#1$}}%
+
+
+\usepackage[%disable,%
+  colorinlistoftodos,%
+  color=cyan!50!white,%
+  bordercolor=cyan!50!black]{todonotes}
+
+%%%%%%%%%%%% Colors 
+%% a somewhat friendly scheme for 5 different colors 
+\definecolor{g1}		{RGB}{215,25,28} % a kind of red
+\definecolor{g2}		{RGB}{253,174,97} % a kind of orange
+\definecolor{g3}		{RGB}{255,255,191} % a kind of yellow
+\definecolor{g4}		{RGB}{171,217,233} % a kind of light blue 
+\definecolor{g5}		{RGB}{44,123,182} % a kind of dark blue 
+
+\definecolor{gr1}		{RGB}{250, 250, 250}
+\definecolor{gr2}		{RGB}{229, 229, 229} % some grey
+
+% color of interpolants
+\definecolor{grey}{RGB}{200,200,200}
+
+%color for pictures
+\colorlet{outlineblue}		{g5}
+\colorlet{fillblue}			{g4}
+\colorlet{darkback}			{gr2}
+\colorlet{lightback}		{gr1}
+\colorlet{stmtcolor}		{gr2} %default statement color
+\colorlet{subgraphcolor}	{g3} %default statement color
+
+
+%%%%%%%%%%%% Setup
+\newtheorem{name}{Printed output}
+\newtheorem{mydef}{Definition}
+
+\hypersetup{
+colorlinks=true,        % false: boxed links; true: colored links
+linkcolor=g1,        % color of internal links
+citecolor=g1,        % color of links to bibliography
+filecolor=g1,        % color of file links
+urlcolor=g1          % color of external links
+}
+
+
+\lstdefinestyle{boogie}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  xleftmargin=\parindent,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  numbers=left,
+  xleftmargin=.6cm
+}
+
+\lstset{escapechar=@,style=boogie}
+
+%%%%%%%%%%%% Comments
+\newif\iffinal
+%\finaltrue % comment out to remove comments 
+ 
+\iffinal
+\newcommand\mycom[1]{}
+\else
+\newcommand\mycom[1]{#1}
+\overfullrule=1mm
+\fi
+\setlength\parindent{0pt}
+
+\newcommand{\jw}[1]{\mycom{\todo[color=blue!40,inline]{\small JW: #1}}}
+\newcommand{\dd}[1]{\mycom{\todo[color=orange!40,inline]{\small DD: #1}}}
+\newcommand{\ts}[1]{\mycom{\todo[color=green!40,inline]{\small TS: #1}}}
+
+
+\newcommand{\all}[1]{\mycom{\todo[color=green!40,inline]{\small #1}}}
+\newcommand{\meta}[1]{\mycom{\todo[color=blue!10,inline,caption={Beschreibung},nolist]{\setlist{nolistsep}\small #1}}}
+\newcommand{\xxx}{\mycom{\stfootcol{Placeholder}{blue!20}\xspace}}
+\newcommand{\cn}{\mycom{\stfootcol{Cite}{blue!20}\xspace}}
+
+
+\begin{document}
+	\newcommand{\HorizontalLine}{\rule{\linewidth}{0.3mm}}
+	
+		\begin{center}
+		{\scshape\Large Master Project \par}
+		\vspace{1.5cm}
+		{\huge\bfseries Accelerated Interpolation in Ultimate \par}
+		\vspace{1cm}
+		{\large \scshape Jonas Werner\par}
+		\vspace{0.5cm}
+		{\today \vspace{2cm}} 
+		
+		\end{center}
+
+\section{Introduction}
+
+\section{Ultimate}
+
+\section{Accelerated Interpolation Library}
+\subsection{Loopdetector}
+\subsubsection{Simple Loops}
+\subsubsection{Nested Loops}
+\subsubsection{Procedures}
+\subsection{Looppreprocessor}
+\subsection{Accelerated Interpolation}
+
+
+\pagebreak
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{bib}
+
+	
+\end{document}

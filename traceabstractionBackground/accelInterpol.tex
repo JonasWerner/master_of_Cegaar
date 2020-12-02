@@ -172,7 +172,6 @@ The code creates program $P_c = (V_c, \mu_c, S_c)$ consisting of:
 	\item $Stm_c = \{ \texttt{x := 0, \texttt{x < 6}, \texttt{x >= 6}, \texttt{x := x + 2}, \texttt{x == 6}, \texttt{x != 6} }\}$
 \end{itemize}
 
-\jw{TODO: The crux of it all is the going from program statements to logical formulas. use successor relation for that. CFGs and traces are over program statements. TODO: Define program statement semantics for successor relation. Define sequence of program states with a program trace.}
 Each program variable has a domain, so that it is possible to assign a concrete value.
 \begin{mydef}
 	A variable valuation of a program variable $v \in V$ is a function $\rho: v \rightarrow \mu(v)$.  Assigning it a value from its domain.
@@ -602,6 +601,24 @@ I_{\bar{\tau}}^{post}: \langle \top, I_1, post(I_2', stm_3 \circ stm_4), \bot  \
 \end{equation*}
 This sequence is now general enough for the trace scheme to exclude the loop.
 
+\subsection{Branching Loops}
+
+\section{Accelerated Interpolation in Ultimate}
+\subsection{Loopdetector}
+\subsubsection{Simple Loops}
+
+\subsubsection{Nested Loops}
+
+\subsubsection{Procedures}
+
+\subsection{Looppreprocessor}
+
+\subsection{Accelerated Interpolation}
+
+
+\section{Experimental Results}
+
+\section{Future Work}
 \jw{More Acceleration methods}
 
 \pagebreak
