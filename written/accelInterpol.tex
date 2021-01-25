@@ -151,8 +151,7 @@ This section will introduce the basic ideas behind trace abstraction, loop accel
 
 \subsection{Programs}
 Assume we are given a program and want to verify its safety by checking reachability of an error location. 
-To apply interpolating trace abstraction one firstly needs to know what a program is. 
-We use definitions from \jw{citation needed Refining trace abstraction)}
+To apply interpolating trace abstraction one firstly needs to know what a program is \cite{DBLP:journals/corr/GreitschusDP17}. \\ 
 
 In this paper, we consider a programming language consisting of the basic program statements assignment, assume, and sequential composition. Its syntax is denoted by the following grammar:
 \begin{equation*}
@@ -450,7 +449,7 @@ With its control-flow graph $G_{P_1}$: \\
 		(2) edge node {\texttt{y := 42}} (7)
 		(7) edge node[above] {\texttt{x <= 200}} (3)
 		(3) edge node[left=0.25cm] {\texttt{x := x + 2}} (8)
-		(8) edge node[right=0.25cm] {\texttt{y := x + 5}} (7)
+		(8) edge[bend right] node[right=0.25cm] {\texttt{y := x + 5}} (7)
 		(7) edge node {\texttt{!x <= 200}} (4)
 		(4) edge node {\texttt{y == 207}} (5)
 		(4) edge node {\texttt{y != 207}} (6)
@@ -526,8 +525,8 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 			\node[state] (5) [right of=4] {$\ell_3$};
 			
 			\path (2) edge node {\texttt{x <= 200}} (3);
-			\path (3) edge node {\texttt{x = x + 2}} (4);
-			\path (4) edge node {\texttt{y = x + 5}} (5);
+			\path (3) edge node {\texttt{x := x + 2}} (4);
+			\path (4) edge node {\texttt{y := x + 5}} (5);
 			;
 		\end{tikzpicture}
 		\captionof{figure}{Loop Trace $\tau_{L_1}$}
@@ -552,11 +551,11 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\node[state] (8) [right of=7] {$\ell_3$};
 		
 		\path (2) edge node {\texttt{x <= 200}} (3);
-		\path (3) edge node {\texttt{x = x + 2}} (4);
-		\path (4) edge node {\texttt{y = x + 5}} (5);
+		\path (3) edge node {\texttt{x := x + 2}} (4);
+		\path (4) edge node {\texttt{y := x + 5}} (5);
 		\path (5) edge node {\texttt{x <= 200}} (6);
-		\path (6) edge node[below] {\texttt{x = x + 2}} (7);
-		\path (7) edge node[below] {\texttt{y = x + 5}} (8);
+		\path (6) edge node[below] {\texttt{x := x + 2}} (7);
+		\path (7) edge node[below] {\texttt{y := x + 5}} (8);
 		;
 	\end{tikzpicture}
 	\captionof{figure}{Loop Trace $\tau_{L_2}$}
@@ -584,14 +583,14 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\node[state] (11) [right of=10] {$\ell_3$};
 		
 		\path (2) edge node {\texttt{x <= 200}} (3);
-		\path (3) edge node {\texttt{x = x + 2}} (4);
-		\path (4) edge node {\texttt{y = x + 5}} (5);
+		\path (3) edge node {\texttt{x := x + 2}} (4);
+		\path (4) edge node {\texttt{y := x + 5}} (5);
 		\path (5) edge node {\texttt{x <= 200}} (6);
-		\path (6) edge node[below] {\texttt{x = x + 2}} (7);
-		\path (7) edge node[below] {\texttt{y = x + 5}} (8);
+		\path (6) edge node[below] {\texttt{x := x + 2}} (7);
+		\path (7) edge node[below] {\texttt{y := x + 5}} (8);
 		\path (8) edge node {\texttt{x <= 200}} (9);
-		\path (9) edge node {\texttt{x = x + 2}} (10);
-		\path (10) edge node[below] {\texttt{y = x + 5}} (11);
+		\path (9) edge node {\texttt{x := x + 2}} (10);
+		\path (10) edge node[below] {\texttt{y := x + 5}} (11);
 		;
 	\end{tikzpicture}
 	\captionof{figure}{Loop Trace $\tau_{L_3}$}
@@ -600,8 +599,6 @@ These three looping traces represent the same loop but with a different number o
 \begin{mydef}
 	A minimal loop trace $\tau_{min}$ is a loop trace $s_0, s_1, \ldots, s_n$, where the loophead $\ell_L$ only appears as first and last location. It represents one iteration of the loop.
 \end{mydef}
-
-\jw{TODO 19.01 from here}
 
 In this example $\tau_{L_1}$ is the minimal loop trace. \\
 
@@ -614,36 +611,83 @@ With the minimal loop trace it is possible to formulate the overall effect the l
 	\end{equation*}
 
 \end{mydef}
-For $\tau_{L_1}$ the loop relation is $\psi_{L_1}:$ \texttt{x < 6; x := x + 2} \\
-The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces. \\
-It is however possible to contain every program trace going through a loop in a single relation, the so called reflexive transitive closure.
+For $\tau_{L_1}$ we get the following loop relation:
+\begin{equation*}
+ 	\psi_{L_1}:	\texttt{x <= 100; x := x + 2; y := x + 5} \ = \{(\sigma, \sigma')\ |\ x \leq 100 \land x' = x + 2 \land y = x' + 5 \}
+\end{equation*}
+The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces. It is however possible to contain every looping trace in a single relation, the so called reflexive transitive closure. \\
+
+Analogous to the composition of program statements, as detailed in definition 4, it is possible to concatenate relations.
 \begin{mydef}
-	Given loop relation $\psi_L$, the reflexive transitive closure $\psi_L^*$ is a relation that includes every possible loop trace from every possible loop iteration. It is inductively defined as follows:
+	The concatenation of two relations $\psi_1$ and $\psi_2$, that are defined over the set of program states, is defined as:
+	\begin{equation*}
+		\psi_1 \circ \psi_2 = \{(\sigma, \sigma')\ |\ \exists \sigma''\ \text{where}\ (\sigma, \sigma'') \in \psi_1\ \text{and}\ (\sigma'', \sigma') \in \psi_2 \}
+	\end{equation*}
+\end{mydef}
+
+This concatenation operator is utilized in the reflexive transitive closure's definition.
+
+\begin{mydef}
+	Given loop relation $\psi_L$, the reflexive transitive closure $\psi_L^*$ is a relation that includes every possible loop trace. It is inductively defined as follows:
 	\begin{itemize}
-		\item $\psi^* = \bigvee_{i=0}^\infty \psi^i$
-		\item $\psi^i = $
+		\item $\psi^*_L = \bigvee_{i=0}^\infty \psi^i_L$
+		\item $\psi^i_L = $
 		$\begin{cases}
 			& \varepsilon \hspace{1.5cm} \text{if}\ i = 0 \\
-			& \psi; \psi^{i - 1} \hspace{0.5cm}\text{otherwise}
+			& \psi \circ \psi^{i - 1} \hspace{0.5cm}\text{otherwise}
 		\end{cases}$
 	\end{itemize}
 With identity relation $\varepsilon: \{(\sigma, \sigma')\ |\ \sigma = \sigma'\}$
 \end{mydef}
-There are multiple techniques of computing the reflexive transitive closure of a loop relation, this paper will focus on an algorithm based on ultimately periodic relations, as detailed in previous works. \jw{citation needed} 
+There are multiple techniques of computing the reflexive transitive closure of a loop relation, this paper will focus on an algorithm based on ultimately periodic relations, as detailed and implemented in previous works\cite{JillThesis}. \\
 
- which we transform into a logical formula using definition TODO: $\phi_{L_1}: x_0 < 6 \land x_1 = x_0 + 2$. From $\phi_{L_1}$ we get the reflexive transitive closure:
+\jw{todo: x and x' in this does not make sense. Write: $\sigma(x) \leq 100$ and $\sigma'(x) \leq 3223$}
+
+For our example loop relation  	$\psi_{L_1}: \{(\sigma, \sigma')\ |\ x \leq 100 \land x' = x + 2 \land y = x' + 5 \}$ we get the reflexive transitive closure:
+
+\jw{Todo: maybe proof, that every trace is in}
+
 \begin{equation*}
-	\psi^*_{L_1}: x_0 = x_1 \lor x_0 < 6 \land x_1 = x_0 + 2
+	\psi^*_{L_1}: x = x'\ \land\ y = y'\ \lor\ x \leq 100\ \land\ x' \leq 102\ \land\ x' = x + 2\ \land\ y' \leq y + x'\ \land\ y' = x + 5
 \end{equation*}
 
-
-
-This reflexive transitive closure will be used in the following chapter to compute more general interpolants for trace abstraction.
+This reflexive transitive closure will be used in the following chapter to compute more general interpolants to be used in trace abstraction.
 
 \section{Accelerated Interpolation}
-This section will introduce the technique of combining loop acceleration and interpolating trace abstraction. 
-To check the reachability of $\ell_E$ we use the trace abstraction paradigm: \\
-Firstly, we need a possible error trace $\tau_0$. \\ \\
+This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. \\
+
+Assume we are given the abstract program $P_3$ with error location $\ell_4$:
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=3cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=1.4}
+		initial text =]
+		
+		\node[state, initial left](1){$\ell_1$};
+		
+		\node[state] (2) [right of=1] {$\ell_2$};
+		
+		\node[state] (7) [above of=2] {$\ell_3$};
+		
+		\node[state] (3) [right of=2] {$\ell_4$};
+		
+		
+		\path (1) edge node {$st_0$} (2)
+		(7) edge[bend left] node[right] {$st_2$} (2)
+		(2) edge[bend left] node[left] {$st_1$} (7)
+		(2) edge node {$st_3$} (3)
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Program $P_3$.}
+	\label{fig:rect}
+\end{figure}
+
+\jw{Todo 26.01}
 
 \begin{figure}[H]
 \begin{tikzpicture}[%
