@@ -4,7 +4,7 @@ This list consists of some interesting loop acceleration papers I found.
 
 ## New:
 
-
+<br>
 
 ### "A Calculus for Modular Loop Acceleration"
 
@@ -15,6 +15,8 @@ This list consists of some interesting loop acceleration papers I found.
 Traditional loop acceleration techniques are monolithic, they either accelerate the loop or fail completely.
 This work proposes a combination of multiple acceleration techniques used in a Modular Loop Acceleration framework.
 
+<br>
+<br>
 
 
 
@@ -30,6 +32,8 @@ This work proposes a combination of multiple acceleration techniques used in a M
 Improvement of FastUPR, truly fast -> polynomial time
 
 
+<br>
+<br>
 
 
 
@@ -45,6 +49,8 @@ Loop acceleration (again its a loop summary) using a rational vector addition sy
 to over-approximate the loop's behaviour. (They even cited Ultimate ;) )
 
 
+<br>
+<br>
 
 
 
@@ -59,6 +65,8 @@ to over-approximate the loop's behaviour. (They even cited Ultimate ;) )
 Generalize the underapproximation loop acceleration already implemented in I, to enhance convergence.
 
 
+<br>
+<br>
 
 
 
@@ -73,6 +81,8 @@ Generation of loop invariants using fixpoint calculation on polynomial assignemn
 Focus on loops with multiple branching paths.
 
 
+<br>
+<br>
 
 
 
@@ -87,6 +97,8 @@ Usage of Jordan normal form decomposition to derive symbolic expressions.
 
 
 
+<br>
+<br>
 
 
 
@@ -102,6 +114,8 @@ computations.
 
 
 
+<br>
+<br>
 
 
 
@@ -122,6 +136,8 @@ transitive closure) using three distinct classes of relations: Difference bounds
 finite monoid affine relations. Right now Ultimate only supports octagonal relations.
 
 
+<br>
+<br>
 
 
 
@@ -137,6 +153,8 @@ Simulation of loop paths via symbolic execution, used to compute a loop summary.
 a necessary condition on input values for the program to take the loop.
 
 
+<br>
+<br>
 
 
 
