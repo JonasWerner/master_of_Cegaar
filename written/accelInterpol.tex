@@ -514,7 +514,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\begin{tikzpicture}[%
 			->,
 			>=stealth', shorten >=1pt, auto,
-			node distance=3cm, scale=1, 
+			node distance=3.25cm, scale=1, 
 			transform shape, align=center,    
 			smallnode/.style={inner sep=2}
 			initial text =]
@@ -537,7 +537,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3cm, scale=1, 
+		node distance=3.25cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=2}
 		initial text =]
@@ -566,7 +566,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3cm, scale=1, 
+		node distance=3.25cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=2}
 		initial text =]
@@ -612,9 +612,10 @@ With the minimal loop trace it is possible to formulate the overall effect the l
 
 \end{mydef}
 For $\tau_{L_1}$ we get the following loop relation:
-\begin{equation*}
- 	\psi_{L_1}:	\texttt{x <= 100; x := x + 2; y := x + 5} \ = \{(\sigma, \sigma')\ |\ x \leq 100 \land x' = x + 2 \land y = x' + 5 \}
-\end{equation*}
+\begin{align*}
+ 	\psi_{L_1}&:	\texttt{x <= 100; x := x + 2; y := x + 5} \ \\
+ 	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 100 \land \sigma[x]' = \sigma[x] + 2 \land \sigma[y]' = \sigma[x]' + 5 \}
+\end{align*}
 The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces. It is however possible to contain every looping trace in a single relation, the so called reflexive transitive closure. \\
 
 Analogous to the composition of program statements, as detailed in definition 4, it is possible to concatenate relations.
@@ -634,60 +635,35 @@ This concatenation operator is utilized in the reflexive transitive closure's de
 		\item $\psi^i_L = $
 		$\begin{cases}
 			& \varepsilon \hspace{1.5cm} \text{if}\ i = 0 \\
-			& \psi \circ \psi^{i - 1} \hspace{0.5cm}\text{otherwise}
+			& \psi \circ \psi^{i - 1} \hspace{0.4cm}\text{otherwise}
 		\end{cases}$
 	\end{itemize}
 With identity relation $\varepsilon: \{(\sigma, \sigma')\ |\ \sigma = \sigma'\}$
 \end{mydef}
 There are multiple techniques of computing the reflexive transitive closure of a loop relation, this paper will focus on an algorithm based on ultimately periodic relations, as detailed and implemented in previous works\cite{JillThesis}. \\
 
-\jw{todo: x and x' in this does not make sense. Write: $\sigma(x) \leq 100$ and $\sigma'(x) \leq 3223$}
-
-For our example loop relation  	$\psi_{L_1}: \{(\sigma, \sigma')\ |\ x \leq 100 \land x' = x + 2 \land y = x' + 5 \}$ we get the reflexive transitive closure:
+For our example loop relation  	$\psi_{L_1}$ we get the reflexive transitive closure:
+\begin{align*}
+	\psi^*_{L_1}:& \{(\sigma, \sigma') \  |\ (\sigma[x] = \sigma[x]'\ \land\ \sigma[y] = \sigma[y]')\ \\ &\lor\ (\sigma[x] \leq 100\ \land\ \sigma[x]' \leq 102\ \land\ \sigma[x]' = \sigma[x] + 2\ \land\ \sigma[y]' = \sigma[x] + 5) \}
+\end{align*}
 
 \jw{Todo: maybe proof, that every trace is in}
-
-\begin{equation*}
-	\psi^*_{L_1}: x = x'\ \land\ y = y'\ \lor\ x \leq 100\ \land\ x' \leq 102\ \land\ x' = x + 2\ \land\ y' \leq y + x'\ \land\ y' = x + 5
-\end{equation*}
 
 This reflexive transitive closure will be used in the following chapter to compute more general interpolants to be used in trace abstraction.
 
 \section{Accelerated Interpolation}
 This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. \\
 
-Assume we are given the abstract program $P_3$ with error location $\ell_4$:
+Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with loop head $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$ and consequently the loop acceleration $\psi^*_{L_1}$. \par
 
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}[%
-		->,
-		>=stealth', shorten >=1pt, auto,
-		node distance=3cm, scale=1, 
-		transform shape, align=center,    
-		smallnode/.style={inner sep=1.4}
-		initial text =]
-		
-		\node[state, initial left](1){$\ell_1$};
-		
-		\node[state] (2) [right of=1] {$\ell_2$};
-		
-		\node[state] (7) [above of=2] {$\ell_3$};
-		
-		\node[state] (3) [right of=2] {$\ell_4$};
-		
-		
-		\path (1) edge node {$st_0$} (2)
-		(7) edge[bend left] node[right] {$st_2$} (2)
-		(2) edge[bend left] node[left] {$st_1$} (7)
-		(2) edge node {$st_3$} (3)
-		;
-	\end{tikzpicture}
-	\captionof{figure}{Program $P_3$.}
-	\label{fig:rect}
-\end{figure}
+The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
 
-\jw{Todo 26.01}
+\begin{mydef}
+	Given an error trace $\tau$ containing loop $L$ with loop head $\ell_L$, a meta trace $\bar{\tau}$ is an error trace where the sequence of program statements between the first and last occurrence of $\ell_L$ has been replaced by a single edge, labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+\end{mydef}
+
+Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
+
 
 \begin{figure}[H]
 \begin{tikzpicture}[%
@@ -698,54 +674,29 @@ transform shape, align=center,
 smallnode/.style={inner sep=1.4}
 initial text =]
 
-\node[state](1){$\ell_0$};
+\node[state](1){$\ell_1$};
 
-\node[state] (2) [right of=1] {$\ell_1$};
+\node[state] (2) [right of=1] {$\ell_2$};
 
-\node[state] (3) [right of=2] {$\ell_2$};
+\node[state] (3) [right of=2] {$\ell_3$};
 
-\node[state] (4) [right of=3, xshift=1cm] {$\ell_1$};
+\node[state] (4) [right of=3] {$\ell_3'$};
 
-\node[state] (5) [right of=4] {$\ell_3$};
+\node[state] (5) [right of=4, xshift=0.5cm] {$\ell_6$};
 
-\node[state] (6) [right of=5] {$\ell_E$};
+\node[state] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
 
-\path (1) edge node {$x_0 = 0$} (2); \\
-\path (2) edge node {$x_0 < 6$} (3); \\
-\path (3) edge node {$x_1 = x_0 + 2$} (4);\\
-\path (4) edge node {$x_1 \geq 6$} (5); \\
-\path (5) edge node {$x_1 \neq 6$} (6); \\
+\path (1) edge node {\texttt{x := 0}} (2); \\
+\path (2) edge node {\texttt{y := 0}} (3); \\
+\path (3) edge node {$\psi^*_{L_1}$} (4);\\
+\path (4) edge node[] {\texttt{!x <= 200}} (5); \\
+\path (5) edge node {\texttt{y != 207}} (6); \\
 ;
 \end{tikzpicture}
-	\captionof{figure}{$\tau_0$}
+	\captionof{figure}{$\bar{\tau_1}$}
 \end{figure}
 
-\subsection{Meta-Traces}
-The transitive closure of a loop contains every trace going through it. To make use of loop acceleration, we need to pull apart the looping location $\ell_2$ by introducing so called meta-transitions of the form:
-\begin{equation*}
-\overset{stm_3\ \circ \ stm_4}{\overset{\curvearrowright}{\ell_2}} \Rightarrow \hspace*{1cm} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2''
-\end{equation*}
-Where $(stm_3 \circ stm_4)^*$ symbolizes the calculated transitive closure of the loop. \par
-Using meta-transitions, we can transform our trace scheme into a meta-trace:
-\begin{equation*}
-\bar{\tau}: \ell_0 \xrightarrow{\text{$stm_1$}} \ell_1 \xrightarrow{\text{$stm_2$}} \ell_2' \xrightarrow{\text{$(stm_3 \circ stm_4)^*$}} \ell_2'' \xrightarrow{\text{$stm_5$}} \ell_E
-\end{equation*}
-The feasibility of the meta-trace is the same as the trace scheme before: \\
-\begin{itemize}
-	\item  If it is feasible then the original trace is feasible, making the program incorrect
-	\item If it is infeasible, we can compute an interpolant sequence: \\
-	\begin{equation*}
-	I_{\bar{\tau}}: \langle \top, I_1, I_2', I_2'', \bot  \rangle
-	\end{equation*}
-\end{itemize}
 
-To guarantee inductiveness to the loop, we have to compute the strongest post of each interpolant, that coincide with a location in the loop, and its transitive closure:
-\begin{equation*}
-I_{\bar{\tau}}^{post}: \langle \top, I_1, post(I_2', stm_3 \circ stm_4), \bot  \rangle
-\end{equation*}
-This sequence is now general enough for the trace scheme to exclude the loop.
-
-\jw{More Acceleration methods}
 
 \pagebreak
 \addcontentsline{toc}{chapter}{Bibliography}
