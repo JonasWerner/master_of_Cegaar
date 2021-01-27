@@ -23,7 +23,8 @@ This work proposes a combination of multiple acceleration techniques used in a M
 -  Zachary Kincaid, Jason Breck, John Cyphert, Thomas Reps
 - https://dl.acm.org/doi/abs/10.1145/3290368
 
-
+<br>
+<br>
 
 
 ### "PTIME Computation of Transitive Closures of Octagonal Relations"
