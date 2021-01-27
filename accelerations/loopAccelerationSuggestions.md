@@ -19,7 +19,9 @@ This work proposes a combination of multiple acceleration techniques used in a M
 <br>
 
 
-
+### "Closed forms for numerical loops"
+-  Zachary Kincaid, Jason Breck, John Cyphert, Thomas Reps
+- https://dl.acm.org/doi/abs/10.1145/3290368
 
 
 
