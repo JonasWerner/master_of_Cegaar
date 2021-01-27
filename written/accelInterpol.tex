@@ -346,9 +346,6 @@ The sequence of program states $\pi_0: true, x = 0, x = 0, x = 2, false, false$ 
 \end{mydef}
 A proof of infeasibility refutes the possibility of a program trace being taken. The goal of
 
-
-\vspace{5cm}
-
 \jw{Todo Interpolants as generalization}
 For example, consider the conjunction:
 \begin{equation}
@@ -614,7 +611,7 @@ With the minimal loop trace it is possible to formulate the overall effect the l
 For $\tau_{L_1}$ we get the following loop relation:
 \begin{align*}
  	\psi_{L_1}&:	\texttt{x <= 100; x := x + 2; y := x + 5} \ \\
- 	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 100 \land \sigma[x]' = \sigma[x] + 2 \land \sigma[y]' = \sigma[x]' + 5 \}
+ 	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 100 \land \sigma'[x] = \sigma[x] + 2 \land \sigma'[y] = \sigma'[x] + 5 \}
 \end{align*}
 The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces. It is however possible to contain every looping trace in a single relation, the so called reflexive transitive closure. \\
 
@@ -644,7 +641,7 @@ There are multiple techniques of computing the reflexive transitive closure of a
 
 For our example loop relation  	$\psi_{L_1}$ we get the reflexive transitive closure:
 \begin{align*}
-	\psi^*_{L_1}:& \{(\sigma, \sigma') \  |\ (\sigma[x] = \sigma[x]'\ \land\ \sigma[y] = \sigma[y]')\ \\ &\lor\ (\sigma[x] \leq 100\ \land\ \sigma[x]' \leq 102\ \land\ \sigma[x]' = \sigma[x] + 2\ \land\ \sigma[y]' = \sigma[x] + 5) \}
+	\psi^*_{L_1}:& \{(\sigma, \sigma') \  |\ (\sigma[x] = \sigma'[x]\ \land\ \sigma[y] = \sigma'[y])\ \\ &\lor\ (\sigma[x] \leq 100\ \land\ \sigma'[x] \leq 102\ \land\ \sigma'[x] = \sigma[x] + 2\ \land\ \sigma'[y] = \sigma[x] + 5) \}
 \end{align*}
 
 \jw{Todo: maybe proof, that every trace is in}
