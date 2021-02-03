@@ -405,12 +405,12 @@ Assume we are given the following program $P_1$: \\
 \begin{figure}[H]
 	\begin{align*}
 		&\texttt{1: int x := 0}; \\
-		&\texttt{2: int y := 42}; \\
-		&\texttt{3: while x <= 200:} \\
-		&\texttt{4: \hspace*{2em} x := x + 2;} \\
-		&\texttt{5: \hspace*{2em} y := x + 5;} \\
+		&\texttt{2: int y := 1}; \\
+		&\texttt{3: while x <= 50:} \\
+		&\texttt{4: \hspace*{2em} x := x + 1;} \\
+		&\texttt{5: \hspace*{2em} y := y + 2;} \\
 		&\texttt{6: end while} \\
-		&\texttt{7: assert y == 207;}
+		&\texttt{7: assert y == 102;}
 	\end{align*}
 	\captionof{figure}{Example Program $P_0$.}
 	\label{fig:square}
@@ -443,13 +443,13 @@ With its control-flow graph $G_{P_1}$: \\
 		\node[state] (6) [right of=4] {$\ell_8$};
 		
 		\path (1) edge node {\texttt{x := 0}} (2)
-		(2) edge node {\texttt{y := 42}} (7)
-		(7) edge node[above] {\texttt{x <= 200}} (3)
-		(3) edge node[left=0.25cm] {\texttt{x := x + 2}} (8)
-		(8) edge[bend right] node[right=0.25cm] {\texttt{y := x + 5}} (7)
-		(7) edge node {\texttt{!x <= 200}} (4)
-		(4) edge node {\texttt{y == 207}} (5)
-		(4) edge node {\texttt{y != 207}} (6)
+		(2) edge node {\texttt{y := 1}} (7)
+		(7) edge node[above] {\texttt{x <= 20}} (3)
+		(3) edge node[left=0.25cm] {\texttt{x := x + 1}} (8)
+		(8) edge[bend right] node[right=0.25cm] {\texttt{y := y + 2}} (7)
+		(7) edge node {\texttt{!x <= 50}} (4)
+		(4) edge node {\texttt{y == 103}} (5)
+		(4) edge node {\texttt{y != 103}} (6)
 		;
 	\end{tikzpicture}
 	\captionof{figure}{Control-Flow Graph $G_{P_1}$ of Program $P_1$.}
@@ -483,18 +483,18 @@ Assume trace abstraction generates program trace $\tau_1$:
 		
 		
 		\path (1) edge node {\texttt{x := 0}} (2);
-		\path (2) edge node {\texttt{y := 42}} (3);
-		\path (3) edge node {\texttt{x <= 200}} (4);
-		\path (4) edge node {\texttt{x := x + 2}} (5);
-		\path (5) edge node {\texttt{y := x + 5}} (6);
-		\path (6) edge node[below] {\texttt{x <= 200}} (7);
-		\path (7) edge node[below] {\texttt{x := x + 2}} (8);
-		\path (8) edge node[below] {\texttt{y := x + 5}} (9);
-		\path (9) edge node {\texttt{x <= 200}} (10);
-		\path (10) edge node {\texttt{x := x + 2}} (11);
-		\path (11) edge node[below] {\texttt{y := x + 5}} (12);
-		\path (12) edge node[below] {\texttt{!x <= 200}} (13);
-		\path (13) edge node[below] {\texttt{y != 207}} (14);
+		\path (2) edge node {\texttt{y := 1}} (3);
+		\path (3) edge node {\texttt{x <= 50}} (4);
+		\path (4) edge node {\texttt{x := x + 1}} (5);
+		\path (5) edge node {\texttt{y := y + 2}} (6);
+		\path (6) edge node[below] {\texttt{x <= 50}} (7);
+		\path (7) edge node[below] {\texttt{x := x + 1}} (8);
+		\path (8) edge node[below] {\texttt{y := y + 2}} (9);
+		\path (9) edge node {\texttt{x <= 50}} (10);
+		\path (10) edge node {\texttt{x := x + 1}} (11);
+		\path (11) edge node[below] {\texttt{y := y + 2}} (12);
+		\path (12) edge node[below] {\texttt{!x <= 50}} (13);
+		\path (13) edge node[below] {\texttt{y != 103}} (14);
 		;
 	\end{tikzpicture}
 	\captionof{figure}{Program Trace $\tau_1$ of $P_1$}
@@ -521,12 +521,12 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 			\node[state] (4) [right of=3] {$\ell_5$};
 			\node[state] (5) [right of=4] {$\ell_3$};
 			
-			\path (2) edge node {\texttt{x <= 200}} (3);
-			\path (3) edge node {\texttt{x := x + 2}} (4);
-			\path (4) edge node {\texttt{y := x + 5}} (5);
+			\path (2) edge node {\texttt{x <= 50}} (3);
+			\path (3) edge node {\texttt{x := x + 1}} (4);
+			\path (4) edge node {\texttt{y := y + 2}} (5);
 			;
 		\end{tikzpicture}
-		\captionof{figure}{Loop Trace $\tau_{L_1}$}
+		\captionof{figure}{Loop Trace $\tau_{L_1}$ modelling one iteration of the loop.}
 \end{figure}
 
 \begin{figure}[H]
@@ -547,15 +547,15 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\node[state] (7) [right of=6] {$\ell_5$};
 		\node[state] (8) [right of=7] {$\ell_3$};
 		
-		\path (2) edge node {\texttt{x <= 200}} (3);
-		\path (3) edge node {\texttt{x := x + 2}} (4);
-		\path (4) edge node {\texttt{y := x + 5}} (5);
-		\path (5) edge node {\texttt{x <= 200}} (6);
-		\path (6) edge node[below] {\texttt{x := x + 2}} (7);
-		\path (7) edge node[below] {\texttt{y := x + 5}} (8);
+		\path (2) edge node {\texttt{x <= 50}} (3);
+		\path (3) edge node {\texttt{x := x + 1}} (4);
+		\path (4) edge node {\texttt{y := y + 2}} (5);
+		\path (5) edge node {\texttt{x <= 50}} (6);
+		\path (6) edge node[below] {\texttt{x := x + 1}} (7);
+		\path (7) edge node[below] {\texttt{y := y + 2}} (8);
 		;
 	\end{tikzpicture}
-	\captionof{figure}{Loop Trace $\tau_{L_2}$}
+	\captionof{figure}{Loop Trace $\tau_{L_2}$ modelling two iterations of the loop.}
 \end{figure}
 
 \begin{figure}[H]
@@ -579,18 +579,18 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\node[state] (10) [below of=6] {$\ell_5$};
 		\node[state] (11) [right of=10] {$\ell_3$};
 		
-		\path (2) edge node {\texttt{x <= 200}} (3);
-		\path (3) edge node {\texttt{x := x + 2}} (4);
-		\path (4) edge node {\texttt{y := x + 5}} (5);
-		\path (5) edge node {\texttt{x <= 200}} (6);
-		\path (6) edge node[below] {\texttt{x := x + 2}} (7);
-		\path (7) edge node[below] {\texttt{y := x + 5}} (8);
-		\path (8) edge node {\texttt{x <= 200}} (9);
-		\path (9) edge node {\texttt{x := x + 2}} (10);
-		\path (10) edge node[below] {\texttt{y := x + 5}} (11);
+		\path (2) edge node {\texttt{x <= 50}} (3);
+		\path (3) edge node {\texttt{x := x + 1}} (4);
+		\path (4) edge node {\texttt{y := y + 2}} (5);
+		\path (5) edge node {\texttt{x <= 50}} (6);
+		\path (6) edge node[below] {\texttt{x := x + 1}} (7);
+		\path (7) edge node[below] {\texttt{y := y + 2}} (8);
+		\path (8) edge node {\texttt{x <= 50}} (9);
+		\path (9) edge node {\texttt{x := x + 1}} (10);
+		\path (10) edge node[below] {\texttt{y := y + 2}} (11);
 		;
 	\end{tikzpicture}
-	\captionof{figure}{Loop Trace $\tau_{L_3}$}
+	\captionof{figure}{Loop Trace $\tau_{L_3}$ modelling three iterations of the loop.}
 \end{figure}
 These three looping traces represent the same loop but with a different number of iterations.
 \begin{mydef}
@@ -610,8 +610,8 @@ With the minimal loop trace it is possible to formulate the overall effect the l
 \end{mydef}
 For $\tau_{L_1}$ we get the following loop relation:
 \begin{align*}
- 	\psi_{L_1}&:	\texttt{x <= 100; x := x + 2; y := x + 5} \ \\
- 	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 100 \land \sigma'[x] = \sigma[x] + 2 \land \sigma'[y] = \sigma'[x] + 5 \}
+ 	\psi_{L_1}&:	\texttt{x <= 50; x := x + 1; y := y + 2} \ \\
+ 	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 50 \land \sigma'[x] = \sigma[x] + 1 \land \sigma'[y] = \sigma'[y] + 2 \}
 \end{align*}
 The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces. It is however possible to contain every looping trace in a single relation, the so called reflexive transitive closure. \\
 
@@ -639,9 +639,9 @@ With identity relation $\varepsilon: \{(\sigma, \sigma')\ |\ \sigma = \sigma'\}$
 \end{mydef}
 There are multiple techniques of computing the reflexive transitive closure of a loop relation, this paper will focus on an algorithm based on ultimately periodic relations, as detailed and implemented in previous works\cite{JillThesis}. \\
 
-For our example loop relation  	$\psi_{L_1}$ we get the reflexive transitive closure:
+For our example loop relation  	$\psi_{L_1}$ we calculate the reflexive transitive closure:
 \begin{align*}
-	\psi^*_{L_1}:& \{(\sigma, \sigma') \  |\ (\sigma[x] = \sigma'[x]\ \land\ \sigma[y] = \sigma'[y])\ \\ &\lor\ (\sigma[x] \leq 100\ \land\ \sigma'[x] \leq 102\ \land\ \sigma'[x] = \sigma[x] + 2\ \land\ \sigma'[y] = \sigma[x] + 5) \}
+	\psi^*_{L_1}: \{(\sigma, \sigma') \  |\ &((\sigma'[x] \leq \sigma[x]\ \lor\ \sigma'[x] \leq 51)\ \land\ (\sigma[x] \leq \sigma'[x])\ \land\ \\ & (\sigma'[y] = \sigma[y] - 2 \cdot \sigma[x] + 2\cdot \sigma'[x]))\ \lor\ (\sigma'[x] = \sigma[x]\ \land\ \sigma'[y] = \sigma[y]) \}
 \end{align*}
 
 \jw{Todo: maybe proof, that every trace is in}
@@ -684,15 +684,49 @@ initial text =]
 \node[state] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
 
 \path (1) edge node {\texttt{x := 0}} (2); \\
-\path (2) edge node {\texttt{y := 0}} (3); \\
+\path (2) edge node {\texttt{y := 1}} (3); \\
 \path (3) edge node {$\psi^*_{L_1}$} (4);\\
-\path (4) edge node[] {\texttt{!x <= 200}} (5); \\
-\path (5) edge node {\texttt{y != 207}} (6); \\
+\path (4) edge node[] {\texttt{!x <= 50}} (5); \\
+\path (5) edge node {\texttt{y != 103}} (6); \\
 ;
 \end{tikzpicture}
-	\captionof{figure}{$\bar{\tau_1}$}
+	\captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$.}
 \end{figure}
 
+We can now analyse this meta trace for feasibility using an SMT-solver such as SMTInterpol\cite{Zitat03} or z3\cite{z3}. We get the following labelling:
+
+\begin{figure}[H]
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=2.5cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=1.4}
+		initial text =]
+		
+		\node[state, label=above:{$true$}](1){$\ell_1$};
+		
+		\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
+		
+		\node[state, label=above:{$y = 1 \land x = 0$}] (3) [right of=2] {$\ell_3$};
+		
+
+		
+		\node[state, label={[align=left]above:$x = 0\ \lor$ \\ $(y \leq 103\ \land$ \\ $(102 < y\ \lor\ $ \\ $2x + 1 \leq y))$}] (4) [right of=3] {$\ell_3'$};
+		
+		\node[state, label=above:{$y = 103$}] (5) [right of=4, xshift=0.5cm] {$\ell_6$};
+		
+		\node[state, label=above:{$false$}] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
+		
+		\path (1) edge node {\texttt{x := 0}} (2); \\
+		\path (2) edge node {\texttt{y := 1}} (3); \\
+		\path (3) edge node {$\psi^*_{L_1}$} (4);\\
+		\path (4) edge node[] {\texttt{!x <= 50}} (5); \\
+		\path (5) edge node {\texttt{y != 103}} (6); \\
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
+\end{figure}
 
 
 \pagebreak
