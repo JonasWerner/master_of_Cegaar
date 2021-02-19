@@ -94,6 +94,7 @@ Focus on loops with multiple branching paths.
 ### "Abstract Acceleration of General Linear Loops"
 - Bertrand Jeannet, Peter Schrammel, Sriram Sankaranarayanan
 - https://arxiv.org/abs/1311.0768
+- POPL 14: https://doi.org/10.1145/2535838.2535843
 
 #### Idea:
 Usage of Jordan normal form decomposition to derive symbolic expressions. 
