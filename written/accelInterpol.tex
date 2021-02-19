@@ -309,7 +309,7 @@ $\tau_0$ from before is infeasible, because for $\texttt{assume !x < 6}$, the in
 		smallnode/.style={inner sep=2}
 		initial text =]
 		
-		\node[state, label=above:{$true$}] (2) {$\ell_1$};
+		\node[state, label=above:{$\top$}] (2) {$\ell_1$};
 		
 		\node[state, label=above:{$x = 0$}] (3) [right of=2] {$\ell_2$};
 		
@@ -317,9 +317,9 @@ $\tau_0$ from before is infeasible, because for $\texttt{assume !x < 6}$, the in
 		
 		\node[state, label=above:{$x = 2$}] (5) [right=3cm of 4] {$\ell_2$};
 		
-		\node[state, label=above:{$false$}] (6) [right of=5] {$\ell_4$};
+		\node[state, label=above:{$\bot$}] (6) [right of=5] {$\ell_4$};
 		
-		\node[state, label=above:{$false$}] (7) [right of=6] {$\ell_6$};
+		\node[state, label=above:{$\bot$}] (7) [right of=6] {$\ell_6$};
 		
 		
 		\path (2) edge node {\texttt{x := 0}} (3); 
@@ -410,7 +410,7 @@ Assume we are given the following program $P_1$: \\
 		&\texttt{4: \hspace*{2em} x := x + 1;} \\
 		&\texttt{5: \hspace*{2em} y := y + 2;} \\
 		&\texttt{6: end while} \\
-		&\texttt{7: assert y == 102;}
+		&\texttt{7: assert y == 103;}
 	\end{align*}
 	\captionof{figure}{Example Program $P_0$.}
 	\label{fig:square}
@@ -555,7 +555,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\path (7) edge node[below] {\texttt{y := y + 2}} (8);
 		;
 	\end{tikzpicture}
-	\captionof{figure}{Loop Trace $\tau_{L_2}$ modelling two iterations of the loop.}
+	\captionof{figure}{Loop Trace $\tau_{L_2}$ Modelling two Iterations of the Loop.}
 \end{figure}
 
 \begin{figure}[H]
@@ -590,7 +590,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\path (10) edge node[below] {\texttt{y := y + 2}} (11);
 		;
 	\end{tikzpicture}
-	\captionof{figure}{Loop Trace $\tau_{L_3}$ modelling three iterations of the loop.}
+	\captionof{figure}{Loop Trace $\tau_{L_3}$ Modelling three Iterations of the Loop.}
 \end{figure}
 These three looping traces represent the same loop but with a different number of iterations.
 \begin{mydef}
@@ -651,12 +651,12 @@ This reflexive transitive closure will be used in the following chapter to compu
 \section{Accelerated Interpolation}
 This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. \\
 
-Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with loop head $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$ and consequently the loop acceleration $\psi^*_{L_1}$. \par
+Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with loop head $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$ and, consequently, the loop acceleration $\psi^*_{L_1}$. \par
 
 The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
 
 \begin{mydef}
-	Given an error trace $\tau$ containing loop $L$ with loop head $\ell_L$, a meta trace $\bar{\tau}$ is an error trace where the sequence of program statements between the first and last occurrence of $\ell_L$ has been replaced by a single edge, labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+	Given an error trace $\tau$ containing loop $L$ with loop head $\ell_L$, a meta trace $\bar{\tau}$ is an error trace where the sequence of program statements between the first and last occurrence of $\ell_L$ has been replaced by a single edge labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
 \end{mydef}
 
 Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
@@ -690,7 +690,7 @@ initial text =]
 \path (5) edge node {\texttt{y != 103}} (6); \\
 ;
 \end{tikzpicture}
-	\captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$.}
+	\captionof{figure}{Meta trace $\bar{\tau_1}$ Generated from $\tau_1$ and $\psi^*_{L_1}$.}
 \end{figure}
 
 We can now analyse this meta trace for feasibility using an SMT-solver such as SMTInterpol\cite{Zitat03} or z3\cite{z3}. We get the following labelling:
@@ -704,19 +704,20 @@ We can now analyse this meta trace for feasibility using an SMT-solver such as S
 		smallnode/.style={inner sep=1.4}
 		initial text =]
 		
-		\node[state, label=above:{$true$}](1){$\ell_1$};
+		\node[state, label=above:{$\top$}](1){$\ell_1$};
 		
 		\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
 		
-		\node[state, label=above:{$y = 1 \land x = 0$}] (3) [right of=2] {$\ell_3$};
+		\node[state, label={[align=left]above:{$y = 1\ \land$ \\$x = 0$}}] (3) [right of=2] {$\ell_3$};
 		
-
-		
-		\node[state, label={[align=left]above:$x = 0\ \lor$ \\ $(y \leq 103\ \land$ \\ $(102 < y\ \lor\ $ \\ $2x + 1 \leq y))$}] (4) [right of=3] {$\ell_3'$};
+		\node[state, label={[align=center]above:
+			$\begin{aligned}
+				((102 < y\ &\lor \ 2x + 1 \leq y)\ \\ \land\ (y &\leq 103)) \\ \lor \ x &= 0\ \\
+			\end{aligned}$}] (4) [right of=3, xshift=0.5cm] {$\ell_3'$};
 		
 		\node[state, label=above:{$y = 103$}] (5) [right of=4, xshift=0.5cm] {$\ell_6$};
 		
-		\node[state, label=above:{$false$}] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
+		\node[state, label=above:{$\bot$}] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
 		
 		\path (1) edge node {\texttt{x := 0}} (2); \\
 		\path (2) edge node {\texttt{y := 1}} (3); \\
@@ -725,8 +726,82 @@ We can now analyse this meta trace for feasibility using an SMT-solver such as S
 		\path (5) edge node {\texttt{y != 103}} (6); \\
 		;
 	\end{tikzpicture}
-	\captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
+	\captionof{figure}{Meta Trace $\bar{\tau_1}$ Generated from $\tau_1$ and $\psi^*_{L_1}$ and Its Infeasibility Proof.}
 \end{figure}
+With interpolant sequence:
+\begin{equation*}
+	 I_{\bar{\tau_1}}: \{ \top,\ x = 0, y = 1 \land x = 0,\ ((102 < y\ \lor \ 2x + 1 \leq y)\ \land\ (y \leq 103))\ \lor\ x = 0,\ y = 103,\ \bot \}
+\end{equation*}
+We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the trace. To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by using the post operator. \\ \\
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=3.25cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=2}
+		initial text =]
+		
+		\node[state, label=above:{$\top$}](1){$\ell_1$};
+		\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
+		\node[state, label=above:{$\begin{aligned}
+				&y = 2 \cdot x + 1\\&\land x \leq 51
+			\end{aligned}$}] (3) [right of=2] {$\ell_3$};
+		\node[state, label=above:{$\begin{aligned}
+				&y = 2 \cdot x + 1\\&\land x \leq 50
+			\end{aligned}$}] (4) [right of=3] {$\ell_4$};
+		\node[state, label=above:{$\begin{aligned}
+				&y + 1 = 2 \cdot x\\&\land x \leq 51
+			\end{aligned}$}] (5) [right of=4] {$\ell_5$};
+		\node[state, label=above:{$\begin{aligned}
+				&y = 2 \cdot x + 1\\&\land x \leq 51
+			\end{aligned}$}] (6) [below of=1] {$\ell_3$};
+		\node[state, label=below:{$\begin{aligned}
+				&y = 2 \cdot x + 1\\&\land x \leq 50
+			\end{aligned}$}] (7) [right of=6] {$\ell_4$};
+		\node[state, label={[xshift=0.7cm]above:{$\begin{aligned}
+				&y + 1 = 2 \cdot x\\&\land x \leq 51
+			\end{aligned}$}}] (8) [right of=7] {$\ell_5$};
+		\node[state, label={[xshift=0cm]above:{$\begin{aligned}
+				&y = 2 \cdot x + 1\\&\land x \leq 51
+				\end{aligned}$}}] (9) [right of=8] {$\ell_3$};
+		\node[state, label={[xshift=0cm]above:{$\begin{aligned}
+				&y = 2 \cdot x + 1\\&\land x \leq 50
+				\end{aligned}$}}] (10) [right of=9] {$\ell_4$};
+		\node[state, label=above:{$\begin{aligned}
+				&y + 1 = 2 \cdot x\\&\land x \leq 51
+			\end{aligned}$}] (11) [below of=6] {$\ell_5$};
+		\node[state, label={[xshift=0cm]below:{$\begin{aligned}
+				&y = 2 \cdot x + 1\\&\land x \leq 51
+				\end{aligned}$}}] (12) [right of=11] {$\ell_3$};
+		\node[state, label={[xshift=0cm]below:{$\begin{aligned}
+					&y = 2 \cdot x + 1\\&\land x \leq 51\ \land x > 50 \\
+					& \leftrightarrow y = 103
+				\end{aligned}$}}] (13) [right of=12] {$\ell_6$};
+		\node[state, label=above:{$\bot$}] (14) [right of=13] {$\ell_7$};
+		
+		
+		\path (1) edge node {\texttt{x := 0}} (2);
+		\path (2) edge node {\texttt{y := 1}} (3);
+		\path (3) edge node {\texttt{x <= 50}} (4);
+		\path (4) edge node {\texttt{x := x + 1}} (5);
+		\path (5) edge node[left, xshift=-.7cm] {\texttt{y := y + 2}} (6);
+		\path (6) edge node[below] {\texttt{x <= 50}} (7);
+		\path (7) edge node[below] {\texttt{x := x + 1}} (8);
+		\path (8) edge node[below] {\texttt{y := y + 2}} (9);
+		\path (9) edge node {\texttt{x <= 50}} (10);
+		\path (10) edge node {\texttt{x := x + 1}} (11);
+		\path (11) edge node[below] {\texttt{y := y + 2}} (12);
+		\path (12) edge node[below] {\texttt{!x <= 50}} (13);
+		\path (13) edge node[below] {\texttt{y != 103}} (14);
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Program Trace $\tau_1$ of $P_1$ with Inductive Infeasibility Proof.}
+\end{figure}
+
+With loop invariant: $y = 2\cdot c + 1\ \land\ x \leq 51$
 
 
 \pagebreak
