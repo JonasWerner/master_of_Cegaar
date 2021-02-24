@@ -2,6 +2,12 @@
 # Loop Acceleration Papers:
 This list consists of some interesting loop acceleration papers I found.
 
+### Incorrectness Logic
+- Note: Not loop acceleration, but perhaps related to danger invariants and the idea of abstraction of an "error hull" 
+- POPL 2020 https://dl.acm.org/doi/pdf/10.1145/3371078
+- https://dblp.org/rec/journals/pacmpl/OHearn20.html?view=bibtex
+
+
 ### "A Calculus for Modular Loop Acceleration"
 
 - Florian Frohn
@@ -40,6 +46,13 @@ to over-approximate the loop's behaviour. (They even cited Ultimate ;) )
 Generalize the underapproximation loop acceleration already implemented in I, to enhance convergence.
 
 
+### Automatic Loop Summarization via Path Dependency Analysis
+
+- Xiaofei Xie, Bihuan Chen, Liang Zou, Yang Liu, Wei Le, Xiaohong Li
+- {IEEE} Trans. Software Eng.2019 https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8241837
+- https://dblp.org/rec/journals/tse/XieCZLLL19.html?view=bibtex
+
+
 ### "Invariant Generation for Multi-Path Loops with Polynomial Assignments"
 - Andreas Humenberger, Maximilian Jaroschek, Laura Kovács
 - VMCAI 2018 https://link.springer.com/chapter/10.1007%2F978-3-319-73721-8_11
@@ -57,6 +70,15 @@ Focus on loops with multiple branching paths.
 
 #### Idea:
 Improvement of FastUPR, truly fast -> polynomial time
+
+
+
+
+### Accelerating invariant generation
+
+- Kumar Madhukar, Björn Wachter, Daniel Kroening, Matt Lewis, Mandayam K. Srivas
+- FMCAD 2015 https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7542259
+- https://dblp.org/rec/conf/fmcad/MadhukarWKLS15.html?view=bibtex
 
 
 ### "Abstract Acceleration of General Linear Loops"
@@ -77,7 +99,6 @@ Usage of Jordan normal form decomposition to derive symbolic expressions.
 #### Idea:
 Combination of symbolic model checking and loop acceleration to enhance convergence of fixpoint 
 computations.
-
 
 
 ## Already implemented:
