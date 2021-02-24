@@ -28,8 +28,13 @@
 \usepackage{pgfgantt}
 \usepackage{wrapfig}
 \usepackage{pdflscape}
+\usepackage{xcolor}
+\usepackage{tcolorbox}% http://ctan.org/pkg/tcolorbox
+\tcbuselibrary{skins,breakable}
 
-	
+
+\newtcbox{\mybox}{breakable, colframe=grey!50!black,colback=grey!40!white,
+	boxrule=0.5pt,arc=4pt,boxsep=0pt,left=6pt,right=6pt,top=6pt,bottom=6pt}
 
 \newcommand{\tf}{\ensuremath{\varphi}\xspace}
 \newcommand{\ctf}{\ensuremath{\widehat{\varphi}}\xspace}
@@ -412,7 +417,7 @@ Assume we are given the following program $P_1$: \\
 		&\texttt{6: end while} \\
 		&\texttt{7: assert y == 103;}
 	\end{align*}
-	\captionof{figure}{Example Program $P_0$.}
+	\captionof{figure}{Example Program $P_1$.}
 	\label{fig:square}
 \end{figure}
 With its control-flow graph $G_{P_1}$: \\
@@ -604,7 +609,7 @@ With the minimal loop trace it is possible to formulate the overall effect the l
 	The loop relation $\psi_L$ describes the effect a loop has on the program state.
 	Given the minimal looping trace $\tau_{min}: s_0, s_1, \ldots, s_{n}$ the loop relation can be constructed by using the composition of all program statements $s_i$.
 	\begin{equation*}
-		\psi_L = s_0; s_1; \cdots; s_n
+		\psi_L = s_0; s_1; \ldots; s_n
 	\end{equation*}
 
 \end{mydef}
@@ -649,14 +654,16 @@ For our example loop relation  	$\psi_{L_1}$ we calculate the reflexive transiti
 This reflexive transitive closure will be used in the following chapter to compute more general interpolants to be used in trace abstraction.
 
 \section{Accelerated Interpolation}
-This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. \\
+This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. We will show multiple types of loops, beginning with loops without branching, continuing with loops with branching, and finishing with nested loops. \\
 
-Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with loop head $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$ and, consequently, the loop acceleration $\psi^*_{L_1}$. \par
+\subsection{Loops Without Branching}
+
+Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with loop head $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$. It is evident that there is only one path through the loop, resulting in a loop without branching. We consequently compute the loop acceleration $\psi^*_{L_1}$. \par
 
 The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
 
 \begin{mydef}
-	Given an error trace $\tau$ containing loop $L$ with loop head $\ell_L$, a meta trace $\bar{\tau}$ is an error trace where the sequence of program statements between the first and last occurrence of $\ell_L$ has been replaced by a single edge labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+	Given an error trace $\tau$ containing loop $L$ with loop head $\ell_L$, a meta trace $\bar{\tau}$ is an error trace where the sequence of program statements between the first and last occurrence of $\ell_L$ have been replaced by a single edge labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
 \end{mydef}
 
 Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
@@ -690,13 +697,13 @@ initial text =]
 \path (5) edge node {\texttt{y != 103}} (6); \\
 ;
 \end{tikzpicture}
-	\captionof{figure}{Meta trace $\bar{\tau_1}$ Generated from $\tau_1$ and $\psi^*_{L_1}$.}
+	\captionof{figure}{Meta trace $\bar{\tau_1}$ Generated from $\tau_1$ Using $\psi^*_{L_1}$.}
 \end{figure}
 
 We can now analyse this meta trace for feasibility using an SMT-solver such as SMTInterpol\cite{Zitat03} or z3\cite{z3}. We get the following labelling:
 
 \begin{figure}[H]
-	\begin{tikzpicture}[%
+		\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
 		node distance=2.5cm, scale=1, 
@@ -708,7 +715,9 @@ We can now analyse this meta trace for feasibility using an SMT-solver such as S
 		
 		\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
 		
-		\node[state, label={[align=left]above:{$y = 1\ \land$ \\$x = 0$}}] (3) [right of=2] {$\ell_3$};
+		\node[state, label={above:$\begin{aligned}
+				&y = 1 \\ \land\ &x = 0
+			\end{aligned}$}] (3) [right of=2] {$\ell_3$};
 		
 		\node[state, label={[align=center]above:
 			$\begin{aligned}
@@ -732,7 +741,20 @@ With interpolant sequence:
 \begin{equation*}
 	 I_{\bar{\tau_1}}: \{ \top,\ x = 0, y = 1 \land x = 0,\ ((102 < y\ \lor \ 2x + 1 \leq y)\ \land\ (y \leq 103))\ \lor\ x = 0,\ y = 103,\ \bot \}
 \end{equation*}
-We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the trace. To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by using the post operator. \\ \\
+We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace. To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by applying the post operator. \\
+
+\begin{mydef}
+	Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ containing a loop spanning from $s_1$ to $s_j$ with loop head $\ell_i$, loop relation $\psi_L$, and corresponding loop acceleration $\psi^*_{L}$ and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$. 
+	To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$. \\
+	Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\ell_L}$. From there keep applying the post operator with the previous location's interplant and the following program statement. \\
+	We get inductive interpolant sequence
+	\begin{equation*}
+		I_\tau: \{\top,I_1,I_2, \ldots ,\ \underbrace{post(I_{\psi^*_L}, \psi^*_L)}_{I_{i}},\ \ \underbrace{post(I_{i}, s_i)}_{I_{i+1}},\ \ldots ,\ \underbrace{post(I_{j-1}, s_j)}_{I_{j}},I_{j+1}, \ldots ,I_{n-1}, \bot \}
+	\end{equation*}
+	Which can now be used by trace abstraction to refine the interpolant automaton.
+\end{mydef}
+
+Using definition 15 we can now compute the missing interpolants for example program trace $\tau_1$:
 
 \begin{figure}[H]
 	\centering
@@ -777,8 +799,8 @@ We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an in
 				&y = 2 \cdot x + 1\\&\land x \leq 51
 				\end{aligned}$}}] (12) [right of=11] {$\ell_3$};
 		\node[state, label={[xshift=0cm]below:{$\begin{aligned}
-					&y = 2 \cdot x + 1\\&\land x \leq 51\ \land x > 50 \\
-					& \leftrightarrow y = 103
+					&y = 2 \cdot x + 1\\&\land x \leq 51\ \land\ x > 50 \\
+					& \equiv y = 103
 				\end{aligned}$}}] (13) [right of=12] {$\ell_6$};
 		\node[state, label=above:{$\bot$}] (14) [right of=13] {$\ell_7$};
 		
@@ -801,8 +823,71 @@ We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an in
 	\captionof{figure}{Program Trace $\tau_1$ of $P_1$ with Inductive Infeasibility Proof.}
 \end{figure}
 
-With loop invariant: $y = 2\cdot c + 1\ \land\ x \leq 51$
+\subsection{Loops With Branching}
+Assume we are given the following program $P_2$: \\
+\begin{figure}[H]
+	\begin{align*}
+		&\texttt{1: int x := 0}; \\
+		&\texttt{2: while x <= 10:} \\
+		&\texttt{3: \hspace*{2em} if x - 4 > 1:} \\
+		&\texttt{4: \hspace*{4em} x := x + 1;} \\
+		&\texttt{5: \hspace*{2em} else:} \\
+		&\texttt{6: \hspace*{4em} x := x + 2;} \\
+		&\texttt{5: \hspace*{2em} x := x + 2} \\
+		&\texttt{7: end while} \\
+		&\texttt{8: assert x == 11;}
+	\end{align*}
+	\captionof{figure}{Example Program $P_1$.}
+	\label{fig:square}
+\end{figure}
+With its control-flow graph $G_{P_2}$: \\
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=3cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=1.4}
+		initial text =]
+		
+		\node[state, initial above](1){$\ell_1$};
+		
+		\node[state] (2) [below of=1] {$\ell_2$};
+		
+		\node[state] (3) [left of=2, xshift=-3cm] {$\ell_3$};
+		
+		\node[state] (8) [below right of=3] {$\ell_4$};
+		
+		\node[state] (9) [below left of=3] {$\ell_5$};
+		
+		\node[state] (10) [below left of=8] {$\ell_6$};
+		
+		\node[state] (11) [right of=2] {$\ell_7$};
+		\node[state] (12) [below right of=11] {$\ell_8$};
+		\node[state] (13) [below left of=11] {$\ell_{9}$};
+		
+		\path (1) edge node {\texttt{x := 0}} (2)
 
+		(2) edge node[above] {\texttt{x <= 10}} (3)
+		(3) edge node[right=0.25cm] {\texttt{x - 4 > 1}} (8)
+		(3) edge node[left=0.25cm] {\texttt{!x - 4 > 1}} (9)
+		
+		(8) edge node[right=0.25cm] {\texttt{x := x + 1}} (10)
+		(9) edge node[left=0.25cm] {\texttt{x := x + 2}} (10)
+		(10) edge [bend angle=55, bend right] node[right=0.25cm] {\texttt{x := x + 2}} (2)
+		
+		(2) edge node[above] {\texttt{!x <= 10}} (11)
+		(11) edge node[above right] {\texttt{x == 11}} (12)
+		(11) edge node[below right] {\texttt{x != 11}} (13)
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Control-Flow Graph $G_{P_2}$ of Program $P_2$.}
+	\label{fig:rect}
+\end{figure}
+
+
+\subsection{Nested Loops}
 
 \pagebreak
 \addcontentsline{toc}{chapter}{Bibliography}
