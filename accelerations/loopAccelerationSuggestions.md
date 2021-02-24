@@ -20,15 +20,6 @@ This work proposes a combination of multiple acceleration techniques used in a M
 - https://dblp.org/rec/journals/pacmpl/KincaidBCR19.html?view=bibtex
 
 
-### "PTIME Computation of Transitive Closures of Octagonal Relations"
-- Filip Konečný
-- TACAS 2016 https://link.springer.com/chapter/10.1007%2F978-3-662-49674-9_42
-- https://dblp.org/rec/conf/tacas/Konecny16.html?view=bibtex
-
-#### Idea:
-Improvement of FastUPR, truly fast -> polynomial time
-
-
 ### "Loop Summarization with Rational Vector Addition Systems"
 - Jake Silverman, Zachary Kincaid
 - CAV 2019 https://link.springer.com/chapter/10.1007%2F978-3-030-25543-5_7
@@ -37,6 +28,7 @@ Improvement of FastUPR, truly fast -> polynomial time
 #### Idea:
 Loop acceleration (again its a loop summary) using a rational vector addition system, which then simulates the input loop,
 to over-approximate the loop's behaviour. (They even cited Ultimate ;) )
+
 
 ### Proving Non-Termination via Loop Acceleration
 - Florian Frohn, Jürgen Giesl
@@ -57,6 +49,14 @@ Generalize the underapproximation loop acceleration already implemented in I, to
 Generation of loop invariants using fixpoint calculation on polynomial assignemnts. 
 Focus on loops with multiple branching paths.
 
+
+### "PTIME Computation of Transitive Closures of Octagonal Relations"
+- Filip Konečný
+- TACAS 2016 https://link.springer.com/chapter/10.1007%2F978-3-662-49674-9_42
+- https://dblp.org/rec/conf/tacas/Konecny16.html?view=bibtex
+
+#### Idea:
+Improvement of FastUPR, truly fast -> polynomial time
 
 
 ### "Abstract Acceleration of General Linear Loops"
