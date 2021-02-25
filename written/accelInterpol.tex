@@ -185,7 +185,6 @@ $P_0$ is defined over the set of program statements:
 \begin{equation*}
 	\Sigma = (\texttt{x := 0},\texttt{x < 6}, \texttt{x := x + 2}, \texttt{assume !x < 6}, \texttt{x == 6}, \texttt{x != 6})
 \end{equation*} 
-That form an alphabet. \\ \par
 The program can be presented as control-flow graph $G_{P_0} = (Loc_P, \delta_P, \ell_{init}, \ell_{err})$, with 
 \begin{itemize}
 	\item $Loc_P = \{ \ell_1, \ell_2, \ell_3, \ell_4, \ell_5, \ell_6 \}$
@@ -339,7 +338,7 @@ $\tau_0$ from before is infeasible, because for $\texttt{assume !x < 6}$, the in
 Program trace $\tau_0$ will therefore never occur in $P_0$. \\
 
 \begin{mydef}
-	Given a program trace $\tau: s_0, s_1, ..., s_n$ a sequence of program states $\pi: \sigma_0, \sigma_1, ..., \sigma_n$ is called an inductive sequence of states for $\tau$ if the strongest postcondition of every program state $\sigma_i$ under the program statement $st_{i+1}$ implies the follow up state $\sigma_{i+1}$. 
+	Given a program trace $\tau: s_0, s_1, ..., s_n$ a sequence of program states $\pi: \sigma_0, \sigma_1, ..., \sigma_n$ is called an inductive sequence of program states for $\tau$ if the strongest postcondition of every program state $\sigma_i$ under the program statement $st_{i+1}$ implies the follow up state $\sigma_{i+1}$. 
 	\begin{equation*}
 			sp(\sigma_i, st_{i+1}) \implies \sigma_{i+1}
 	\end{equation*}
@@ -347,12 +346,15 @@ Program trace $\tau_0$ will therefore never occur in $P_0$. \\
 The sequence of program states $\pi_0: true, x = 0, x = 0, x = 2, false, false$ is an inductive sequence of program states for $\tau_0$
 
 \begin{mydef}
-	An inductive sequence of program states $\pi: \sigma_0, \sigma_1,..., \sigma_n$ of program trace $\tau$ is a proof of infeasibility for $\tau$ if $\sigma_0 = true$ and $\sigma_n = false$.
+	An inductive sequence  of program states $\pi: \sigma_0, \sigma_1,..., \sigma_n$ of program trace $\tau$ is a proof of infeasibility for $\tau$ if $\sigma_0 = true$ and $\sigma_n = false$.
 \end{mydef}
-A proof of infeasibility refutes the possibility of a program trace being taken. The goal of
+A proof of infeasibility refutes the possibility of a program trace being taken in the program's execution.\\
+To show that there are no feasible error traces, trace abstraction iteratively creates an automaton $A_D$, defined on the alphabet of programs statements $\Sigma$, with language $\mathcal{L}(A_D)$. In each iteration $A_D$ gets refined using an infeasibility proof, extending the language: $\mathcal{L}(A_D) = \mathcal{L}(A_D) \cup \pi$.
+If the language $\mathcal{L}(A_D)$ subsumes the language of the original program $\mathcal{L_P}$, then the program is proven to uphold the safety property.
+If there is a feasible error trace then a counterexample is found, proving that the program does not fulfill the safety property.
 
-\jw{Todo Interpolants as generalization}
-For example, consider the conjunction:
+\jw{TODO}
+
 \begin{equation}
 	x_0 = 5 \land x_0 \leq 3
 \end{equation}
@@ -649,8 +651,6 @@ For our example loop relation  	$\psi_{L_1}$ we calculate the reflexive transiti
 	\psi^*_{L_1}: \{(\sigma, \sigma') \  |\ &((\sigma'[x] \leq \sigma[x]\ \lor\ \sigma'[x] \leq 51)\ \land\ (\sigma[x] \leq \sigma'[x])\ \land\ \\ & (\sigma'[y] = \sigma[y] - 2 \cdot \sigma[x] + 2\cdot \sigma'[x]))\ \lor\ (\sigma'[x] = \sigma[x]\ \land\ \sigma'[y] = \sigma[y]) \}
 \end{align*}
 
-\jw{Todo: maybe proof, that every trace is in}
-
 This reflexive transitive closure will be used in the following chapter to compute more general interpolants to be used in trace abstraction.
 
 \section{Accelerated Interpolation}
@@ -886,6 +886,146 @@ With its control-flow graph $G_{P_2}$: \\
 	\label{fig:rect}
 \end{figure}
 
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=3.25cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=2}
+		initial text =]
+		
+		\node[state](1){$\ell_1$};
+		\node[state] (2) [right of=1] {$\ell_2$};
+		\node[state] (3) [right of=2] {$\ell_3$};
+		\node[state] (4) [right of=3] {$\ell_5$};
+		\node[state] (5) [right of=4] {$\ell_6$};
+		\node[state] (6) [below of=1] {$\ell_2$};
+		\node[state] (7) [right of=6] {$\ell_3$};
+		\node[state] (8) [right of=7] {$\ell_5$};
+		\node[state] (9) [right of=8] {$\ell_6$};
+		\node[state] (10) [right of=9] {$\ell_2$};
+		\node[state] (11) [below of=6] {$\ell_3$};
+		\node[state] (12) [right of=11] {$\ell_4$};
+		\node[state] (13) [right of=12] {$\ell_6$};
+		\node[state] (14) [right of=13] {$\ell_2$};
+		\node[state] (15) [right of=14] {$\ell_3$};
+		\node[state] (16) [below of=11] {$\ell_4$};
+		\node[state] (17) [right of=16] {$\ell_6$};
+		\node[state] (18) [right of=17] {$\ell_2$};
+		\node[state] (19) [right of=18] {$\ell_7$};
+		\node[state] (20) [right of=19] {$\ell_9$};
+		
+		
+		\path (1) edge node {\texttt{x := 0}} (2);
+		\path (2) edge node {\texttt{x <= 10}} (3);
+		\path (3) edge node {\texttt{!x - 4 > 1}} (4);
+		\path (4) edge node {\texttt{x := x + 2}} (5);
+		\path (5) edge node {\texttt{x := x + 2}} (6);
+		\path (6) edge node[below] {\texttt{x <= 10}} (7);
+		\path (7) edge node[below] {\texttt{!x - 4 > 1}} (8);
+		\path (8) edge node[below] {\texttt{x := x + 2}} (9);
+		\path (9) edge node {\texttt{x := x + 2}} (10);
+		\path (10) edge node {\texttt{x <= 10}} (11);
+		\path (11) edge node[below] {\texttt{x - 4 > 1}} (12);
+		\path (12) edge node[below] {\texttt{x := x + 1}} (13);
+		\path (13) edge node[below] {\texttt{x := x + 2}} (14);
+		\path (14) edge node {\texttt{x <= 10}} (15);
+		\path (15) edge node {\texttt{x - 4 > 1}} (16);
+		\path (16) edge node[below] {\texttt{x := x + 1}} (17);
+		\path (17) edge node[below] {\texttt{x := x + 2}} (18);
+		\path (18) edge node[below] {\texttt{!x <= 10}} (19);
+		\path (19) edge node[below] {\texttt{x != 11}} (20);
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Program Trace $\tau_2$ of $P_2$}
+\end{figure}
+
+Loop relations and accelerations:
+\begin{align*}
+ 	\psi_{L_{1,1}} &:\ \texttt{x <= 10; !x - 4 > 1; x := x + 2;\ x := x + 2} \\
+	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land  \sigma'[x] = \sigma[x] + 4 \} \\
+	\psi_{L_{1,1}}^* &: \{(\sigma, \sigma')\ |\ (\sigma'[x] \leq 9 \lor \sigma[x]' \leq x)\ \land\ 3\cdot \sigma'[x] + \sigma[x]\ (mod\ -4) = 0\ \land\ \sigma[x] \leq \sigma'[x] \} \\ \\
+	\psi_{L_{1,2}}&:\ \texttt{x <= 10; x - 4 > 1; x := x + 1; x := x + 2} \\
+	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \} \\
+	\psi_{L_{1,2}}^* &: \{ (\sigma, \sigma')\ | \ \sigma'[x] = \sigma[x]\ \lor\ \sigma[x] \leq \sigma'[x]\ \land\ \sigma'[x] + 2 \cdot \sigma[x]\ (mod\ 3) = 0 \\
+	&\hspace*{1.5cm} \land\ 3 < \sigma[x]\ \land\ \sigma'[x] \leq 13 \} \\
+\end{align*}
+
+Branching Meta-Trace:
+\begin{figure}[H]
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=2.5cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=1.4}
+		initial text =]
+		
+		\node[state](1){$\ell_1$};
+		
+		\node[state] (2) [right of=1] {$\ell_2$};
+		
+		\node[state] (3) [right of=2, xshift=-0.55cm] {$\ell_2'$};
+		
+		\node[state] (4) [right of=3, xshift=-0.55cm] {$\ell_2$};
+		
+		\node[state] (5) [right of=4, xshift=-0.55cm] {$\ell_2'$};
+		
+		\node[state] (6) [right of=5, xshift=0.4cm] {$\ell_7$};
+		
+		\node[state] (7) [right of=6, xshift=0.4cm] {$\ell_9$};
+		
+		\path (1) edge node {\texttt{x := 0}} (2);
+		\path (2) edge node {$\psi^*_{L_{1,1}}$} (3);
+		\path (3) edge node {$\varepsilon$} (4);
+		\path (4) edge node {$\psi^*_{L_{1,2}}$} (5);
+		\path (5) edge node {\texttt{!x <= 10}} (6);
+		\path (6) edge node {\texttt{x != 11}} (7);
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Meta Trace $\bar{\tau_2}$ Generated from $\tau_1$ Using a Loop with Branching.}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=2.5cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=1.4}
+		initial text =]
+		
+		\node[state, label=above:{$\top$}](1){$\ell_1$};
+		
+		\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
+		
+		\node[state, xshift=-0.55cm, label={above:$\begin{aligned}
+				&(5 \cdot x \leq 56 \\ &\lor x \leq 4) \\ &\land x \leq 9
+			\end{aligned}$}] (3) [right of=2] {$\ell_2'$};
+		
+		\node[state, xshift=-0.55cm, label={above:$\begin{aligned}
+				&(5 \cdot x \leq 56 \\ &\lor x \leq 4) \\ &\land x \leq 9
+			\end{aligned}$}] (4) [right of=3] {$\ell_2$};
+		
+		\node[state,xshift=-0.55cm,  label=above:{$ x \leq 11$}] (5) [right of=4] {$\ell_2'$};
+		
+		\node[state, xshift=0.4cm, label=above:{$x = 11$}] (6) [right of=5] {$\ell_7$};
+		
+		\node[state, xshift=0.4cm, label=above:{$\bot$}] (7) [right of=6] {$\ell_9$};
+		
+		\path (1) edge node {\texttt{x := 0}} (2); \\
+		\path (2) edge node {$\psi_{L_{1,1}}$} (3); \\
+		\path (3) edge node {$\varepsilon$} (4);\\
+		\path (4) edge node {$\psi_{L_{1,2}}$} (5); \\
+		\path (5) edge node {\texttt{!x <= 10}} (6); \\
+		\path (6) edge node {\texttt{x != 11}} (7); \\
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Meta Trace $\bar{\tau_1}$ Generated from $\tau_1$ and $\psi^*_{L_1}$ and Its Infeasibility Proof.}
+\end{figure}
 
 \subsection{Nested Loops}
 
