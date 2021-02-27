@@ -253,7 +253,7 @@ $
 \vspace{0.7cm} \\ 
 Programs model multiple program statement sequences:
 \begin{mydef}
-Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ that is defined over a set of program statements $Stmt$, and its control-flow graph $G_P$, we call a sequence of program statements $\tau: s_0, s_1, s_2, ..., s_n \in Stmt^*$ a program trace, if $\tau$ is the labeling of a path starting in $\ell_{init}$. Meaning, each for each $s_i$, $0 \leq i \leq n$, there is $(\ell_i, s_i, \ell_{i+1}) \in \delta$. The program trace is called error trace if $\ell_n = \ell_{err}$.  
+Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ that is defined over a set of program statements $Stmt$, and its control-flow graph $G_P$, we call a sequence of program statements \\ $\tau: s_0, s_1, s_2, ..., s_n \in Stmt^*$ a program trace, if $\tau$ is the labeling of a path starting in $\ell_{init}$. Meaning, each for each $s_i$, $0 \leq i \leq n$, there is $(\ell_i, s_i, \ell_{i+1}) \in \delta$. The program trace is called error trace if $\ell_n = \ell_{err}$.  
 \end{mydef}
 
 For example, consider program $P_0$ from before. A possible error trace would be:
@@ -297,7 +297,7 @@ Graphically represented as:
 Because a program trace is rather abstract, the question arises whether the program can actually take the defined sequence of statements.
 
 \begin{mydef}
-	Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and a program trace $\tau:\ s_0, s_1, s_2, ..., s_n$ of $P$, a sequence of program states $\pi:\ \sigma_0, \sigma_1, \sigma_2,..., \sigma_n$ is a program execution of $\tau$, if $(\sigma_i, \sigma_{i+1} \in \rho _{s_i})$ for $0 \leq i \leq n$. \\
+	Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and a program trace $\tau:\ s_0, s_1, s_2, ..., s_n$ of $P$, a sequence of program states $\pi:\ \sigma_0, \sigma_1, \sigma_2,..., \sigma_n$ is a program execution of $\tau$, if $(\sigma_i, \sigma_{i+1}) \in \rho _{s_i}$ for $0 \leq i \leq n$. \\
 	Trace $\tau$ is called feasible if there is a corresponding program execution, otherwise it is infeasible.
 \end{mydef}
 
@@ -506,9 +506,9 @@ Assume trace abstraction generates program trace $\tau_1$:
 	\end{tikzpicture}
 	\captionof{figure}{Program Trace $\tau_1$ of $P_1$}
 \end{figure}
-It is noticeable that program location $\ell_3$ appears repeatedly in the trace indicating that it is an entry point for a loop. From this entry point, the so called loophead, one can extract a loop trace. 
+It is noticeable that program location $\ell_3$ appears repeatedly in the trace indicating that it is an entry point for a loop. From this entry point, the so called loop head, one can extract a loop trace. 
 \begin{mydef}
-	A loop trace $\tau_L$ is a program trace  $s_0, s_1, \ldots, s_n$, where $s_0 = s_n$.
+		Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and a program trace $\tau: s_0, s_1, \ldots, s_n$. If $(\ell_0, s_i, \ell_1) \in \delta\ $ and $(\ell_{n-1}, s_n, \ell_0) \in \delta $. $\ell_0$ then $\tau$ is a loop trace. $\ell_0$ is called the loop head.
 \end{mydef}
 
 In $\tau_1$ there are three loop traces of varying length:  \\
@@ -601,7 +601,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 \end{figure}
 These three looping traces represent the same loop but with a different number of iterations.
 \begin{mydef}
-	A minimal loop trace $\tau_{min}$ is a loop trace $s_0, s_1, \ldots, s_n$, where the loophead $\ell_L$ only appears as first and last location. It represents one iteration of the loop.
+	A minimal loop trace $\tau_{min}$ is a loop trace $s_0, s_1, \ldots, s_n$, where the loop head $\ell_L$ only appears as first and last location. It represents one iteration of the loop.
 \end{mydef}
 
 In this example $\tau_{L_1}$ is the minimal loop trace. \\
@@ -658,7 +658,7 @@ This section will introduce the technique of combining loop acceleration and int
 
 \subsection{Loops Without Branching}
 
-Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with loop head $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$. It is evident that there is only one path through the loop, resulting in a loop without branching. We consequently compute the loop acceleration $\psi^*_{L_1}$. \par
+Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with  $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$. It is evident that there is only one path through the loop, resulting in a loop without branching. We consequently compute the loop acceleration $\psi^*_{L_1}$. \par
 
 The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
 
