@@ -825,6 +825,7 @@ Using definition 15 we can now compute the missing interpolants for example prog
 
 \subsection{Loops With Branching}
 \jw{TODO: Text and defs}
+The programs shown before contained loops that had only one distinct minimal loop trace, that was repeated. However, most programs contain loops with branching, caused for example, by ifs and elses. These case distinctions create multiple minimal loop traces that differ from one another. This chapter introduces our technique of dealing with branching loops. \\ \par
 Assume we are given the following program $P_2$: \\
 \begin{figure}[H]
 	\begin{align*}
@@ -886,7 +887,7 @@ With its control-flow graph $G_{P_2}$: \\
 	\captionof{figure}{Control-Flow Graph $G_{P_2}$ of Program $P_2$.}
 	\label{fig:rect}
 \end{figure}
-
+And assume further that trace abstraction generated the following error trace:
 
 \begin{figure}[H]
 	\centering
@@ -943,6 +944,8 @@ With its control-flow graph $G_{P_2}$: \\
 	\end{tikzpicture}
 	\captionof{figure}{Program Trace $\tau_2$ of $P_2$}
 \end{figure}
+
+\jw{Todo: explanation on why branching loops are bad: We cannot get a finite number of minimal loop traces, as the interweaving of the loop paths create infinitely many.}
 
 Loop relations and accelerations:
 \begin{align*}
