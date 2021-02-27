@@ -1027,9 +1027,68 @@ Branching Meta-Trace:
 	\end{tikzpicture}
 	\captionof{figure}{Meta Trace $\bar{\tau_1}$ Generated from $\tau_1$ and $\psi^*_{L_1}$ and Its Infeasibility Proof.}
 \end{figure}
-
 \subsection{Nested Loops}
-\jw{TODO}
+Assume we are given the following program $P_3$: \\
+\begin{figure}[H]
+	\begin{align*}
+		&\texttt{1: int x := 0}; \\
+		&\texttt{2: int y := 0}; \\
+		&\texttt{3: while x < 5:} \\
+		&\texttt{4: \hspace*{2em} x := x + 1;} \\
+		&\texttt{5: \hspace*{2em} while y < 4:} \\
+		&\texttt{6: \hspace*{4em} y := y + 2;} \\
+		&\texttt{7: \hspace*{2em} end while} \\
+		&\texttt{8: end while} \\
+		&\texttt{9: assert y == 10;}
+	\end{align*}
+	\captionof{figure}{Example Program $P_3$.}
+	\label{fig:square}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=3cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=1.4}
+		initial text =]
+		
+		\node[state, initial above](1){$\ell_1$};
+		
+		\node[state] (2) [below of=1] {$\ell_2$};
+		
+		\node[state] (3) [below of=2] {$\ell_3$};
+		
+		\node[state] (4) [left of=3] {$\ell_4$};
+		
+		\node[state] (5) [left of=4] {$\ell_5$};
+		
+		\node[state] (6) [below of=5] {$\ell_6$};
+		
+		\node[state] (8) [right of=3] {$\ell_8$};
+		
+		\node[state] (9) [below of=8] {$\ell_9$};
+		
+		\node[state] (10) [right of=8] {$\ell_{10}$};
+		
+		\path (1) edge node {\texttt{x := 0}} (2)
+		(2) edge node {\texttt{y := 0}} (3)
+		(3) edge node {\texttt{x < 5}} (4)
+		(4) edge[] node {\texttt{x := x + 1}} (5)
+		(5) edge[bend right] node[left] {\texttt{y < 4}} (6)
+		(6) edge[bend right] node[right] {\texttt{y := y + 2}} (5)
+		(5) edge[bend left] node[] {\texttt{!y < 10}} (3)
+		(3) edge[] node[] {\texttt{!x < 5}} (8)
+		(8) edge[] node[] {\texttt{y != 10}} (9)
+		(8) edge[] node[] {\texttt{y == 10}} (10)
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Control-Flow Graph $G_{P_3}$ of Program $P_3$.}
+	\label{fig:rect}
+\end{figure}
+
 \pagebreak
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{plain}
