@@ -508,7 +508,7 @@ Assume trace abstraction generates program trace $\tau_1$:
 \end{figure}
 It is noticeable that program location $\ell_3$ appears repeatedly in the trace indicating that it is an entry point for a loop. From this entry point, the so called loop head, one can extract a loop trace. 
 \begin{mydef}
-		Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and a program trace $\tau: s_0, s_1, \ldots, s_n$. If $(\ell_0, s_i, \ell_1) \in \delta\ $ and $(\ell_{n-1}, s_n, \ell_0) \in \delta $. $\ell_0$ then $\tau$ is a loop trace. $\ell_0$ is called the loop head.
+		Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and a program trace $\tau: s_0, s_1, \ldots, s_n$. $\tau$ is a loop trace, if $(\ell_0, s_0, \ell_1) \in \delta\ $ and $(\ell_{n-1}, s_n, \ell_0) \in \delta $. $\ell_0$ is called the loop head.
 \end{mydef}
 
 In $\tau_1$ there are three loop traces of varying length:  \\
@@ -663,7 +663,7 @@ Reconsider program $P_1$ from the previous chapter. To prove its safety trace ab
 The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
 
 \begin{mydef}
-	Given an error trace $\tau$ containing loop $L$ with loop head $\ell_L$, a meta trace $\bar{\tau}$ is an error trace where the sequence of program statements between the first and last occurrence of $\ell_L$ have been replaced by a single edge labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+	Given an error trace $\tau$ containing loop with loop head $\ell_L$. A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing the sequence of program statements between the first and last occurrence of $\ell_L$ by a single edge labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
 \end{mydef}
 
 Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
