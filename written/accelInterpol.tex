@@ -663,7 +663,7 @@ Reconsider program $P_1$ from the previous chapter. To prove its safety trace ab
 The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
 
 \begin{mydef}
-	Given an error trace $\tau$ containing loop with loop head $\ell_L$. A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing the sequence of program statements between the first and last occurrence of $\ell_L$ by a single edge labelled with the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+	Given an error trace $\tau$ containing loop with loop head $\ell_L$. A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing the sequence of program statements between the first and last occurrence of $\ell_L$ by a the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
 \end{mydef}
 
 Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
@@ -961,29 +961,31 @@ Because \begin{itemize}
 the loop is branching.
 We separate the loop branches by checking the program statements in the intervals between the loop head repetition and get two minimal loop traces:
 \begin{align*}
-	I&: \tau_{L_1}:\ \texttt{x <= 10; !x - 4 > 1; x := x + 2;\ x := x + 2} \\
-	II&: \tau_{L_2}:\ \texttt{x <= 10; x - 4 > 1; x := x + 1; x := x + 2}
+	&\tau_{L_1}:\ \texttt{x <= 10; !x - 4 > 1; x := x + 2;\ x := x + 2} \\
+	&\tau_{L_2}:\ \texttt{x <= 10; x - 4 > 1; x := x + 1; x := x + 2}
 \end{align*}
 With loop relations:
 \begin{align*}
-	\psi_{L_{I}} &= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land  \sigma'[x] = \sigma[x] + 4 \} \\
-	\psi_{L_{II}}&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \}
+	\psi_{L_{1}} &= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land  \sigma'[x] = \sigma[x] + 4 \} \\
+	\psi_{L_{2}}&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \}
 \end{align*}
 
-Using these two relations we can model an iteration of the loop as $\tau_{L_1} \lor \tau_{L_2}$.  \\
-\jw{TODO: use these}
-Loop relations and accelerations:
+Using these two relations we can approximate an iteration of the loop as $\tau_{L_1} \lor \tau_{L_2}$. \\ \par
+As we have now sensible minimal loop traces for both branches of the loop, it is possible to compute a loop acceleration the same way as in previous chapters:
 \begin{align*}
- 	\psi_{L_{1,1}} &:\ \texttt{x <= 10; !x - 4 > 1; x := x + 2;\ x := x + 2} \\
-	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land  \sigma'[x] = \sigma[x] + 4 \} \\
-	\psi_{L_{1,1}}^* &: \{(\sigma, \sigma')\ |\ (\sigma'[x] \leq 9 \lor \sigma[x]' \leq x)\ \land\ 3\cdot \sigma'[x] + \sigma[x]\ (mod\ -4) = 0\ \land\ \sigma[x] \leq \sigma'[x] \} \\ \\
-	\psi_{L_{1,2}}&:\ \texttt{x <= 10; x - 4 > 1; x := x + 1; x := x + 2} \\
-	&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \} \\
-	\psi_{L_{1,2}}^* &: \{ (\sigma, \sigma')\ | \ \sigma'[x] = \sigma[x]\ \lor\ \sigma[x] \leq \sigma'[x]\ \land\ \sigma'[x] + 2 \cdot \sigma[x]\ (mod\ 3) = 0 \\
-	&\hspace*{1.5cm} \land\ 3 < \sigma[x]\ \land\ \sigma'[x] \leq 13 \} \\
+	\psi_{L_{1}}^* &: \{(\sigma, \sigma')\ |\ (\sigma'[x] \leq 9 \lor \sigma[x]' \leq x)\ \land\ 3\cdot \sigma'[x] + \sigma[x]\ (mod\ -4) = 0\ \land\ \sigma[x] \leq \sigma'[x] \} \\
+	\psi_{L_{2}}^* &: \{ (\sigma, \sigma')\ | \ \sigma[x] \leq \sigma'[x]\ \land\ \sigma'[x] + 2 \cdot \sigma[x]\ (mod\ 3) = 0 \\
+	&\hspace*{1.75cm} \land\ 3 < \sigma[x]\ \land\ \sigma'[x] \leq 13 \ \lor \sigma'[x] = \sigma[x]\}
 \end{align*}
 
-Branching Meta-Trace:
+To utilize them in accelerated interpolation we firstly need to introduce a meta trace variant for branching loops.
+
+\begin{mydef}
+	Given an error trace $\tau$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $n$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_i^*$ for $i \in 1 \ldots n$. A branching meta trace $\bar{\tau}$ is constructed from $\tau$ by replacing $\tau_L$ with the sequence $\tau_m: \psi_1^*, \varepsilon, \psi_2^*, \varepsilon, \ldots, \psi_n^* $. Where each $\psi_i$ leads to the new loop exit $\ell_L'$ and each $\varepsilon$ from $\ell_L'$ to $\ell_L$.
+\end{mydef}
+ A meta trace for branching loops represents the overall effect of the loop on the program state, however, it does not contain every trace through the loop. Traces where, for example, two branches alternate are not contained, as in the meta trace each branch is taken sequentially a finite amount of times. A meta trace for branching loops therefore represents an underapproximation of possible loop traces. \\ \par
+
+For the trace $\tau_2$ we get the following branching meta trace:
 \begin{figure}[H]
 	\begin{tikzpicture}[%
 		->,
@@ -1015,9 +1017,9 @@ Branching Meta-Trace:
 		\path (6) edge node {\texttt{x != 11}} (7);
 		;
 	\end{tikzpicture}
-	\captionof{figure}{Meta Trace $\bar{\tau_2}$ Generated from $\tau_2$ Using a Loop with Branching.}
+	\captionof{figure}{Branching Meta Trace $\bar{\tau_2}$ Generated from $\tau_2$.}
 \end{figure}
-
+Out of which an SMT-solver generates the following infeasibility proof:
 \begin{figure}[H]
 	\begin{tikzpicture}[%
 		->,
@@ -1046,15 +1048,16 @@ Branching Meta-Trace:
 		\node[state, xshift=0.4cm, label=above:{$\bot$}] (7) [right of=6] {$\ell_9$};
 		
 		\path (1) edge node {\texttt{x := 0}} (2); \\
-		\path (2) edge node {$\psi_{L_{1,1}}$} (3); \\
+		\path (2) edge node {$\psi_{L_{1}}$} (3); \\
 		\path (3) edge node {$\varepsilon$} (4);\\
-		\path (4) edge node {$\psi_{L_{1,2}}$} (5); \\
+		\path (4) edge node {$\psi_{L_{2}}$} (5); \\
 		\path (5) edge node {\texttt{!x <= 10}} (6); \\
 		\path (6) edge node {\texttt{x != 11}} (7); \\
 		;
 	\end{tikzpicture}
-	\captionof{figure}{Meta Trace $\bar{\tau_1}$ Generated from $\tau_1$ and $\psi^*_{L_1}$ and Its Infeasibility Proof.}
+	\captionof{figure}{Meta Trace $\bar{\tau_2}$ and Its Infeasibility Proof.}
 \end{figure}
+Interpolant sequence $I_{\bar{\tau}_2}: \{ \top,\ x = 0,\ 5 \cdot x \leq 56 \lor x \leq 4,\ 5 \cdot x \leq 56 \lor x \leq 4,\ x \leq 11,\ x = 11,\ \bot\}$ can be used to generate an inductive infeasibility proof for $\tau_2$ by using the post operator as explained before. 
 \subsection{Nested Loops}
 Assume we are given the following program $P_3$: \\
 \begin{figure}[H]
