@@ -32,7 +32,6 @@
 \usepackage{tcolorbox}% http://ctan.org/pkg/tcolorbox
 \tcbuselibrary{skins,breakable}
 
-
 \newtcbox{\mybox}{breakable, colframe=grey!50!black,colback=grey!40!white,
 	boxrule=0.5pt,arc=4pt,boxsep=0pt,left=6pt,right=6pt,top=6pt,bottom=6pt}
 
@@ -402,7 +401,7 @@ Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and its control-flo
 		\item[4.] Construct an automaton, $\mathcal{A}_i$, from the interpolants.
 		\item[5.] If the language $\mathcal{L(A_P)}$, that is recognized by the program's control-flow graph, is a subset of the union of languages recognized by the constructed automata: $\mathcal{L(A_P)} \subseteq \mathcal{L(A}_1) \cup ... \cup \mathcal{L(A}_i)$ then the program is correct, else start again at step 1.
 	\end{itemize}
-	The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. However, the interpolants are not guaranteed to be general enough to exclude a large number of error traces. Which poses a problem for loops. In the following we introduce a way to exclude a large number of traces going through a loop.
+	The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. However, the interpolants are not guaranteed to be general enough to exclude a large number of error traces. Which poses a problem for loops. In the following chapters we introduce a way to exclude a large number of traces going through a loop.
 
 
 \section{Loop Acceleration}
@@ -428,26 +427,26 @@ With its control-flow graph $G_{P_1}$: \\
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3cm, scale=1, 
+		node distance=1cm and 3cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=1.4}
 		initial text =]
 		
 		\node[state, initial above](1){$\ell_1$};
 		
-		\node[state] (2) [below of=1] {$\ell_2$};
+		\node[state] (2) [below= of 1] {$\ell_2$};
 		
-		\node[state] (7) [below of=2] {$\ell_3$};
+		\node[state] (7) [below= of 2] {$\ell_3$};
 		
-		\node[state] (3) [left of=7] {$\ell_4$};
+		\node[state] (3) [left= of 7] {$\ell_4$};
 		
-		\node[state] (8) [below of=3] {$\ell_5$};
+		\node[state] (8) [below= of 3] {$\ell_5$};
 		
-		\node[state] (4) [right of=7] {$\ell_6$};
+		\node[state] (4) [right= of 7] {$\ell_6$};
 		
-		\node[state] (5) [below of=4] {$\ell_7$};
+		\node[state] (5) [below= of 4] {$\ell_7$};
 		
-		\node[state] (6) [right of=4] {$\ell_8$};
+		\node[state] (6) [right= of 4] {$\ell_8$};
 		
 		\path (1) edge node {\texttt{x := 0}} (2)
 		(2) edge node {\texttt{y := 1}} (7)
@@ -468,25 +467,25 @@ Assume trace abstraction generates program trace $\tau_1$:
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3.25cm, scale=1, 
+		node distance=1.25cm and 2.5cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=2}
 		initial text =]
 		
 		\node[state](1){$\ell_1$};
-		\node[state] (2) [right of=1] {$\ell_2$};
-		\node[state] (3) [right of=2] {$\ell_3$};
-		\node[state] (4) [right of=3] {$\ell_4$};
-		\node[state] (5) [right of=4] {$\ell_5$};
-		\node[state] (6) [below of=1] {$\ell_3$};
-		\node[state] (7) [right of=6] {$\ell_4$};
-		\node[state] (8) [right of=7] {$\ell_5$};
-		\node[state] (9) [right of=8] {$\ell_3$};
-		\node[state] (10) [right of=9] {$\ell_4$};
-		\node[state] (11) [below of=6] {$\ell_5$};
-		\node[state] (12) [right of=11] {$\ell_3$};
-		\node[state] (13) [right of=12] {$\ell_6$};
-		\node[state] (14) [right of=13] {$\ell_7$};
+		\node[state] (2) [right= of 1] {$\ell_2$};
+		\node[state] (3) [right= of 2] {$\ell_3$};
+		\node[state] (4) [right= of 3] {$\ell_4$};
+		\node[state] (5) [right= of 4] {$\ell_5$};
+		\node[state] (6) [below= of 1] {$\ell_3$};
+		\node[state] (7) [right= of 6] {$\ell_4$};
+		\node[state] (8) [right= of 7] {$\ell_5$};
+		\node[state] (9) [right= of 8] {$\ell_3$};
+		\node[state] (10) [right= of 9] {$\ell_4$};
+		\node[state] (11) [below= of 6] {$\ell_5$};
+		\node[state] (12) [right= of 11] {$\ell_3$};
+		\node[state] (13) [right= of 12] {$\ell_6$};
+		\node[state] (14) [right= of 13] {$\ell_7$};
 		
 		
 		\path (1) edge node {\texttt{x := 0}} (2);
@@ -508,7 +507,7 @@ Assume trace abstraction generates program trace $\tau_1$:
 \end{figure}
 It is noticeable that program location $\ell_3$ appears repeatedly in the trace indicating that it is an entry point for a loop. From this entry point, the so called loop head, one can extract a loop trace. 
 \begin{mydef}
-		Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and a program trace $\tau: s_0, s_1, \ldots, s_n$. $\tau$ is a loop trace, if $(\ell_0, s_0, \ell_1) \in \delta\ $ and $(\ell_{n-1}, s_n, \ell_0) \in \delta $. $\ell_0$ is called the loop head.
+	Given a program trace $\tau: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$. \\ The sub trace $s_i, s_{i+1}\ldots, s_j$ is called a loop trace if $(\ell_i, s_i, \ell_{i+1}) \in \delta\ $ and $(\ell_{j-1}, s_j, \ell_i) \in \delta $. $\ell_i$ is called the loop head.
 \end{mydef}
 
 In $\tau_1$ there are three loop traces of varying length:  \\
@@ -518,15 +517,15 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 		\begin{tikzpicture}[%
 			->,
 			>=stealth', shorten >=1pt, auto,
-			node distance=3.25cm, scale=1, 
+			node distance=1.25cm and 2.5cm, scale=1, 
 			transform shape, align=center,    
 			smallnode/.style={inner sep=2}
 			initial text =]
 			
 			\node[state] (2) [] {$\ell_3$};
-			\node[state] (3) [right of=2] {$\ell_4$};
-			\node[state] (4) [right of=3] {$\ell_5$};
-			\node[state] (5) [right of=4] {$\ell_3$};
+			\node[state] (3) [right= of 2] {$\ell_4$};
+			\node[state] (4) [right= of 3] {$\ell_5$};
+			\node[state] (5) [right= of 4] {$\ell_3$};
 			
 			\path (2) edge node {\texttt{x <= 50}} (3);
 			\path (3) edge node {\texttt{x := x + 1}} (4);
@@ -541,18 +540,18 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3.25cm, scale=1, 
+		node distance=1.25cm and 2.5cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=2}
 		initial text =]
 		
 		\node[state] (2) [] {$\ell_3$};
-		\node[state] (3) [right of=2] {$\ell_4$};
-		\node[state] (4) [right of=3] {$\ell_5$};
-		\node[state] (5) [right of=4] {$\ell_3$};
-		\node[state] (6) [below of=2] {$\ell_4$};
-		\node[state] (7) [right of=6] {$\ell_5$};
-		\node[state] (8) [right of=7] {$\ell_3$};
+		\node[state] (3) [right= of 2] {$\ell_4$};
+		\node[state] (4) [right= of 3] {$\ell_5$};
+		\node[state] (5) [right= of 4] {$\ell_3$};
+		\node[state] (6) [below= of 2] {$\ell_4$};
+		\node[state] (7) [right= of 6] {$\ell_5$};
+		\node[state] (8) [right= of 7] {$\ell_3$};
 		
 		\path (2) edge node {\texttt{x <= 50}} (3);
 		\path (3) edge node {\texttt{x := x + 1}} (4);
@@ -570,21 +569,21 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3.25cm, scale=1, 
+		node distance=1.25cm and 2.5cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=2}
 		initial text =]
 		
 		\node[state] (2) [] {$\ell_3$};
-		\node[state] (3) [right of=2] {$\ell_4$};
-		\node[state] (4) [right of=3] {$\ell_5$};
-		\node[state] (5) [right of=4] {$\ell_3$};
-		\node[state] (6) [below of=2] {$\ell_4$};
-		\node[state] (7) [right of=6] {$\ell_5$};
-		\node[state] (8) [right of=7] {$\ell_3$};
-		\node[state] (9) [right of=8] {$\ell_4$};
-		\node[state] (10) [below of=6] {$\ell_5$};
-		\node[state] (11) [right of=10] {$\ell_3$};
+		\node[state] (3) [right= of 2] {$\ell_4$};
+		\node[state] (4) [right= of 3] {$\ell_5$};
+		\node[state] (5) [right= of 4] {$\ell_3$};
+		\node[state] (6) [below= of 2] {$\ell_4$};
+		\node[state] (7) [right= of 6] {$\ell_5$};
+		\node[state] (8) [right= of 7] {$\ell_3$};
+		\node[state] (9) [right= of 8] {$\ell_4$};
+		\node[state] (10) [below= of 6] {$\ell_5$};
+		\node[state] (11) [right= of 10] {$\ell_3$};
 		
 		\path (2) edge node {\texttt{x <= 50}} (3);
 		\path (3) edge node {\texttt{x := x + 1}} (4);
@@ -600,8 +599,14 @@ In $\tau_1$ there are three loop traces of varying length:  \\
 	\captionof{figure}{Loop Trace $\tau_{L_3}$ Modelling three Iterations of the Loop.}
 \end{figure}
 These three looping traces represent the same loop but with a different number of iterations.
+
 \begin{mydef}
-	A minimal loop trace $\tau_{min}$ is a loop trace $s_0, s_1, \ldots, s_n$, where the loop head $\ell_L$ only appears as first and last location. It represents one iteration of the loop.
+	Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with $(\ell_i, s_i, \ell_{i+1}) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$ where there is no $k \in [j, n]$ with $(\ell_{k-1}, s_k, \ell_i) \in \delta$. $\tau_L$ is called the maximum loop trace and represents the loop in the program trace.
+\end{mydef}
+In the example $\tau_{L_3}$ is the maximum loop trace in $\tau_1$. In the following we will use the phrases loops in program trace and maximum loop trace interchangeably. 
+
+\begin{mydef}
+	Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$, program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with loop $\tau_L: s_i, s_{i+1}, \ldots, s_l, \ldots, s_j$, where $(\ell_i, s_i, \ell_{i+1}) \in \delta$, $(\ell_l, s_l, \ell_i) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$. The loop trace $\tau_{min}: s_i, \ldots, s_l$ is called minimal loop trace if there is no $m \in [i, l]$ where $(\ell_{m-1}, s_m, \ell_i) \in \delta$.
 \end{mydef}
 
 In this example $\tau_{L_1}$ is the minimal loop trace. \\
@@ -663,7 +668,7 @@ Reconsider program $P_1$ from the previous chapter. To prove its safety trace ab
 The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
 
 \begin{mydef}
-	Given an error trace $\tau$ containing loop with loop head $\ell_L$. A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing the sequence of program statements between the first and last occurrence of $\ell_L$ by a the loop acceleration. The last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+	Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$. A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing $\tau_L$ by a the loop acceleration. Furthermore, the last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
 \end{mydef}
 
 Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
@@ -671,30 +676,30 @@ Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
 
 \begin{figure}[H]
 \begin{tikzpicture}[%
-->,
->=stealth', shorten >=1pt, auto,
-node distance=2.5cm, scale=1, 
-transform shape, align=center,    
-smallnode/.style={inner sep=1.4}
-initial text =]
-
-\node[state](1){$\ell_1$};
-
-\node[state] (2) [right of=1] {$\ell_2$};
-
-\node[state] (3) [right of=2] {$\ell_3$};
-
-\node[state] (4) [right of=3] {$\ell_3'$};
-
-\node[state] (5) [right of=4, xshift=0.5cm] {$\ell_6$};
-
-\node[state] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
-
-\path (1) edge node {\texttt{x := 0}} (2); \\
-\path (2) edge node {\texttt{y := 1}} (3); \\
-\path (3) edge node {$\psi^*_{L_1}$} (4);\\
-\path (4) edge node[] {\texttt{!x <= 50}} (5); \\
-\path (5) edge node {\texttt{y != 103}} (6); \\
+	->,
+	>=stealth', shorten >=1pt, auto,
+	node distance=2.5cm, scale=1, 
+	transform shape, align=center,    
+	smallnode/.style={inner sep=1.4}
+	initial text =]
+	
+	\node[state](1){$\ell_1$};
+	
+	\node[state] (2) [right of=1] {$\ell_2$};
+	
+	\node[state] (3) [right of=2] {$\ell_3$};
+	
+	\node[state] (4) [right of=3] {$\ell_3'$};
+	
+	\node[state] (5) [right of=4, xshift=0.5cm] {$\ell_6$};
+	
+	\node[state] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
+	
+	\path (1) edge node {\texttt{x := 0}} (2); \\
+	\path (2) edge node {\texttt{y := 1}} (3); \\
+	\path (3) edge node {$\psi^*_{L_1}$} (4);\\
+	\path (4) edge node[] {\texttt{!x <= 50}} (5); \\
+	\path (5) edge node {\texttt{y != 103}} (6); \\
 ;
 \end{tikzpicture}
 	\captionof{figure}{Meta trace $\bar{\tau_1}$ Generated from $\tau_1$ Using $\psi^*_{L_1}$.}
@@ -743,7 +748,6 @@ With interpolant sequence:
 \end{equation*}
 We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace. To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by applying the post operator. \\
 
-\begin{mydef}
 	Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ containing a loop spanning from $s_1$ to $s_j$ with loop head $\ell_i$, loop relation $\psi_L$, and corresponding loop acceleration $\psi^*_{L}$ and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$. 
 	To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$. \\
 	Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\ell_L}$. From there keep applying the post operator with the previous location's interplant and the following program statement. \\
@@ -752,9 +756,8 @@ We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an in
 		I_\tau: \{\top,I_1,I_2, \ldots ,\ \underbrace{post(I_{\psi^*_L}, \psi^*_L)}_{I_{i}},\ \ \underbrace{post(I_{i}, s_i)}_{I_{i+1}},\ \ldots ,\ \underbrace{post(I_{j-1}, s_j)}_{I_{j}},I_{j+1}, \ldots ,I_{n-1}, \bot \}
 	\end{equation*}
 	Which can now be used by trace abstraction to refine the interpolant automaton.
-\end{mydef}
 
-Using definition 15 we can now compute the missing interpolants for example program trace $\tau_1$:
+We compute the missing interpolants for example program trace $\tau_1$ as follows:
 
 \begin{figure}[H]
 	\centering
@@ -900,31 +903,31 @@ Assume that trace abstraction generated the following error trace $\tau_2$ of pr
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3.25cm, scale=1, 
+		node distance=1.25cm and 2.5cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=2}
 		initial text =]
 		
 		\node[state](1){$\ell_1$};
-		\node[state] (2) [right of=1] {$\ell_2$};
-		\node[state] (3) [right of=2] {$\ell_3$};
-		\node[state] (4) [right of=3] {$\ell_5$};
-		\node[state] (5) [right of=4] {$\ell_6$};
-		\node[state] (6) [below of=1] {$\ell_2$};
-		\node[state] (7) [right of=6] {$\ell_3$};
-		\node[state] (8) [right of=7] {$\ell_5$};
-		\node[state] (9) [right of=8] {$\ell_6$};
-		\node[state] (10) [right of=9] {$\ell_2$};
-		\node[state] (11) [below of=6] {$\ell_3$};
-		\node[state] (12) [right of=11] {$\ell_4$};
-		\node[state] (13) [right of=12] {$\ell_6$};
-		\node[state] (14) [right of=13] {$\ell_2$};
-		\node[state] (15) [right of=14] {$\ell_3$};
-		\node[state] (16) [below of=11] {$\ell_4$};
-		\node[state] (17) [right of=16] {$\ell_6$};
-		\node[state] (18) [right of=17] {$\ell_2$};
-		\node[state] (19) [right of=18] {$\ell_7$};
-		\node[state] (20) [right of=19] {$\ell_9$};
+		\node[state] (2) [right= of 1] {$\ell_2$};
+		\node[state] (3) [right= of 2] {$\ell_3$};
+		\node[state] (4) [right= of 3] {$\ell_5$};
+		\node[state] (5) [right= of 4] {$\ell_6$};
+		\node[state] (6) [below= of 1] {$\ell_2$};
+		\node[state] (7) [right= of 6] {$\ell_3$};
+		\node[state] (8) [right= of 7] {$\ell_5$};
+		\node[state] (9) [right= of 8] {$\ell_6$};
+		\node[state] (10) [right= of 9] {$\ell_2$};
+		\node[state] (11) [below= of 6] {$\ell_3$};
+		\node[state] (12) [right= of 11] {$\ell_4$};
+		\node[state] (13) [right= of 12] {$\ell_6$};
+		\node[state] (14) [right= of 13] {$\ell_2$};
+		\node[state] (15) [right= of 14] {$\ell_3$};
+		\node[state] (16) [below= of 11] {$\ell_4$};
+		\node[state] (17) [right= of 16] {$\ell_6$};
+		\node[state] (18) [right= of 17] {$\ell_2$};
+		\node[state] (19) [right= of 18] {$\ell_7$};
+		\node[state] (20) [right= of 19] {$\ell_9$};
 		
 		
 		\path (1) edge node {\texttt{x := 0}} (2);
@@ -981,7 +984,7 @@ As we have now sensible minimal loop traces for both branches of the loop, it is
 To utilize them in accelerated interpolation we firstly need to introduce a meta trace variant for branching loops.
 
 \begin{mydef}
-	Given an error trace $\tau$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $n$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_i^*$ for $i \in 1 \ldots n$. A branching meta trace $\bar{\tau}$ is constructed from $\tau$ by replacing $\tau_L$ with the sequence $\tau_m: \psi_1^*, \varepsilon, \psi_2^*, \varepsilon, \ldots, \psi_n^* $. Where each $\psi_i$ leads to the new loop exit $\ell_L'$ and each $\varepsilon$ from $\ell_L'$ to $\ell_L$.
+	Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_i^*$ for $i \in 1 \ldots m$. A branching meta trace $\bar{\tau}$ is constructed from $\tau$ by replacing $\tau_L$ with the sequence $\tau_m: \psi_1^*, \varepsilon, \psi_2^*, \varepsilon, \ldots, \psi_n^* $. Where each $\psi_i$ leads to the new loop exit $\ell_L'$ and each $\varepsilon$ from $\ell_L'$ to $\ell_L$.
 \end{mydef}
  A meta trace for branching loops represents the overall effect of the loop on the program state, however, it does not contain every trace through the loop. Traces where, for example, two branches alternate are not contained, as in the meta trace each branch is taken sequentially a finite amount of times. A meta trace for branching loops therefore represents an underapproximation of possible loop traces. \\ \par
 
@@ -1057,12 +1060,20 @@ Out of which an SMT-solver generates the following infeasibility proof:
 	\end{tikzpicture}
 	\captionof{figure}{Meta Trace $\bar{\tau_2}$ and Its Infeasibility Proof.}
 \end{figure}
-Interpolant sequence $I_{\bar{\tau}_2}: \{ \top,\ x = 0,\ 5 \cdot x \leq 56 \lor x \leq 4,\ 5 \cdot x \leq 56 \lor x \leq 4,\ x \leq 11,\ x = 11,\ \bot\}$ can be used to generate an inductive infeasibility proof for $\tau_2$ by using the post operator as explained before. 
+Interpolant sequence $I_{\bar{\tau}_2}: \{ \top,\ x = 0,\ 5 \cdot x \leq 56 \lor x \leq 4,\ 5 \cdot x \leq 56 \lor x \leq 4,\ x \leq 11,\ x = 11,\ \bot\}$ can be used to generate an inductive infeasibility proof for $\tau_2$ by using the post operator as explained before with one modification. \\ \par
+Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_{i}^*$ for $i \in 1 \ldots m$ with branching meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi_{1}^*, \varepsilon, \ldots, \varepsilon, \psi_{m}^*$ that has infeasibility proof in form of a sequence of interpolants $I_{\bar{\tau}}: \{\top, I_1, \ldots, I_{\psi_{1}}^*, \ldots, I_{\psi_{m}}^*, \ldots, I_{n - 1}, \bar \}$. For computing an inductive infeasibility proof for $\tau$ we use $I_{\bar{\tau}}$ and apply the $post$ operator in a similar fashion as explained before. But instead of applying $post$ to a singular loop entry interpolant and loop acceleration, we need to calculate the $post$ of all loop entry interpolants and loop accelerations. The first interpolant for the loop $I_i$ is then the conjunction of all these: $I_i = \bigwedge_{k=1}^{m} post(I_{\psi_k}^*, \psi_k^*)$. From this first interpolant we can then apply post until the end of the branching loop is reached.
 
-\jw{TODO: in original trace we take conjunction of post(interpolant loop entry I, acceleration I) and post(interpolant loop entry II, acceleration II)}
 
 \subsection{Nested Loops}
-Assume we are given the following program $P_3$: \\
+Not only are branching loops a possibility in programs, but it can also be the case that there are loops within loops. For example a $\texttt{while}$ in a $\texttt{while}$. These kind of loops are called nested loops and too pose a challenge for loop acceleration as when they appear in traces it is not yet clear which loop to accelerate and so forth. This chapter aims at introducing a technique of solving that problem. \\ \par
+
+Firstly, we need to define the notion of nested loops in detail.
+\begin{mydef}
+	Given an error trace $\tau: s_0, s_1, \ldots, s_i, \ldots, s_j, \ldots s_n$ containing a loop \\ $\tau_{L_1}: s_i, s_{i+1}, \ldots, s_k, \ldots, s_l, \ldots, s_j$ with loop head $\ell_{L_1}$ which also contains a loop $\tau_{L_2}: s_k, s_{k+1}, \ldots, s_l$ with loop head $\ell_{L_2}$.
+	Loop $\tau_{L_2}$ is called a nested loop and $\tau_{L_1}$ is called nesting loop.
+\end{mydef}
+
+To illustrate this definition further, assume we are given the following program $P_3$: \\
 \begin{figure}[H]
 	\begin{align*}
 		&\texttt{1: int x := 0}; \\
@@ -1078,7 +1089,7 @@ Assume we are given the following program $P_3$: \\
 	\captionof{figure}{Example Program $P_3$.}
 	\label{fig:square}
 \end{figure}
-
+With corresponding control-flow graph $G_{P_3}$:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[%
@@ -1122,34 +1133,34 @@ Assume we are given the following program $P_3$: \\
 	\captionof{figure}{Control-Flow Graph $G_{P_3}$ of Program $P_3$.}
 	\label{fig:rect}
 \end{figure}
-
+And suppose we want to check $P_3$ for safety, trace abstraction generates the following error trace $\tau_3$:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[%
 		->,
 		>=stealth', shorten >=1pt, auto,
-		node distance=3.25cm, scale=1, 
+		node distance=1.25cm and 2.5cm, scale=1, 
 		transform shape, align=center,    
 		smallnode/.style={inner sep=2}
 		initial text =]
 		
 		\node[state](1){$\ell_1$};
-		\node[state] (2) [right of=1] {$\ell_2$};
-		\node[state] (3) [right of=2] {$\ell_3$};
-		\node[state] (4) [right of=3] {$\ell_4$};
-		\node[state] (5) [right of=4] {$\ell_5$};
-		\node[state] (6) [below of=1] {$\ell_6$};
-		\node[state] (7) [right of=6] {$\ell_5$};
-		\node[state] (8) [right of=7] {$\ell_6$};
-		\node[state] (9) [right of=8] {$\ell_5$};
-		\node[state] (10) [right of=9] {$\ell_3$};
-		\node[state] (11) [below of=6] {$\ell_4$};
-		\node[state] (12) [right of=11] {$\ell_5$};
-		\node[state] (13) [right of=12] {$\ell_3$};
-		\node[state] (14) [right of=13] {$\ell_8$};
-		\node[state] (15) [right of=14] {$\ell_9$};
-		\node[state] (16) [below of=11] {$\ell_4$};
-		\node[state] (17) [right of=16] {$\ell_6$};
+		\node[state] (2) [right= of 1] {$\ell_2$};
+		\node[state] (3) [right= of 2] {$\ell_3$};
+		\node[state] (4) [right= of 3] {$\ell_4$};
+		\node[state] (5) [right= of 4] {$\ell_5$};
+		\node[state] (6) [below= of 1] {$\ell_6$};
+		\node[state] (7) [right= of 6] {$\ell_5$};
+		\node[state] (8) [right= of 7] {$\ell_6$};
+		\node[state] (9) [right= of 8] {$\ell_5$};
+		\node[state] (10) [right= of 9] {$\ell_3$};
+		\node[state] (11) [below= of 6] {$\ell_4$};
+		\node[state] (12) [right= of 11] {$\ell_5$};
+		\node[state] (13) [right= of 12] {$\ell_3$};
+		\node[state] (14) [right= of 13] {$\ell_8$};
+		\node[state] (15) [right= of 14] {$\ell_9$};
+		\node[state] (16) [below= of 11] {$\ell_4$};
+		\node[state] (17) [right= of 16] {$\ell_6$};
 		
 		
 		\path (1) edge node {\texttt{x := 0}} (2);
@@ -1172,6 +1183,16 @@ Assume we are given the following program $P_3$: \\
 	\end{tikzpicture}
 	\captionof{figure}{Program Trace $\tau_3$ of $P_3$}
 \end{figure}
+We see there is a loop:
+\begin{align*}
+	\tau_{L_1}:\ &\texttt{x < 5},\ \texttt{x := x + 1},\ \texttt{x < 5},\ \texttt{y < 4},\ \texttt{y := y + 2},\ \texttt{y < 4},\ \texttt{y := y + 2},\\ &\texttt{!y < 4},\ 
+	\texttt{x < 5},\ \texttt{x := x + 1},\ \texttt{!y < 10},\ \texttt{x := x + 1},\ \texttt{! y < 4},\ \texttt{!x < 5}
+\end{align*}
+There is another loop in $\tau_{L_1}$:
+\begin{align*}
+	\tau_{L_2}: \texttt{y < 4},\ \texttt{y := y + 2},\ \texttt{y < 4},\ \texttt{y := y + 2}
+\end{align*}
+Making $\tau_{L_2}$ nested in $\tau_{L_1}$.
 
 
 \pagebreak
