@@ -131,8 +131,10 @@ urlcolor=g1          % color of external links
 		\vspace{1cm}
 		{\large \scshape Jonas Werner\par}
 		\vspace{0.5cm}
+		{\large \scshape Advised By: \par}
+		{\large \scshape Dr. Daniel Dietsch, Tanja Schindler \par}
+		\vspace{0.5cm}
 		{\today \vspace{2cm}} 
-		
 		\end{center}
 
 \section{Introduction}
@@ -1246,6 +1248,17 @@ $\psi_{L_{1}}$ can be accelerated resulting in $\psi_{L_{1}}^*$ that can then be
 We implemented our accelerated interpolation approach in the program analysis framework \textsc{Ultimate}...
 
 \section{Future Work}
+In this paper, we presented our work of using loop acceleration in an interpolating trace abstraction context. However, there are still some topics that can be worked on in the future. \\ \par
+Our implementation relied mostly on two loop acceleration techniques, loop acceleration using FastUPR and an over approximating acceleration using symbolic execution, from previous projects. [citation needed]. Both accelerations had their share of advantages and drawbacks, FastUPR could only accelerate loops that could be transformed into an octagonal relation, for example. There are more possible acceleration techniques that could be implemented in the accelerated interpolation framework in \textsc{Ultimate}. \\ \par
+
+What is more, most programs also feature calls to other procedures, that can also occur in loops. Our implementation can handle simple call and return loops of two kinds:
+\jw{Todo: procedure hierarchy: loop only contained in procedure, procedure only contained in loop}
+What functionality is still missing, is the ability to accelerate loops with recursive function calls. Recursive function calls can be viewed as loops in themselves, but cannot be accelerated efficiently yet. \\ \par
+
+The detection method of loops described in this work relied heavily on trace abstraction to construct a trace containing the repeated occurence of program locations. But we also showed the representation of  a program as a graph, the control-flow graph. In most examples a loop was recognizable in the control flow graph, so we suggest a possible graph theoretical approach to loop detection, which may help to find minimal loop traces faster. \\ \par
+
+
+
 \jw{More loop accelerations, better nested loops, recursive procedures, loop detector utilizing the CFG instead of trace}
 
 \pagebreak
