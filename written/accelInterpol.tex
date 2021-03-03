@@ -969,8 +969,8 @@ We separate the loop branches by checking the program statements in the interval
 \end{align*}
 With loop relations:
 \begin{align*}
-	\psi_{L_{1}} &= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land  \sigma'[x] = \sigma[x] + 4 \} \\
-	\psi_{L_{2}}&= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \}
+	\psi_{L_{1}} &: \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land  \sigma'[x] = \sigma[x] + 4 \} \\
+	\psi_{L_{2}}&: \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \}
 \end{align*}
 
 Using these two relations we can approximate an iteration of the loop as $\tau_{L_1} \lor \tau_{L_2}$. \\ \par
@@ -1188,12 +1188,64 @@ We see there is a loop:
 	\tau_{L_1}:\ &\texttt{x < 5},\ \texttt{x := x + 1},\ \texttt{x < 5},\ \texttt{y < 4},\ \texttt{y := y + 2},\ \texttt{y < 4},\ \texttt{y := y + 2},\\ &\texttt{!y < 4},\ 
 	\texttt{x < 5},\ \texttt{x := x + 1},\ \texttt{!y < 10},\ \texttt{x := x + 1},\ \texttt{! y < 4},\ \texttt{!x < 5}
 \end{align*}
-There is another loop in $\tau_{L_1}$:
+With another loop in $\tau_{L_1}$:
 \begin{align*}
 	\tau_{L_2}: \texttt{y < 4},\ \texttt{y := y + 2},\ \texttt{y < 4},\ \texttt{y := y + 2}
 \end{align*}
-Making $\tau_{L_2}$ nested in $\tau_{L_1}$.
+Making $\tau_{L_2}$ nested in $\tau_{L_1}$. To accelerate them we face the problem of computing a minimal loop trace, because the outer loop cannot be simplified to a single minimal loop trace, because the inner loop can appear an arbitrary amount of times. Though it is possible to compute a minimal loop trace for the inner loop:
+\begin{equation*}
+	\tau_{min, {L_2}}: \texttt{y < 4,\ y := y + 2}
+\end{equation*}
+Of which we generate the loop relation:
+\begin{equation*}
+	\psi_{L_{2}}: \{(\sigma, \sigma')\ |\ \sigma[y] < 4 \land \sigma'[y] = \sigma[y] + 2 \}
+\end{equation*}
+This loop relation can now be accelerated as before, resulting in loop acceleration $\psi_{L_{2}}^*$. Because this acceleration contains all loop traces of $\tau_{L_2}$ it mitigates the problem of constructing a minimal loop trace for $\tau_{L_1}$.
 
+\begin{mydef}
+		Given an error trace $\tau: s_0, s_1, \ldots, s_i, \ldots, s_j, \ldots s_n$ containing a loop \\ $\tau_{L_1}: s_i, s_{i+1}, \ldots, s_k, \ldots, s_l, \ldots, s_j$ with loop head $\ell_{L_1}$ with nested loop $\tau_{L_2}: s_k, s_{k+1}, \ldots, s_l$ with loop head $\ell_{L_2}$, that has loop relation $\psi_{L_{2}}$ and loop acceleration $\psi_{L_{2}}^*$. The nested minimal loop trace 
+		\begin{equation*}
+			\tau_{min, {L_1}} : s_i, s_{i+1}, \ldots, \psi_{L_{2}}^*, \ldots, s_l
+		\end{equation*}
+		Is constructed by replacing program statement sequence $\tau_{L_2}$ by its loop acceleration $\psi_{L_{2}}^*$ and creating a new loop exit location $\ell_{L_2}'$ in place of $\ell_{L_2}$.
+\end{mydef}
+
+For $\tau_{L_1}$ we get the nested minimal loop trace $\tau_{min, {L_1}}$:
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+		->,
+		>=stealth', shorten >=1pt, auto,
+		node distance=1.25cm and 2.5cm, scale=1, 
+		transform shape, align=center,    
+		smallnode/.style={inner sep=2}
+		initial text =]
+		
+		\node[state] (2) [] {$\ell_3$};
+		\node[state] (3) [right= of 2] {$\ell_4$};
+		\node[state] (4) [right= of 3] {$\ell_5$};
+		\node[state] (5) [right= of 4] {$\ell_5'$};
+		\node[state] (6) [right= of 5] {$\ell_3$};
+		
+		\path (2) edge node {\texttt{x <= 5}} (3);
+		\path (3) edge node {\texttt{x := x + 1}} (4);
+		\path (4) edge node {$\psi_{L_{2}}^*$} (5);
+		\path (5) edge node {\texttt{!y < 4}} (6);
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Loop Trace $\tau_{L_1}$ modelling one iteration of the loop.}
+\end{figure}
+Out of which we now can compute the loop relation:
+\begin{equation*}
+	\psi_{L_{1}}: \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land \sigma'[x] = \sigma[x] + 1 \land \psi_{L_{2}}^* \}
+\end{equation*}
+$\psi_{L_{1}}$ can be accelerated resulting in $\psi_{L_{1}}^*$ that can then be used in meta trace generation and interpolant calculation as before.
+
+\section{Evaluation}
+We implemented our accelerated interpolation approach in the program analysis framework \textsc{Ultimate}...
+
+\section{Future Work}
 
 \pagebreak
 \addcontentsline{toc}{chapter}{Bibliography}
