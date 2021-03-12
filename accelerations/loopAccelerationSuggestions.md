@@ -20,11 +20,14 @@ This work proposes a combination of multiple acceleration techniques used in a M
 
 
 ### "Closed forms for numerical loops"
-
 -  Zachary Kincaid, Jason Breck, John Cyphert, Thomas Reps
-- POPL2019 https://dl.acm.org/doi/abs/10.1145/3290368
+- POPL 2019 https://dl.acm.org/doi/abs/10.1145/3290368
 - https://dblp.org/rec/journals/pacmpl/KincaidBCR19.html?view=bibtex
 
+### "Non-linear reasoning for invariant synthesis"
+- Zachary Kincaid, John Cyphert, Jason Breck, Thomas W. Reps
+- POPL 2018 https://dl.acm.org/doi/10.1145/3158142
+- https://dblp.org/rec/journals/pacmpl/KincaidCBR18.html?view=bibtex
 
 ### "Loop Summarization with Rational Vector Addition Systems"
 - Jake Silverman, Zachary Kincaid
@@ -72,8 +75,6 @@ Focus on loops with multiple branching paths.
 Improvement of FastUPR, truly fast -> polynomial time
 
 
-
-
 ### Accelerating invariant generation
 
 - Kumar Madhukar, Björn Wachter, Daniel Kroening, Matt Lewis, Mandayam K. Srivas
@@ -108,6 +109,19 @@ supported assignments.
 #### Idea:
 Combination of symbolic model checking and loop acceleration to enhance convergence of fixpoint 
 computations.
+
+
+## Accelerated Interpolation (interpolation using loop accelerations):
+
+### "Accelerating Interpolants":
+- Hossein Hojjat, Radu Iosif, Filip Konečný, Viktor Kuncak, Philipp Rümmer
+- ATVA 2012: https://link.springer.com/chapter/10.1007/978-3-642-33386-6_16
+- https://dblp.org/rec/conf/atva/HojjatIKKR12.html?view=bibtex
+
+### "Accelerating Interpolation-Based Model-Checking":
+- Nicolas Caniart, Emmanuel Fleury, Jérôme Leroux, Marc Zeitoun
+- TACAS 2008: https://link.springer.com/chapter/10.1007/978-3-540-78800-3_32
+- https://dblp.org/rec/conf/tacas/CaniartFLZ08.html?view=bibtex
 
 
 ## Already implemented:
