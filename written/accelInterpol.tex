@@ -235,6 +235,7 @@ But, it is not guaranteed that these interpolants are more general. \dd{In gener
 This issue is most notably in program loops. 
 Assume that the given program contains a loop with guard $x < 5000$, $x$ being an integer variable. 
 It is possible that the computed interpolant sequence does not exclude every loop iteration, leading to the need of disproving every of the 5000 possible error traces individually. 
+\dd{What is a interpolant sequence?}
 \bigskip
 
 A solution for this problem is accelerating the loop, meaning computing its transitive closure, and calculating interpolants on that.\ts{more precisely? (interpolants are not computed from the loop)} 
@@ -835,22 +836,28 @@ For our example loop relation $\psi_{L_1}$ we calculate the reflexive transitive
 This reflexive transitive closure will be used in the following chapter to compute more general interpolants to be used in trace abstraction.
 
 \section{Accelerated Interpolation}\label{sec:accelinterpol}
-This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. We will show multiple types of loops, beginning with loops without branching, continuing with loops with branching, and finishing with nested loops. \\
+This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. 
+We will show multiple types of loops, beginning with loops without branching, continuing with loops with branching, and finishing with nested loops.
 
 \subsection{Loops Without Branching}
-
-Reconsider program $P_1$ from the previous chapter. To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with  $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$. It is evident that there is only one path through the loop, resulting in a loop without branching. We consequently compute the loop acceleration $\psi^*_{L_1}$. \par
+Reconsider program $P_1$ from the previous chapter. 
+To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$. 
+It is evident that there is only one path through the loop, resulting in a loop without branching. 
+We consequently compute the loop acceleration $\psi^*_{L_1}$.
 
 The loop acceleration contains every looping trace, meaning it is possible to replace the whole loop in the error trace by that acceleration, modelling a relation consisting of every loop trace.
+\dd{Why not explain the idea of meta trace first and then give a definition?}
 
 \begin{mydef}
-    Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$. A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing $\tau_L$ by a the loop acceleration. Furthermore, the last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+    Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$. 
+    A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing $\tau_L$ with the loop acceleration. 
+    Furthermore, the last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
 \end{mydef}
 \ts{Now you have a mixture of statements and relations. Do you want to allow this (explanation required) or use transformulas in general?}
+\dd{Which loop acceleration? Will you talk about properties of loop accelerations? What is a loop acceleration? Is it "the closure"? Or is it \emph{some} relation over program states that has some properties relative to a closure?}
 
-Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
 
-
+The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
 \begin{figure}[H]
 \begin{tikzpicture}[%
     ->,
@@ -917,8 +924,10 @@ We can now analyse this meta trace for feasibility using an SMT-solver such as S
         \path (5) edge node {\texttt{y != 103}} (6); \\
         ;
     \end{tikzpicture}
-    \captionof{figure}{Meta Trace $\bar{\tau_1}$ Generated from $\tau_1$ and $\psi^*_{L_1}$ and Its Infeasibility Proof.}
+    \captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
 \end{figure}
+\dd{Do not capitalize captions. They are just normal sentences.}
+
 With interpolant sequence:
 \begin{equation*}
      I_{\bar{\tau_1}}: \{ \top,\ x = 0, y = 1 \land x = 0,\ ((102 < y\ \lor \ 2x + 1 \leq y)\ \land\ (y \leq 103))\ \lor\ x = 0,\ y = 103,\ \bot \}
