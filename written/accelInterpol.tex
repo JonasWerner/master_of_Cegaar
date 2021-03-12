@@ -846,6 +846,7 @@ The loop acceleration contains every looping trace, meaning it is possible to re
 \begin{mydef}
     Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$. A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing $\tau_L$ by a the loop acceleration. Furthermore, the last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
 \end{mydef}
+\ts{Now you have a mixture of statements and relations. Do you want to allow this (explanation required) or use transformulas in general?}
 
 Error trace $\tau_1$ creates meta trace $\bar{\tau_1}$:
 
@@ -924,14 +925,15 @@ With interpolant sequence:
 \end{equation*}
 We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace. To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by applying the post operator. \\
 
-    Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ containing a loop spanning from $s_1$ to $s_j$ with loop head $\ell_i$, loop relation $\psi_L$, and corresponding loop acceleration $\psi^*_{L}$ and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$. 
+    Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ containing a loop spanning from $s_i$ to $s_j$ with loop head $\ell_i$, loop relation $\psi_L$, and corresponding loop acceleration $\psi^*_{L}$ and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$. 
     To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$. \\
-    Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\ell_L}$. From there keep applying the post operator with the previous location's interplant and the following program statement. \\
+    Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\ell_L}$. From there keep applying the post operator with the previous location's interpolant and the following program statement. \\
     We get inductive interpolant sequence
     \begin{equation*}
         I_\tau: \{\top,I_1,I_2, \ldots ,\ \underbrace{post(I_{\psi^*_L}, \psi^*_L)}_{I_{i}},\ \ \underbrace{post(I_{i}, s_i)}_{I_{i+1}},\ \ldots ,\ \underbrace{post(I_{j-1}, s_j)}_{I_{j}},I_{j+1}, \ldots ,I_{n-1}, \bot \}
     \end{equation*}
     Which can now be used by trace abstraction to refine the interpolant automaton.
+    \ts{Explain why this works and why it is necessary.}
 
 We compute the missing interpolants for example program trace $\tau_1$ as follows:
 
@@ -1001,9 +1003,11 @@ We compute the missing interpolants for example program trace $\tau_1$ as follow
     \end{tikzpicture}
     \captionof{figure}{Program Trace $\tau_1$ of $P_1$ with Inductive Infeasibility Proof.}
 \end{figure}
+\ts{The simplification of the interpolant at $\ell_6$ is wrong.}
 
 \subsection{Loops With Branching}
 The programs shown before contained loops that had only one distinct minimal loop trace. However, most programs contain loops with branching paths, caused, for example, by if and else statements. These case distinctions create multiple minimal loop traces that differ from one another. This chapter introduces our technique of dealing with branching loops. \\ \par
+\ts{``our'' - explain which parts differ from the paper.}
 To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta_2, \ell_{1}, \ell_{9})$ created by the following program code:\\
 \begin{figure}[H]
     \begin{align*}
@@ -1070,7 +1074,9 @@ It is evident that $\ell_2$ is a loop head, it is, however, not possible to appl
 
 \begin{mydef}
     Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and an error trace $\tau: s_0, s_1, \ldots, s_n$ with loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. The loop is called branching, if there is a program location $\ell_B$ where $\exists s_k \in \tau_L\ \text{with}\ (\ell_B, s_k, \ell_l) \in \delta$ and $\exists s_l \in \tau_L\  \text{with}\ (\ell_B, s_l, \ell_m) \in \delta$.
+    \ts{Don't use quantifiers as abbreviation in text.}
 \end{mydef}
+
 To accelerate branching loops we have to separate each loop branch into its own loop, for which it is possible to compute a minimal loop trace. \\ \par
 Assume that trace abstraction generated the following error trace $\tau_2$ of program $P_2$:
 
@@ -1160,7 +1166,7 @@ As we have now sensible minimal loop traces for both branches of the loop, it is
 To utilize them in accelerated interpolation we firstly need to introduce a meta trace variant for branching loops.
 
 \begin{mydef}
-    Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_i^*$ for $i \in 1 \ldots m$. A branching meta trace $\bar{\tau}$ is constructed from $\tau$ by replacing $\tau_L$ with the sequence $\tau_m: \psi_1^*, \varepsilon, \psi_2^*, \varepsilon, \ldots, \psi_n^* $. Where each $\psi_i$ leads to the new loop exit $\ell_L'$ and each $\varepsilon$ from $\ell_L'$ to $\ell_L$.
+    Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_i^*$ for $i \in 1 \ldots m$.\ts{use a different index, $i$ is the loophead index} A branching meta trace $\bar{\tau}$ is constructed from $\tau$ by replacing $\tau_L$ with the sequence $\tau_m: \psi_1^*, \varepsilon, \psi_2^*, \varepsilon, \ldots, \psi_n^* $. Where each $\psi_i$ leads to the new loop exit $\ell_L'$ and each $\varepsilon$ from $\ell_L'$ to $\ell_L$.
 \end{mydef}
  A meta trace for branching loops represents the overall effect of the loop on the program state, however, it does not contain every trace through the loop. Traces where, for example, two branches alternate are not contained, as in the meta trace each branch is taken sequentially a finite amount of times. A meta trace for branching loops therefore represents an underapproximation of possible loop traces. \\ \par
 
@@ -1238,6 +1244,7 @@ Out of which an SMT-solver generates the following infeasibility proof:
 \end{figure}
 Interpolant sequence $I_{\bar{\tau}_2}: \{ \top,\ x = 0,\ 5 \cdot x \leq 56 \lor x \leq 4,\ 5 \cdot x \leq 56 \lor x \leq 4,\ x \leq 11,\ x = 11,\ \bot\}$ can be used to generate an inductive infeasibility proof for $\tau_2$ by using the post operator as explained before with one modification. \\ \par
 Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_{i}^*$ for $i \in 1 \ldots m$ with branching meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi_{1}^*, \varepsilon, \ldots, \varepsilon, \psi_{m}^*$ that has infeasibility proof in form of a sequence of interpolants $I_{\bar{\tau}}: \{\top, I_1, \ldots, I_{\psi_{1}}^*, \ldots, I_{\psi_{m}}^*, \ldots, I_{n - 1}, \bar \}$. For computing an inductive infeasibility proof for $\tau$ we use $I_{\bar{\tau}}$ and apply the $post$ operator in a similar fashion as explained before. But instead of applying $post$ to a singular loop entry interpolant and loop acceleration, we need to calculate the $post$ of all loop entry interpolants and loop accelerations. The first interpolant for the loop $I_i$ is then the conjunction of all these: $I_i = \bigwedge_{k=1}^{m} post(I_{\psi_k}^*, \psi_k^*)$. From this first interpolant we can then apply post until the end of the branching loop is reached.
+\ts{Explain why this works.}
 
 
 \subsection{Nested Loops}
