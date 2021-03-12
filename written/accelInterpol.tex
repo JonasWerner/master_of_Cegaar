@@ -641,13 +641,28 @@ Assume trace abstraction generates program trace $\tau_1$:
     \end{tikzpicture}
     \captionof{figure}{Program Trace $\tau_1$ of $P_1$}
 \end{figure}
-It is noticeable that program location $\ell_3$ appears repeatedly in the trace indicating that it is an entry point for a loop. From this entry point, the so called loop head, one can extract a loop trace. 
+
+\dd{Alternative display of trace:}
+\newcommand{\loc}[1]{\ensuremath{\ell_{#1}}}
+$$
+\begin{array}{l}
+\loc{1}\st{x:=0}\loc{2}\st{y:=1}\\
+\loc{3}\st{x<=50}\loc{4}\st{x:=x+1}\loc{5}\st{y:=y+2}\\
+\loc{3}\st{x<=50}\loc{4}\st{x:=x+1}\loc{5}\st{y:=y+2}\\
+\loc{3}\st{x<=50}\loc{4}\st{x:=x+1}\loc{5}\st{y:=y+2}\\
+\loc{3}\st{x>50}\loc{6}\st{y!=103}\loc{7}\\
+\end{array}
+$$
+
+It is noticeable that program location $\ell_3$ appears repeatedly in the trace indicating that it is an entry point for a loop. 
+From this entry point, the so-called loop head, one can extract a loop trace. 
 \begin{mydef}
     Given a program trace $\tau: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$. \\ The sub trace $s_i, s_{i+1}\ldots, s_j$ is called a loop trace if $(\ell_i, s_i, \ell_{i+1}) \in \delta\ $ and $(\ell_{j-1}, s_j, \ell_i) \in \delta $. $\ell_i$ is called the loop head.
 \end{mydef}
+\dd{What is a sub trace? Define or just call it a sequence of statements.}
 
-In $\tau_1$ there are three loop traces of varying length:  \\
 
+In $\tau_1$ there are three loop traces of varying length:
 \begin{figure}[H]
     \centering
         \begin{tikzpicture}[%
@@ -668,7 +683,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
             \path (4) edge node {\texttt{y := y + 2}} (5);
             ;
         \end{tikzpicture}
-        \captionof{figure}{Loop Trace $\tau_{L_1}$ modelling one iteration of the loop.}
+        \captionof{figure}{Loop trace $\tau_{L_1}$ modelling one iteration of the loop.}
 \end{figure}
 
 \begin{figure}[H]
@@ -697,7 +712,7 @@ In $\tau_1$ there are three loop traces of varying length:  \\
         \path (7) edge node[below] {\texttt{y := y + 2}} (8);
         ;
     \end{tikzpicture}
-    \captionof{figure}{Loop Trace $\tau_{L_2}$ Modelling two Iterations of the Loop.}
+    \captionof{figure}{Loop trace $\tau_{L_2}$ modelling two iterations of the loop.}
 \end{figure}
 
 \begin{figure}[H]
@@ -735,20 +750,28 @@ In $\tau_1$ there are three loop traces of varying length:  \\
     \captionof{figure}{Loop Trace $\tau_{L_3}$ Modelling three Iterations of the Loop.}
 \end{figure}
 These three looping traces represent the same loop but with a different number of iterations.
+
 \ts{The definition of loop trace also includes the traces starting with $\ell_4$ or $\ell_5$. Why do they not appear here? Or do you want to exclude them from the definition?}
+\dd{Also: It seems unnecessary to have so many pictures of the relatively simple idea (a trace contains loop unwindings)}
+
 
 \begin{mydef}
     Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with $(\ell_i, s_i, \ell_{i+1}) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$ where there is no $k \in [j, n]$ with $(\ell_{k-1}, s_k, \ell_i) \in \delta$. $\tau_L$ is called the maximum loop trace and represents the loop in the program trace.
 \end{mydef}
-\ts{In the definition above, a loop trace is a sub trace starting with the loop head. Shouldn't $\tau_L$ then also start with the loop head? Otherwise, $\tau_{L_3}$ does not match the definition.}
-In the example $\tau_{L_3}$ is the maximum loop trace in $\tau_1$. In the following we will use the phrases loops in program trace and maximum loop trace interchangeably. 
+\ts{In the definition above, a loop trace is a sub trace starting with the loop head. 
+Shouldn't $\tau_L$ then also start with the loop head? 
+Otherwise, $\tau_{L_3}$ does not match the definition.}
+In the example $\tau_{L_3}$ is the maximum loop trace in $\tau_1$. 
+\dd{which example?}
+In the following we will use the phrases loops in program trace and maximum loop trace interchangeably. 
 
 \begin{mydef}
     Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$, program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with loop $\tau_L: s_i, s_{i+1}, \ldots, s_l, \ldots, s_j$, where $(\ell_i, s_i, \ell_{i+1}) \in \delta$, $(\ell_l, s_l, \ell_i) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$. The loop trace $\tau_{min}: s_i, \ldots, s_l$ is called minimal loop trace if there is no $m \in [i, l]$ where $(\ell_{m-1}, s_m, \ell_i) \in \delta$.
 \end{mydef}
 \ts{Complicated. I don't think you need a loop containing another loop for this definition.}
 
-In this example $\tau_{L_1}$ is the minimal loop trace. \\
+In this example $\tau_{L_1}$ is the minimal loop trace. 
+\dd{which example?}
 
 With the minimal loop trace it is possible to formulate the effect one iteration of the loop has on the program state.
 \begin{mydef}
@@ -757,8 +780,9 @@ With the minimal loop trace it is possible to formulate the effect one iteration
     \begin{equation*}
         \psi_L = s_0; s_1; \ldots; s_n
     \end{equation*}
-
 \end{mydef}
+\dd{Dont switch between ``loop trace'' and ``looping trace''}
+
 For $\tau_{L_1}$ we get the following loop relation:
 \begin{align*}
      \psi_{L_1}&:	\texttt{x <= 50; x := x + 1; y := y + 2} \ \\
@@ -766,12 +790,18 @@ For $\tau_{L_1}$ we get the following loop relation:
 \end{align*}
 The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces.
 \ts{How can a relation appear in a trace? You mean the sequence of statements forming the loop.}
-It is however possible to contain every looping trace in a single relation, the so called reflexive transitive closure. \\
+\dd{Also: Write it as $\psi_{L_1} = \psi(s_i s_{i+1} \ldots)$ = \{\ldots\}}
+It is however possible to contain every looping trace in a single relation, the so-called reflexive transitive closure.
+\dd{What is a looping trace? A loop trace? 
+I think you want to talk about all the loop unwindings that can be ``extracted'' from a looping trace. 
+I.e., if we have a trace $\tau = s_0 s_1 s_2 s_3 ...$ and $A = s_i s_{i+1}$ is a looping trace in $\tau$ with a loop relation $\psi_A$, then we want to express $\psi_A^*$ with a finite formula. 
+}
 
-
-Analogous to the composition of program statements, as detailed in definition 4, it is possible to concatenate relations.\ts{Use labels to refer to definitions, sections,...}
+Analogous to the composition of program statements, as detailed in definition 4, it is possible to concatenate relations.
+\ts{Use labels to refer to definitions, sections,...}
+\dd{And if you are at it: it also helps to have names for the definitions}
 \begin{mydef}
-    The concatenation of two relations $\psi_1$ and $\psi_2$, that are defined over the set of program states, is defined as:
+    The concatenation of two relations $\psi_1$ and $\psi_2$ is:
     \begin{equation*}
         \psi_1 \circ \psi_2 = \{(\sigma, \sigma')\ |\ \exists \sigma''\ \text{where}\ (\sigma, \sigma'') \in \psi_1\ \text{and}\ (\sigma'', \sigma') \in \psi_2 \}
     \end{equation*}
@@ -792,16 +822,19 @@ This concatenation operator is utilized in the reflexive transitive closure's de
 With identity relation $\varepsilon: \{(\sigma, \sigma')\ |\ \sigma = \sigma'\}$
 \end{mydef}
 \ts{In the definition, only define reflexive transitive closure, and \emph{afterwards} write what it means here (...every possible loop trace...).}
-There are multiple techniques of computing the reflexive transitive closure of a loop relation, this paper will focus on an algorithm based on ultimately periodic relations, as detailed and implemented in previous works\cite{JillThesis}. \\
+\dd{You missed some $L$s}
+There are multiple techniques of computing the reflexive transitive closure of a loop relation. 
+In this paper, we focus on an algorithm based on ultimately periodic relations~\cite{JillThesis}.
 
-For our example loop relation  	$\psi_{L_1}$ we calculate the reflexive transitive closure:
+For our example loop relation $\psi_{L_1}$ we calculate the reflexive transitive closure:
 \begin{align*}
-    \psi^*_{L_1}: \{(\sigma, \sigma') \  |\ &((\sigma'[x] \leq \sigma[x]\ \lor\ \sigma'[x] \leq 51)\ \land\ (\sigma[x] \leq \sigma'[x])\ \land\ \\ & (\sigma'[y] = \sigma[y] - 2 \cdot \sigma[x] + 2\cdot \sigma'[x]))\ \lor\ (\sigma'[x] = \sigma[x]\ \land\ \sigma'[y] = \sigma[y]) \}
+    \psi^*_{L_1}: \{(\sigma, \sigma') \  |\ &((\sigma'[x] \leq \sigma[x]\ \lor\ \sigma'[x] \leq 51)\ \land\ (\sigma[x] \leq \sigma'[x])\ \land\ \\ & (\sigma'[y] = \sigma[y] - 2 \cdot \sigma[x] + 2\cdot \sigma'[x]))\ \lor\ (\sigma' = \sigma) \}
 \end{align*}
-
+\newcommand{\rtc}[1]{\ensuremath{\psi^*_{#1}}}
+\dd{Are you really sure this is the correct $\rtc{L_1}$?}
 This reflexive transitive closure will be used in the following chapter to compute more general interpolants to be used in trace abstraction.
 
-\section{Accelerated Interpolation}
+\section{Accelerated Interpolation}\label{sec:accelinterpol}
 This section will introduce the technique of combining loop acceleration and interpolating trace abstraction to check safety of a program. We will show multiple types of loops, beginning with loops without branching, continuing with loops with branching, and finishing with nested loops. \\
 
 \subsection{Loops Without Branching}
