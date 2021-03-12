@@ -90,6 +90,15 @@ Improvement of FastUPR, truly fast -> polynomial time
 #### Idea:
 Usage of Jordan normal form decomposition to derive symbolic expressions. 
 
+### "Definability of Accelerated Relations in a Theory of Arrays and Its Applications"
+- Francesco Alberti, Silvio Ghilardi, Natasha Sharygina
+- FroCoS 2013: https://link.springer.com/chapter/10.1007%2F978-3-642-40885-4_3
+- https://dblp.org/rec/conf/frocos/AlbertiGS13.html?view=bibtex
+
+#### Idea:
+For a loop with array assignments of a certain form, its acceleration can be
+given as exists-forall formula. Relies on use of a database of components of
+supported assignments.
 
 ### "Flat Acceleration in Symbolic Model Checking"
 - Sébastien Bardin, Alain Finkel, Jérôme Leroux, Philippe Schnoebelen

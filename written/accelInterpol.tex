@@ -217,7 +217,7 @@ A program trace is a sequence of program statements, or a word over $\Sigma$.
 
 A program can be represented as a directed labelled graph, called control-flow graph, with program locations as nodes, edges labelled with program statements, and with a distinct initial location. 
 The control-flow graph depicts all possible transitions from one program location to another. 
-An error location is a program location, that violates the safety property. 
+An error location is a program location, that violates the safety property.\ts{How does a location violate a property? Explain error location. In the beginning, you are given a program and a safety property - how is this connected to the error location?} 
 The goal is to check whether there is a program trace, called error trace, that starts in the initial location and ends in the error location, that is feasible. 
 
 Trace abstraction aims at constructing automata~\cite{10.1007/978-3-642-39799-8_2} from infeasible error traces. \dd{Is this a good description of TA?}
@@ -237,11 +237,11 @@ Assume that the given program contains a loop with guard $x < 5000$, $x$ being a
 It is possible that the computed interpolant sequence does not exclude every loop iteration, leading to the need of disproving every of the 5000 possible error traces individually. 
 \bigskip
 
-A solution for this problem is accelerating the loop, meaning computing its transitive closure, and calculating interpolants on that. 
+A solution for this problem is accelerating the loop, meaning computing its transitive closure, and calculating interpolants on that.\ts{more precisely? (interpolants are not computed from the loop)} 
 This project aims at implementing exactly that. 
 The goal is to combine interpolation and loop acceleration on the basis of the work of Hojjat et al.~\cite{10.1007/978-3-642-33386-6_16} in the software analysis framework Ultimate~\cite{Zitat02}.
 
-The remainder of this proposal is structured as follows. 
+The remainder of this proposal is structured as follows.\ts{Update.}
 Chapter~\ref{sec:background} will give an overview of needed background information, like a more detailed look at trace abstraction, loop acceleration, and the combination of interpolation and acceleration. 
 Chapter~\ref{sec:loopaccel} will detail the approach this project will take to implement accelerated interpolation in Ultimate, and finally an outline of the project's deliverables and schedule.
 \dd{first mention of ``accelerated interpolation'' -- perhaps introduce it explicitly by saying ``we call this combination \ldots''}
@@ -269,7 +269,7 @@ Using this programming language, it is possible to represent a program as follow
     $Loc$ being a finite set of program locations, 
     a set of edges between two program locations labelled with a statement $\delta \subseteq Loc \times Stmt \times Loc$, 
     an initial location $\ell_0 \in Loc$, and 
-    an error location $\ell_{err} \in Loc$.
+    an error location $\ell_{err} \in Loc$.\ts{It is strange to start a definition with ``can be represented''. Maybe define control-flow graph and, after the definition, say that a program can be represented as a cfg.}
 \end{mydef}
 
 \begin{example}
@@ -334,6 +334,7 @@ And the following graphical representation:
 \end{example}
 
 \dd{It is useful to wrap all the function symbols in Latex macros}
+\ts{And to use mathit for identifiers consisting of several letters (like $\mathit{Var}$)}
 Each program variable has a domain $D$ defining the set of all possible values.
 \begin{mydef}
     A variable valuation of a program variable $v \in Var$ is a function $\rho: v \rightarrow D$  assigning it a value from its domain.
@@ -356,7 +357,8 @@ $$ \rho_s =
     \{(\sigma, \sigma')\ |\ \sigma' = \sigma[x \mapsto \mathcal{I}(expr)(\sigma)]\} , & \text{if}\ s \equiv \texttt{x := expr} \\
     \{(\sigma, \sigma')\ |\ \exists \sigma''\ \text{where}\ (\sigma, \sigma'') \in \rho_{s_1}\ \text{and}\ (\sigma'', \sigma') \in \rho_{s_2} \}, & \text{if}\ s \equiv \texttt{$s_1;s_2$}
 \end{cases}
-$$
+$$\ts{You already used $\rho$ for valuation.}
+\ts{What is an interpretation function?}
 \end{mydef}
 
 Programs model multiple program statement sequences:
@@ -480,6 +482,7 @@ Interpolanten $\rightarrow$ Sequenzinterpolanten \cite{10.1007/11691372_33} $\ri
 \subsection{Interpolating Trace Abstraction}
 
 By combining infeasibility proofs and interpolant computation we can define trace abstraction as a technique for proving or disproving safety for a given program by checking for reachability of an error location.
+\ts{What do you want to say with this phrase?}
 Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and its control-flow graph $G_P$, to check reachability of error location $\ell_{err}$, use trace abstraction with interpolation according to the following paradigm \cite{10.1007/978-3-642-03237-0_7}: \\
 \begin{itemize}
     \item[1.] Search $G_P$ for a program trace that starts at $\ell_{init}$ and ends in $\ell_{err}$:
@@ -516,11 +519,12 @@ Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and its control-flo
         \item[4.] Construct an automaton, $\mathcal{A}_i$, from the interpolants.
         \item[5.] If the language $\mathcal{L(A_P)}$, that is recognized by the program's control-flow graph, is a subset of the union of languages recognized by the constructed automata: $\mathcal{L(A_P)} \subseteq \mathcal{L(A}_1) \cup ... \cup \mathcal{L(A}_i)$ then the program is correct, else start again at step 1.
     \end{itemize}
-    The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. However, the interpolants are not guaranteed to be general enough to exclude a large number of error traces. Which poses a problem for loops. In the following chapters we introduce a way to exclude a large number of traces going through a loop.
+    \ts{How are the interpolant automata used in Step 1? As described so far, one could just take the same trace over and over again.}
+    The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. However, the interpolants are not guaranteed to be general enough to exclude a large number of error traces.\ts{But what is guaranteed?} Which poses a problem for loops. In the following chapters we introduce a way to exclude a large number of traces going through a loop.
 
 
 \section{Loop Acceleration}\label{sec:loopaccel}
-Programs generally contain loops, like \texttt{while} or \texttt{for} loops. These can create up to infinitely many distinct program traces. Trace abstraction has then, in the worst case when the generated Craig interpolants are only general enough to disprove one trace, refute every program trace generated by the loop. A remedy to that is the computation of a loop acceleration in form of the reflexive transitive closure. This chapter introduces loops as traces and relations, and how a loop relation can be used to compute a reflexive transitive closure. \\
+Programs generally contain loops, like \texttt{while} or \texttt{for} loops. These can create up to infinitely many distinct program traces. Trace abstraction has then, in the worst case when the generated Craig interpolants are only general enough to disprove one trace, refute every program trace generated by the loop. A remedy to that is the computation of a loop acceleration in form of the reflexive transitive closure. This chapter introduces loops as traces and relations, and how a loop relation can be used to compute a reflexive transitive closure.\ts{Explain why you don't just take the original loops, what is the difference?}
 
 Assume we are given the program $P_1 = (Loc_1, \delta_1, \ell_{1}, \ell_{7})$ created from the following program code: \\
 \begin{figure}[H]
@@ -565,7 +569,7 @@ With its control-flow graph $G_{P_1}$: \\
         
         \path (1) edge node {\texttt{x := 0}} (2)
         (2) edge node {\texttt{y := 1}} (7)
-        (7) edge node[above] {\texttt{x <= 20}} (3)
+        (7) edge node[above] {\texttt{x <= 50}} (3)
         (3) edge node[left=0.25cm] {\texttt{x := x + 1}} (8)
         (8) edge[bend right] node[right=0.25cm] {\texttt{y := y + 2}} (7)
         (7) edge node {\texttt{!x <= 50}} (4)
@@ -714,15 +718,18 @@ In $\tau_1$ there are three loop traces of varying length:  \\
     \captionof{figure}{Loop Trace $\tau_{L_3}$ Modelling three Iterations of the Loop.}
 \end{figure}
 These three looping traces represent the same loop but with a different number of iterations.
+\ts{The definition of loop trace also includes the traces starting with $\ell_4$ or $\ell_5$. Why do they not appear here? Or do you want to exclude them from the definition?}
 
 \begin{mydef}
     Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with $(\ell_i, s_i, \ell_{i+1}) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$ where there is no $k \in [j, n]$ with $(\ell_{k-1}, s_k, \ell_i) \in \delta$. $\tau_L$ is called the maximum loop trace and represents the loop in the program trace.
 \end{mydef}
+\ts{In the definition above, a loop trace is a sub trace starting with the loop head. Shouldn't $\tau_L$ then also start with the loop head? Otherwise, $\tau_{L_3}$ does not match the definition.}
 In the example $\tau_{L_3}$ is the maximum loop trace in $\tau_1$. In the following we will use the phrases loops in program trace and maximum loop trace interchangeably. 
 
 \begin{mydef}
     Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$, program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with loop $\tau_L: s_i, s_{i+1}, \ldots, s_l, \ldots, s_j$, where $(\ell_i, s_i, \ell_{i+1}) \in \delta$, $(\ell_l, s_l, \ell_i) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$. The loop trace $\tau_{min}: s_i, \ldots, s_l$ is called minimal loop trace if there is no $m \in [i, l]$ where $(\ell_{m-1}, s_m, \ell_i) \in \delta$.
 \end{mydef}
+\ts{Complicated. I don't think you need a loop containing another loop for this definition.}
 
 In this example $\tau_{L_1}$ is the minimal loop trace. \\
 
@@ -740,9 +747,12 @@ For $\tau_{L_1}$ we get the following loop relation:
      \psi_{L_1}&:	\texttt{x <= 50; x := x + 1; y := y + 2} \ \\
      &= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 50 \land \sigma'[x] = \sigma[x] + 1 \land \sigma'[y] = \sigma'[y] + 2 \}
 \end{align*}
-The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces. It is however possible to contain every looping trace in a single relation, the so called reflexive transitive closure. \\
+The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces.
+\ts{How can a relation appear in a trace? You mean the sequence of statements forming the loop.}
+It is however possible to contain every looping trace in a single relation, the so called reflexive transitive closure. \\
 
-Analogous to the composition of program statements, as detailed in definition 4, it is possible to concatenate relations.
+
+Analogous to the composition of program statements, as detailed in definition 4, it is possible to concatenate relations.\ts{Use labels to refer to definitions, sections,...}
 \begin{mydef}
     The concatenation of two relations $\psi_1$ and $\psi_2$, that are defined over the set of program states, is defined as:
     \begin{equation*}
@@ -764,6 +774,7 @@ This concatenation operator is utilized in the reflexive transitive closure's de
     \end{itemize}
 With identity relation $\varepsilon: \{(\sigma, \sigma')\ |\ \sigma = \sigma'\}$
 \end{mydef}
+\ts{In the definition, only define reflexive transitive closure, and \emph{afterwards} write what it means here (...every possible loop trace...).}
 There are multiple techniques of computing the reflexive transitive closure of a loop relation, this paper will focus on an algorithm based on ultimately periodic relations, as detailed and implemented in previous works\cite{JillThesis}. \\
 
 For our example loop relation  	$\psi_{L_1}$ we calculate the reflexive transitive closure:
