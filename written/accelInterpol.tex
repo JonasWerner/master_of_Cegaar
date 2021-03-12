@@ -464,8 +464,9 @@ The sequence of program states $\pi_0: true, x = 0, x = 0, x = 2, false, false$ 
 \end{mydef}
 A proof of infeasibility refutes the possibility of a program trace being taken in the program's execution.
 
-To show that there are no feasible error traces, trace abstraction iteratively creates an automaton $A_D$, defined on the alphabet of programs statements $\Sigma$, with language $\mathcal{L}(A_D)$. 
+To show that there are no feasible error traces, trace abstraction iteratively extends an (initially empty) automaton $A_D$, defined on the alphabet of programs statements $\Sigma$, with language $\mathcal{L}(A_D)$. 
 In each iteration $A_D$ gets refined using an infeasibility proof, extending the language: $\mathcal{L}(A_D) = \mathcal{L}(A_D) \cup \pi$.
+\dd{No, not with $\pi$. Perhaps with $\{\tau\}$. Also, write it as update $:=$.}
 If the language $\mathcal{L}(A_D)$ subsumes the language of the original program $\mathcal{L_P}$, then the program is proven to uphold the safety property.
 If there is a feasible error trace then a counterexample is found, proving that the program does not fulfil the safety property.
 
@@ -476,14 +477,14 @@ If there is a feasible error trace then a counterexample is found, proving that 
 \end{equation}
 Which is unsatisfiable. A derived interpolant is $x_0 = 5$ \\
 Interpolanten $\rightarrow$ Sequenzinterpolanten \cite{10.1007/11691372_33} $\rightarrow$ Interpolantenautomat
+\dd{Even if this is todo, the example is not really helpful for an interpolant. And, if you want to be complete, you could add the definition of (binary or sequence) interpolants}
 
-\vspace*{2cm}
 
 \subsection{Interpolating Trace Abstraction}
-
+\dd{Why is this section called \emph{Interpolating} TA? Why not just TA?}
 By combining infeasibility proofs and interpolant computation we can define trace abstraction as a technique for proving or disproving safety for a given program by checking for reachability of an error location.
 \ts{What do you want to say with this phrase?}
-Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and its control-flow graph $G_P$, to check reachability of error location $\ell_{err}$, use trace abstraction with interpolation according to the following paradigm \cite{10.1007/978-3-642-03237-0_7}: \\
+Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and its control-flow graph $G_P$, we can use trace abstraction with interpolation~\cite{10.1007/978-3-642-03237-0_7} to check, whether the error location $\ell_{err}$ is reachable or not:
 \begin{itemize}
     \item[1.] Search $G_P$ for a program trace that starts at $\ell_{init}$ and ends in $\ell_{err}$:
     \begin{figure}[H]
@@ -514,19 +515,35 @@ Given a program $P = (Loc, \delta, \ell_{init}, \ell_{err})$ and its control-flo
             ;
         \end{tikzpicture}
     \end{figure}
-        \item[2.] Prove feasibility. \\ In case that the trace is proven feasible, the program is incorrect, if the trace is infeasible construct an infeasibility proof.
-        \item[3.] Use the infeasibility proof to calculate interpolants.
-        \item[4.] Construct an automaton, $\mathcal{A}_i$, from the interpolants.
-        \item[5.] If the language $\mathcal{L(A_P)}$, that is recognized by the program's control-flow graph, is a subset of the union of languages recognized by the constructed automata: $\mathcal{L(A_P)} \subseteq \mathcal{L(A}_1) \cup ... \cup \mathcal{L(A}_i)$ then the program is correct, else start again at step 1.
-    \end{itemize}
-    \ts{How are the interpolant automata used in Step 1? As described so far, one could just take the same trace over and over again.}
-    The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. However, the interpolants are not guaranteed to be general enough to exclude a large number of error traces.\ts{But what is guaranteed?} Which poses a problem for loops. In the following chapters we introduce a way to exclude a large number of traces going through a loop.
+
+    \item[2.] Prove feasibility. \\ 
+    In case that the trace is proven feasible, the program is incorrect, if the trace is infeasible construct an infeasibility proof.
+    
+    \item[3.] Use the infeasibility proof to calculate interpolants.
+    \item[4.] Construct an automaton, $\mathcal{A}_i$, from the interpolants.
+    \item[5.] If the language $\mathcal{L(A_P)}$, that is recognized by the program's control-flow graph, is a subset of the union of languages recognized by the constructed automata: $\mathcal{L(A_P)} \subseteq \mathcal{L(A}_1) \cup ... \cup \mathcal{L(A}_i)$ then the program is correct, else start again at step 1.
+\end{itemize}
+\ts{How are the interpolant automata used in Step 1? As described so far, one could just take the same trace over and over again.}
+The interpolants generated in step 3 serve to generalize the infeasibility proof to exclude other possible error traces. 
+However, the interpolants are not guaranteed to be general enough to exclude a large number of error traces.
+\ts{But what is guaranteed?} 
+Which poses a problem for loops. 
+\dd{Use complete sentences}
+In the following sections, we introduce a way to exclude a large number of traces going through a loop.
 
 
 \section{Loop Acceleration}\label{sec:loopaccel}
-Programs generally contain loops, like \texttt{while} or \texttt{for} loops. These can create up to infinitely many distinct program traces. Trace abstraction has then, in the worst case when the generated Craig interpolants are only general enough to disprove one trace, refute every program trace generated by the loop. A remedy to that is the computation of a loop acceleration in form of the reflexive transitive closure. This chapter introduces loops as traces and relations, and how a loop relation can be used to compute a reflexive transitive closure.\ts{Explain why you don't just take the original loops, what is the difference?}
+Programs often contain loops, like \texttt{while} or \texttt{for} loops. 
+These can create up to infinitely many distinct program traces. 
+\dd{``Up to infinity'' seems like a strange bound ;)}
+Trace abstraction has then, in the worst case when the generated Craig interpolants are only general enough to disprove one trace, to refute every program trace generated by the loop.
+\dd{i.e., infinitely many.}
+A remedy to that is the computation of a loop acceleration in form of the reflexive transitive closure. 
+\dd{Why?}
+This chapter introduces loops as traces and relations, and how a loop relation can be used to compute a reflexive transitive closure.
+\ts{Explain why you don't just take the original loops, what is the difference?}
 
-Assume we are given the program $P_1 = (Loc_1, \delta_1, \ell_{1}, \ell_{7})$ created from the following program code: \\
+Assume we are given the program $P_1 = (Loc_1, \delta_1, \ell_{1}, \ell_{7})$ created from the following program code:
 \begin{figure}[H]
     \begin{align*}
         &\texttt{1: int x := 0}; \\
