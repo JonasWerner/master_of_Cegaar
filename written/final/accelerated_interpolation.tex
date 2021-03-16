@@ -335,7 +335,7 @@ And the following graphical representation:
         (4) edge node {\st{x!=6}} (6)
         ;
     \end{tikzpicture}
-    \captionof{figure}{Control-Flow Graph $G_{P_0}$ of Program $P_0$.}
+    \captionof{figure}{Control-flow graph $G_{P_0}$ of program $P_0$.}
     \label{fig:ex:p0:cfg}
 \end{figure}
 \end{example}
@@ -571,7 +571,7 @@ Assume we are given the program $P_1 = (Loc_1, \delta_1, \ell_{1}, \ell_{7})$ cr
         &\texttt{6: end while} \\
         &\texttt{7: assert y == 103;}
     \end{align*}
-    \captionof{figure}{Example Program $P_1$.}
+    \captionof{figure}{Example program $P_1$.}
     \label{fig:ex:p1}
 \end{figure}
 With its control-flow graph $G_{P_1}$: \\
@@ -604,7 +604,7 @@ With its control-flow graph $G_{P_1}$: \\
         (4) edge node {\st{y == 103}} (6)
         ;
     \end{tikzpicture}
-    \captionof{figure}{Control-Flow Graph $G_{P_1}$ of Program $P_1$.}
+    \captionof{figure}{Control-flow graph $G_{P_1}$ of program $P_1$.}
     \label{fig:ex:p1:cfg}
 \end{figure}
 Assume trace abstraction generates program trace $\tau_1$:
@@ -842,7 +842,7 @@ The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
     \path (5) edge node {\texttt{y != 103}} (6); \\
 ;
 \end{tikzpicture}
-    \captionof{figure}{Meta trace $\bar{\tau_1}$ Generated from $\tau_1$ Using $\psi^*_{L_1}$.}
+    \captionof{figure}{Meta trace $\bar{\tau_1}$ Ggenerated from $\tau_1$ using $\psi^*_{L_1}$.}
 \end{figure}
 
 We can now analyse this meta trace for feasibility using an SMT-solver such as SMTInterpol\cite{Zitat03} or z3\cite{z3}. We get the following labelling:
