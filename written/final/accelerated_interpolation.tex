@@ -38,6 +38,10 @@
 \usepackage[most]{tcolorbox}% http://ctan.org/pkg/tcolorbox
 \tcbuselibrary{skins,breakable}
 \usepackage{comment}
+\usepackage{makecell}
+
+\DeclareSymbolFont{matha}{OML}{txmi}{m}{it}% txfonts
+\DeclareMathSymbol{\varv}{\mathord}{matha}{118}
 
 
 %%%%%%%%%%%% Colors
@@ -101,7 +105,7 @@
 \newcommand{\lan}[1]{\stnorm{\ensuremath{#1}}}
 \newcommand{\stn}[1]{\stnorm{#1}}
 
-\newcommand{\formula}[2]{\tikz[baseline]{\node[shape=rectangle,line width=1pt,draw=#2,fill=#2!30,inner sep=1pt] at (0,.64ex){\hspace{.2em}\texttt{\strut#1}\hspace{.1em}\strut};}}
+\newcommand{\formula}[2]{\tikz[baseline]{\node[shape=rectangle,line width=1pt,draw=#2,fill=#2!30,inner sep=1pt, align=center] at (0,.64ex){\hspace{.2em}\texttt{\strut#1}\hspace{.1em}\strut};}}
 \newcommand{\itp}[1]{\formula{\ensuremath{#1}}{itp}}
 
 \newcommand{\tf}{\ensuremath{\varphi}\xspace}
@@ -111,16 +115,21 @@
 \newcommand{\auxvars}{\ensuremath{Aux}\xspace}
 
 \newcommand{\Var}{\ensuremath{\mathit{Var}}\xspace}
-\newcommand{\Stmt}{\ensuremath{\mathit{Stmt}}\xspace}
+\newcommand{\stmt}{\ensuremath{\mathit{Stmt}}\xspace}
 \newcommand{\Loc}{\ensuremath{\mathit{Loc}}\xspace}
 \newcommand{\err}{\ensuremath{\mathit{err}}\xspace}
 \newcommand{\init}{\ensuremath{\mathit{init}}\xspace}
 
+
 %The [1] means one parameter, which is then referenced in the #1
 \newcommand{\loc}[1]{\ensuremath{\ell_{#1}}}
 \newcommand{\trans}[1]{\ensuremath{\xrightarrow{\st{#1}}}}
+\newcommand{\stateSet}[1]{\ensuremath{\{#1\}}}
 
 
+\newcommand{\precon}{\ensuremath{\mathit{\stateSet{\varphi}}}}
+\newcommand{\postcon}{\ensuremath{\mathit{\stateSet{\psi}}}}
+\newcommand{\accel}[1]{\ensuremath{\psi^*_{L_{#1}}}}
 
 %%%%%%%%%%%% Numbered example environment
 % \newcounter{example}[section]
@@ -272,9 +281,9 @@ Its syntax is denoted by the following grammar, where, given a finite set of pro
 For brevity's sake we use \texttt{bexpr} instead of \texttt{assume bexpr}.
 
 \begin{mydef}
-	Given a finite set of program statements \Stmt. A control-flow graph is a labelled graph $G_P = (\Loc, \delta, \loc{\init}, \loc{\err})$, with
+	Given a finite set of program statements \stmt. A control-flow graph is a labelled graph $G_P = (\Loc, \delta, \loc{\init}, \loc{\err})$, with
 	\Loc being a finite set of locations,
-	a set of edges between two locations labelled with a statement $\delta \subseteq \Loc \times \Stmt \times \Loc$,
+	a set of edges between two locations labelled with a statement $\delta \subseteq \Loc \times \stmt \times \Loc$,
 	an initial location $\loc{init} \in \Loc$, and
 	an error location $\loc{err} \in \Loc$.
 \end{mydef}
@@ -307,7 +316,7 @@ assert x == 6;
 		\item  $\ell_\init = \ell_1$
 		\item $\ell_{err} = \ell_6$
 	\end{itemize}
-	%\dd{Do you want to use our fancy edge labels? I added them, they look like this \protect\st{x:=0}}
+	%\dd{Do you want to use our fancy edge labels? I added them, they look like this \protect\stn{x:=0}}
 
 	And the following graphical representation:
 	\begin{figure}[H]
@@ -343,7 +352,7 @@ assert x == 6;
 % \ts{And to use mathit for identifiers consisting of several letters (like $\mathit{Var}$)}
 Each program variable has a domain $D$ defining the set of all possible values.
 \begin{mydef}
-	A variable valuation of a program variable $v \in \Var$ is a function $\rho: v \rightarrow D$  assigning it a value from its domain.
+	A variable valuation of a program variable $v \in \Var$ is a function $\varv: v \rightarrow D$  assigning it a value from its domain.
 \end{mydef}
 Assigning every program variable a valuation creates a program state.
 
@@ -356,8 +365,8 @@ Assigning every program variable a valuation creates a program state.
 Program statements can change the valuation of variables, transitioning one program state to another.
 
 \begin{mydef}
-	Each program statement $\texttt{s} \in \Stmt$ defines a binary relation $\rho_s \subseteq S \times S$ over the set of program states $S$, called successor relation. Which is, given an interpretation function $\mathcal{I}$, inductively defined as
-	$$ \rho_s =
+	Each program statement $\texttt{s} \in \stmt$ defines a binary relation $\rho \subseteq S \times S$ over the set of program states $S$, called successor relation. Which is, given an interpretation function $\mathcal{I}$, inductively defined as
+	$$ \rho =
 		\begin{cases}
 			\{(\sigma, \sigma')\ |\ \mathcal{I}(\text{bexpr})(\sigma)\ =\ true\ \text{and}\ \sigma = \sigma'\} ,                                          & \text{if}\ s \equiv \text{\texttt{assume bexpr}} \\
 			\{(\sigma, \sigma')\ |\ \sigma' = \sigma[x \mapsto \mathcal{I}(expr)(\sigma)]\} ,                                                             & \text{if}\ s \equiv \texttt{x := expr}           \\
@@ -367,9 +376,16 @@ Program statements can change the valuation of variables, transitioning one prog
 	\ts{What is an interpretation function?}
 \end{mydef}
 
-Programs model multiple program statement sequences:
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ that is defined over a set of program statements \Stmt, and its control-flow graph $G_P$, we call a sequence of program statements \\ $\tau: s_0 s_1 s_2\ ...\ s_n \in \Stmt^*$ a program trace, if $\tau$ is the labeling of a path starting in $\ell_\init$. Meaning, each for each $s_i$, $0 \leq i \leq n$, there is $(\ell_i, s_i, \ell_{i+1}) \in \delta$. The program trace is called error trace if $\ell_n = \ell_\err$.
+	\jw{Sets of States.}
+\end{mydef}
+
+\begin{mydef}
+	Given sets of states \precon, \postcon, and program statement s, a Hoare-Triple\cite{10.1145/363235.363259} is the triple \precon s\postcon, where \precon\ is called the precondition, and \postcon\ postcondition. A Hoare-Triple is valid if and only if, given $\rho(s) = (\sigma, \sigma')$, $\sigma \in \precon$ and $\sigma' \in \postcon$.
+\end{mydef}
+
+\begin{mydef}
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ that is defined over a set of program statements \stmt, and its control-flow graph $G_P$, we call a sequence of program statements \\ $\tau: s_0 s_1 s_2\ ...\ s_n \in \stmt^*$ a program trace, if $\tau$ is the labeling of a path starting in $\ell_\init$. Meaning, each for each $s_i$, $0 \leq i \leq n$, there is $(\ell_i, s_i, \ell_{i+1}) \in \delta$. The program trace is called error trace if $\ell_n = \ell_\err$.
 \end{mydef}
 
 \begin{example}
@@ -419,17 +435,17 @@ Programs model multiple program statement sequences:
 Because a program trace is rather abstract, the question arises whether the program can actually take the defined sequence of statements.
 \dd{``Take'' seems like a strange word here. You want to say: Is a trace executable?}
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and a program trace $\tau:\ s_0, s_1, s_2, ..., s_n$ of $P$, a sequence of program states $\pi:\ \sigma_0, \sigma_1, \sigma_2,..., \sigma_n$ is a program execution of $\tau$, if $(\sigma_i, \sigma_{i+1}) \in \rho _{s_i}$ for $0 \leq i \leq n$.
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and a program trace $\tau:\ s_0, s_1, s_2, ..., s_n$ of $P$, a sequence of program states $\pi:\ \sigma_0, \sigma_1, \sigma_2,..., \sigma_n$ is a program execution of $\tau$, if $(\sigma_i, \sigma_{i+1}) \in \rho(s) for 0 \leq i \leq n$.
 
 	$\tau$ is called feasible if it has at least one program execution, otherwise it is infeasible.
 \end{mydef}
 \dd{You have restricted yourself to finite traces. Is there a reason? }
 
-$\tau_0$ from before is infeasible, because for $\st{(x>=6)}$, the interpretation function $\mathcal{I}(\texttt{x >= 6})(x = 2)$ evaluates to false and is, with that, not part of the successor relation.
+$\tau_0$ from before is infeasible, because for $\st{x>=6}$, the interpretation function $\mathcal{I}(\texttt{x >= 6})(x = 2)$ evaluates to false and is, with that, not part of the successor relation.
 \dd{Perhaps you should explain what your interpretation function is :p}
 %Are there annotations of the nodes correct?
 \dd{Explain what the following picture shows}
-\dd{You can use the mighty trace abstration color scheme for interpolants if you are inclined: \protect\itp{\top}}
+%\dd{You can use the mighty trace abstration color scheme for interpolants if you are inclined: \protect\itp{\top}}
 
 \begin{comment}
 \begin{figure}[H]
@@ -857,7 +873,7 @@ The loop acceleration contains every looping trace, meaning it is possible to re
 \ts{Now you have a mixture of statements and relations. Do you want to allow this (explanation required) or use transformulas in general?}
 \dd{Which loop acceleration? Will you talk about properties of loop accelerations? What is a loop acceleration? Is it "the closure"? Or is it \emph{some} relation over program states that has some properties relative to a closure?}
 
-
+\begin{comment}
 The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
 \begin{figure}[H]
 	\begin{tikzpicture}[%
@@ -889,9 +905,19 @@ The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
 	\end{tikzpicture}
 	\captionof{figure}{Meta trace $\bar{\tau_1}$ Ggenerated from $\tau_1$ using $\psi^*_{L_1}$.}
 \end{figure}
+\end{comment}
 
+\begin{figure}[H]
+	\begin{center}
+		\begin{tabular}{ccccccccccc}
+			\loc{1} & \st{x:=0} & \loc{2} & \st{y:=1} & \loc{3} & \accel{1} & $\ell_{3}'$ & \st{x>50} & \loc{6} & \st{y!=103} & \loc{7} \\
+		\end{tabular}
+	\end{center}
+	\captionof{figure}{Meta trace $\bar{\tau_1}$ Ggenerated from $\tau_1$ using $\psi^*_{L_1}$.}
+\end{figure}
 We can now analyse this meta trace for feasibility using an SMT-solver such as SMTInterpol\cite{Zitat03} or z3\cite{z3}. We get the following labelling:
 
+\begin{comment}
 \begin{figure}[H]
 	\begin{tikzpicture}[%
 			->,
@@ -927,7 +953,31 @@ We can now analyse this meta trace for feasibility using an SMT-solver such as S
 	\end{tikzpicture}
 	\captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
 \end{figure}
-\dd{Do not capitalize captions. They are just normal sentences.}
+\end{comment}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tabular}{ccc}
+			                               & \itp{\top}                                & \loc{1} \\
+			\st{x:=0}                      &                                           &         \\
+			                               & \itp{x=0}                                 & \loc{2} \\
+			\st{y:=1}                      &                                           &         \\
+			                               & \itp{y = 1 \land x = 0}                   & \loc{3} \\
+			\accel{1}                      &                                           &         \\
+			                               & \makecell{\itp{102 < y \lor 2x + 1 \leq y
+			\land  y \leq 103 \lor x = 0}} & \loc{3'}                                            \\
+			\st{x>50}                      &                                           &         \\
+			                               & \itp{y = 103}                             & \loc{6} \\
+			\st{y!=103}                    &                                           &         \\
+			                               & \itp{\bot}                                & \loc{7} \\
+		\end{tabular}
+	\end{center}
+\end{figure}
+\captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
+\label{fig:ex:t0:infproof}
+\jw{itp does not linebreak :(}
+%\dd{Do not capitalize captions. They are just normal sentences.}
+
 
 With interpolant sequence:
 \begin{equation*}
@@ -947,6 +997,7 @@ Which can now be used by trace abstraction to refine the interpolant automaton.
 
 We compute the missing interpolants for example program trace $\tau_1$ as follows:
 
+\begin{comment}
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[%
@@ -1013,6 +1064,44 @@ We compute the missing interpolants for example program trace $\tau_1$ as follow
 	\end{tikzpicture}
 	\captionof{figure}{Program trace $\tau_1$ of $P_1$ with inductive infeasibility proof.}
 \end{figure}
+\end{comment}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tabular}{ccc}
+			            & \itp{\top}                                                   & \loc{1} \\
+			\st{x:=0}   &                                                              &         \\
+			            & \itp{x=0}                                                    & \loc{2} \\
+			\st{y:=1}   &                                                              &         \\
+			            & \itp{y = 2x + 1 \land x \leq 51}                             & \loc{3} \\
+			\st{x<=50}  &                                                              &         \\
+			            & \makecell{\itp{y = 2x + 1 \land x \leq 50}}                  & \loc{4} \\
+			\st{x:=x+1} &                                                              &         \\
+			            & \itp{y + 1 = 2x}                                             & \loc{5} \\
+			\st{y:=y+2} &                                                              &         \\
+			            & \itp{y = 2x + 1 \land x \leq 51}                             & \loc{3} \\
+			\st{x<=50}  &                                                              &         \\
+			            & \makecell{\itp{y = 2x + 1 \land x \leq 50}}                  & \loc{4} \\
+			\st{x:=x+1} &                                                              &         \\
+			            & \itp{y + 1 = 2x}                                             & \loc{5} \\
+			\st{y:=y+2} &                                                              &         \\
+			            & \itp{y = 2x + 1 \land x \leq 51}                             & \loc{3} \\
+			\st{x<=50}  &                                                              &         \\
+			            & \makecell{\itp{y = 2x + 1 \land x \leq 50}}                  & \loc{4} \\
+			\st{x:=x+1} &                                                              &         \\
+			            & \itp{y + 1 = 2x}                                             & \loc{5} \\
+			\st{y:=y+2} &                                                              &         \\
+			            & \itp{y = 2x + 1 \land x \leq 51}                             & \loc{3} \\
+			\st{x>50}   &                                                              &         \\
+			            & \itp{y = 2x + 1 \land x \leq 51 \land x > 50 \equiv y = 103} & \loc{6} \\
+			\st{y!=103} &                                                              &         \\
+			            & \itp{\bot}                                                   & \loc{7}
+		\end{tabular}
+	\end{center}
+\end{figure}
+\captionof{figure}{Program trace $\tau_1$ of $P_1$ with inductive infeasibility proof.}
+\label{fig:ex:t0:infproof}
+
 \ts{The simplification of the interpolant at $\ell_6$ is wrong.}
 
 \subsection{Loops With Branching}
@@ -1020,7 +1109,7 @@ The programs shown before contained loops that had only one distinct minimal loo
 \ts{``our'' - explain which parts differ from the paper.}
 To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta_2, \ell_{1}, \ell_{9})$ created by the following program code:\\
 
-
+\begin{comment}
 \begin{figure}[H]
 	\begin{align*}
 		 & \texttt{1: int x := 0};                 \\
@@ -1036,6 +1125,28 @@ To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta
 	\captionof{figure}{Example program $P_2$.}
 	\label{fig:square}
 \end{figure}
+\end{comment}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{lstlisting}[]  % Start your code-block
+
+x := 0;
+while x <= 10 {
+    if x - 4 > 1 {
+        x := x + 1;
+    } else {
+        x := x + 2;
+    }
+    x := x + 2;
+}
+assert x == 11;
+	\end{lstlisting}
+		\captionof{figure}{Example program $P_2$.}
+		\label{fig:ex:p2}
+	\end{center}
+\end{figure}
+
 With its control-flow graph $G_{P_2}$: \\
 \begin{figure}[H]
 	\centering
@@ -1076,13 +1187,13 @@ With its control-flow graph $G_{P_2}$: \\
 It is evident that $\ell_2$ is a loop head, it is, however, not possible to apply the technique described in the previous chapter as it is not possible to construct a single minimal loop trace. The branching created by the \texttt{if} and \texttt{else} statements in the program code, translated to \texttt{assume} statements in the control-flow graph, implies infinitely many loop traces that cannot be summarized by a single minimal loop trace.
 
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an error trace $\tau: s_0s_1\ldots\ s_n$ with loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. The loop is called branching, if there is a program location $\ell_B$ where $\exists s_k \in \tau_L\ \text{with}\ (\ell_B, s_k, \ell_l) \in \delta$ and $\exists s_l \in \tau_L\  \text{with}\ (\ell_B, s_l, \ell_m) \in \delta$.
-	\ts{Don't use quantifiers as abbreviation in text.}
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an error trace $\tau: s_0s_1\ldots\ s_n$ with loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. The loop is called branching, if there is a program location $\ell_B$ where there is a statement $s_k \in \tau_L\ \text{with}\ (\ell_B, s_k, \ell_l) \in \delta$ and there is a program statement $s_l \in \tau_L\  \text{with}\ (\ell_B, s_l, \ell_m) \in \delta$.
 \end{mydef}
-
+%\ts{Don't use quantifiers as abbreviation in text.}
 To accelerate branching loops we have to separate each loop branch into its own loop, for which it is possible to compute a minimal loop trace. \\ \par
 Assume that trace abstraction generated the following error trace $\tau_2$ of program $P_2$:
 
+\begin{comment}
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[%
@@ -1138,19 +1249,35 @@ Assume that trace abstraction generated the following error trace $\tau_2$ of pr
 	\end{tikzpicture}
 	\captionof{figure}{Program trace $\tau_2$ of $P_2$}
 \end{figure}
+\end{comment}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tabular}{ccccccccccc}
+			\loc{1} & \st{x:=0}  & \loc{2} & \st{x<=10}  & \loc{3} & \st{x-4<=1} & \loc{5} & \st{x:=x+2} & \loc{6} & \st{x:=x+2} & \\
+			\loc{2} & \st{x<=10} & \loc{3} & \st{x-4<=1} & \loc{5} & \st{x:=x+2} & \loc{6} & \st{x:=x+2} &         &             & \\
+			\loc{2} & \st{x<=10} & \loc{3} & \st{x-4>1}  & \loc{4} & \st{x:=x+1} & \loc{6} & \st{x:=x+2} &         &             & \\
+			\loc{2} & \st{x<=10} & \loc{3} & \st{x-4>1}  & \loc{4} & \st{x:=x+1} & \loc{6} & \st{x:=x+2} &         &             & \\
+			\loc{2} & \st{x>10}  & \loc{7} & \st{x!=11}  & \loc{9} &             &         &             &         &             & \\
+		\end{tabular}
+	\end{center}
+	\captionof{figure}{Program trace $\tau_2$ of $P_2$}
+\end{figure}
+
+
 Program location $\ell_2$ appears five times making it a loop head with loop trace:
 \begin{align*}
-	\tau_L:\  & \texttt{x <= 10},\ \texttt{!x - 4 > 1},\ \texttt{x := x + 2},\ \texttt{x := x + 2},\ \texttt{x <= 10},\ \texttt{!x - 4 > 1},\ \texttt{x := x + 2},\ \\ &\texttt{x := x + 2},\ \texttt{x <= 10},\ \texttt{x - 4 > 1},\ \texttt{x := x + 1},\ \texttt{x := x + 2},\ \texttt{x <= 10},\ \texttt{x - 4 > 1},\ \\ &\texttt{x := x + 1},\ \texttt{x := x + 2}
+	\tau_L: & \st{x<=10}\st{x-4<=1}\st{x:=x+2}\st{x:=x+2}\st{x<=10}\st{x-4<=1}\st{x:=x+2}\st{x:=x+2} \\&\st{x<=10}\st{x-4>1}\st{x:=x+1}\st{x:=x+2}\st{x<=10}\st{x-4>1}\st{x:=x+1}\st{x:=x+2}
 \end{align*}
 Because \begin{itemize}
-	\item ($\ell_3$, \texttt{!x - 4 > 1}, $\ell_5$) $\in \delta_2$ and \texttt{!x - 4 > 1} $\in \tau_L$
-	\item ($\ell_3$, \texttt{x - 4 > 1}, $\ell_4$) $\in \delta_2$ and \texttt{x - 4 > 1} $\in \tau_L$
+	\item ($\ell_3$, \st{x-4<=1}, $\ell_5$) $\in \delta_2$ and \st{x-4<=1} $\in \tau_L$
+	\item ($\ell_3$, \st{x-4>1}, $\ell_4$) $\in \delta_2$ and \st{x-4>1} $\in \tau_L$
 \end{itemize}
 the loop is branching.
 We separate the loop branches by checking the program statements in the intervals between the loop head repetition and get two minimal loop traces:
 \begin{align*}
-	 & \tau_{L_1}:\ \texttt{x <= 10; !x - 4 > 1; x := x + 2;\ x := x + 2} \\
-	 & \tau_{L_2}:\ \texttt{x <= 10; x - 4 > 1; x := x + 1; x := x + 2}
+	 & \tau_{L_1}:\ \st{x<=10}\st{x-4<=1}\st{x:=x+2}\st{x:=x+2} \\
+	 & \tau_{L_2}:\ \st{x<=10}\st{x-4>1}\st{x:=x+1}\st{x:=x+2}
 \end{align*}
 With loop relations:
 \begin{align*}
