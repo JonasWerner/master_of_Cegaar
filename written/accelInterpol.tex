@@ -311,10 +311,10 @@ assert x == 6;
 
 	$P_0$ is represented by the control-flow graph $G_{0} = (Loc_P, \delta_P, \ell_\init, \ell_\err)$ with
 	\begin{itemize}
-		\item $\Loc_0 = \{ \ell_1, \ell_2, \ell_3, \ell_4, \ell_5, \ell_6 \}$
-		\item $\begin{aligned}[t]	\delta_0 = \{ &(\ell_1,\st{x:=0},\ell_2), (\ell_2,\st{x<6},\ell_3), (\ell_3,\st{x:=x+2},\ell_2), \\ &(\ell_2,\st{x>=6},\ell_4), (\ell_4,\st{x==6},\ell_5), (\ell_4,\st{x!=6},\ell_6)\} \end{aligned}$
-		\item  $\ell_\init = \ell_1$
-		\item $\ell_{err} = \ell_6$
+		\item $\Loc_0 = \{ \loc{1}, \loc{2}, \loc{3}, \loc{4}, \loc{5}, \loc{6} \}$
+		\item $\begin{aligned}[t]	\delta_0 = \{ &(\loc{1},\st{x:=0},\loc{2}), (\loc{2},\st{x<6},\loc{3}), (\loc{3},\st{x:=x+2},\loc{2}), \\ &(\loc{2},\st{x>=6},\loc{4}), (\loc{4},\st{x==6},\loc{5}), (\loc{4},\st{x!=6},\loc{6})\} \end{aligned}$
+		\item  $\ell_\init = \loc{1}$
+		\item $\loc{err} = \loc{6}$
 	\end{itemize}
 	%\dd{Do you want to use our fancy edge labels? I added them, they look like this \protect\stn{x:=0}}
 
@@ -328,12 +328,12 @@ assert x == 6;
 				transform shape, align=center,
 				smallnode/.style={inner sep=1.4}, anchor=center]
 
-			\node[state, initial above, initial text =](1){$\ell_1$};
-			\node[state] (2) [below of=1] {$\ell_2$};
-			\node[state] (3) [left of=2] {$\ell_3$};
-			\node[state] (4) [right of=2] {$\ell_4$};
-			\node[state] (5) [below of=4] {$\ell_5$};
-			\node[state, accepting] (6) [right of=4] {$\ell_6$};
+			\node[state, initial above, initial text =](1){$\loc{1}$};
+			\node[state] (2) [below of=1] {$\loc{2}$};
+			\node[state] (3) [left of=2] {$\loc{3}$};
+			\node[state] (4) [right of=2] {$\loc{4}$};
+			\node[state] (5) [below of=4] {$\loc{5}$};
+			\node[state, accepting] (6) [right of=4] {$\loc{6}$};
 
 			\path (1) edge node []{\st{x:=0}} (2)
 			(2) edge [bend right] node []{\st{x<6}} (3)
@@ -385,7 +385,7 @@ Program statements can change the valuation of variables, transitioning one prog
 \end{mydef}
 
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ that is defined over a set of program statements \stmt, and its control-flow graph $G_P$, we call a sequence of program statements \\ $\tau: s_0 s_1 s_2\ ...\ s_n \in \stmt^*$ a program trace, if $\tau$ is the labeling of a path starting in $\ell_\init$. Meaning, each for each $s_i$, $0 \leq i \leq n$, there is $(\ell_i, s_i, \ell_{i+1}) \in \delta$. The program trace is called error trace if $\ell_n = \ell_\err$.
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ that is defined over a set of program statements \stmt, and its control-flow graph $G_P$, we call a sequence of program statements \\ $\tau: s_0 s_1 s_2\ ...\ s_n \in \stmt^*$ a program trace, if $\tau$ is the labeling of a path starting in $\ell_\init$. Meaning, each for each $s_i$, $0 \leq i \leq n$, there is $(\loc{i}, s_i, \loc{i+1}) \in \delta$. The program trace is called error trace if $\loc{n} = \ell_\err$.
 \end{mydef}
 
 \begin{example}
@@ -414,12 +414,12 @@ Program statements can change the valuation of variables, transitioning one prog
 				smallnode/.style={inner sep=2}
 				initial text =, anchor=center]
 
-			\node[state] (2) {$\ell_1$};
-			\node[state] (3) [right of=2] {$\ell_2$};
-			\node[state] (4) [right of=3] {$\ell_3$};
-			\node[state] (5) [right of=4] {$\ell_2$};
-			\node[state] (6) [right of=5] {$\ell_4$};
-			\node[state] (7) [right of=6] {$\ell_6$};
+			\node[state] (2) {$\loc{1}$};
+			\node[state] (3) [right of=2] {$\loc{2}$};
+			\node[state] (4) [right of=3] {$\loc{3}$};
+			\node[state] (5) [right of=4] {$\loc{2}$};
+			\node[state] (6) [right of=5] {$\loc{4}$};
+			\node[state] (7) [right of=6] {$\loc{6}$};
 
 			\path (2) edge node {\st{x:=0}} (3);
 			\path (3) edge node {\st{x<6}} (4);
@@ -458,12 +458,12 @@ $\tau_0$ from before is infeasible, because for $\st{x>=6}$, the interpretation 
 			smallnode/.style={inner sep=2}
 			initial text =]
 
-		\node[state, label=above:\text{\itp{\top}}] (2) {$\ell_1$};
-		\node[state, label=above:{$x = 0$}] (3) [right of=2] {$\ell_2$};
-		\node[state, label=above: {$x = 0$}] (4) [right of=3] {$\ell_3$};
-		\node[state, label=above:{$x = 2$}] (5) [right=3cm of 4] {$\ell_2$};
-		\node[state, label=above:{$\bot$}] (6) [right of=5] {$\ell_4$};
-		\node[state, label=above:{$\bot$}] (7) [right of=6] {$\ell_6$};
+		\node[state, label=above:\text{\itp{\top}}] (2) {$\loc{1}$};
+		\node[state, label=above:{$x = 0$}] (3) [right of=2] {$\loc{2}$};
+		\node[state, label=above: {$x = 0$}] (4) [right of=3] {$\loc{3}$};
+		\node[state, label=above:{$x = 2$}] (5) [right=3cm of 4] {$\loc{2}$};
+		\node[state, label=above:{$\bot$}] (6) [right of=5] {$\loc{4}$};
+		\node[state, label=above:{$\bot$}] (7) [right of=6] {$\loc{6}$};
 
 		\path (2) edge node {\texttt{x := 0}} (3);
 		\path (3) edge node {\texttt{x < 6}} (4);
@@ -544,7 +544,7 @@ Interpolanten $\rightarrow$ Sequenzinterpolanten \cite{10.1007/11691372_33} $\ri
 \dd{Why is this section called \emph{Interpolating} TA? Why not just TA?}
 By combining infeasibility proofs and interpolant computation we can define trace abstraction as a technique for proving or disproving safety for a given program by checking for reachability of an error location.
 \ts{What do you want to say with this phrase?}
-Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and its control-flow graph $G_P$, we can use trace abstraction with interpolation~\cite{10.1007/978-3-642-03237-0_7} to check, whether the error location $\ell_{err}$ is reachable or not:
+Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and its control-flow graph $G_P$, we can use trace abstraction with interpolation~\cite{10.1007/978-3-642-03237-0_7} to check, whether the error location $\loc{err}$ is reachable or not:
 \begin{itemize}
 	\item[1.] Search $G_P$ for a program trace that starts at $\ell_\init$ and ends in $\ell_\err$:
 		\begin{figure}[H]
@@ -559,11 +559,11 @@ Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and its control-flow
 
 				\node[state](1){$\ell_\init$};
 
-				\node[state] (2) [right of=1] {$\ell_1$};
+				\node[state] (2) [right of=1] {$\loc{1}$};
 
 				\node[] (3) [right of=2] {$\cdots$};
 
-				\node[state] (4) [right of=3] {$\ell_{n-1}$};
+				\node[state] (4) [right of=3] {$\loc{n-1}$};
 
 				\node[state] (5) [right of=4] {$\ell_\err$};
 
@@ -603,7 +603,7 @@ A remedy to that is the computation of a loop acceleration in form of the reflex
 This chapter introduces loops as traces and relations, and how a loop relation can be used to compute a reflexive transitive closure.
 \ts{Explain why you don't just take the original loops, what is the difference?}
 
-Assume we are given the program $P_1 = (Loc_1, \delta_1, \ell_{1}, \ell_{7})$ created from the following program code:
+Assume we are given the program $P_1 = (Loc_1, \delta_1, \loc{1}, \loc{7})$ created from the following program code:
 
 \begin{figure}[H]
 	\begin{center}
@@ -646,14 +646,14 @@ With its control-flow graph $G_{P_1}$: \\
 			smallnode/.style={inner sep=1.4},
 			anchor=center]
 
-		\node[state, initial above, initial text =](1){$\ell_1$};
-		\node[state] (2) [below= of 1] {$\ell_2$};
-		\node[state] (7) [below= of 2] {$\ell_3$};
-		\node[state] (3) [left= of 7] {$\ell_4$};
-		\node[state] (8) [below= of 3] {$\ell_5$};
-		\node[state] (4) [right= of 7] {$\ell_6$};
-		\node[state] (5) [below= of 4] {$\ell_7$};
-		\node[state] (6) [right= of 4] {$\ell_8$};
+		\node[state, initial above, initial text =](1){$\loc{1}$};
+		\node[state] (2) [below= of 1] {$\loc{2}$};
+		\node[state] (7) [below= of 2] {$\loc{3}$};
+		\node[state] (3) [left= of 7] {$\loc{4}$};
+		\node[state] (8) [below= of 3] {$\loc{5}$};
+		\node[state] (4) [right= of 7] {$\loc{6}$};
+		\node[state] (5) [below= of 4] {$\loc{7}$};
+		\node[state] (6) [right= of 4] {$\loc{8}$};
 
 		\path (1) edge node {\st{x := 0}} (2)
 		(2) edge node {\st{y := 1}} (7)
@@ -681,20 +681,20 @@ Assume trace abstraction generates program trace $\tau_1$:
 			smallnode/.style={inner sep=2}
 			initial text =]
 
-		\node[state](1){$\ell_1$};
-		\node[state] (2) [right= of 1] {$\ell_2$};
-		\node[state] (3) [right= of 2] {$\ell_3$};
-		\node[state] (4) [right= of 3] {$\ell_4$};
-		\node[state] (5) [right= of 4] {$\ell_5$};
-		\node[state] (6) [below= of 1] {$\ell_3$};
-		\node[state] (7) [right= of 6] {$\ell_4$};
-		\node[state] (8) [right= of 7] {$\ell_5$};
-		\node[state] (9) [right= of 8] {$\ell_3$};
-		\node[state] (10) [right= of 9] {$\ell_4$};
-		\node[state] (11) [below= of 6] {$\ell_5$};
-		\node[state] (12) [right= of 11] {$\ell_3$};
-		\node[state] (13) [right= of 12] {$\ell_6$};
-		\node[state] (14) [right= of 13] {$\ell_7$};
+		\node[state](1){$\loc{1}$};
+		\node[state] (2) [right= of 1] {$\loc{2}$};
+		\node[state] (3) [right= of 2] {$\loc{3}$};
+		\node[state] (4) [right= of 3] {$\loc{4}$};
+		\node[state] (5) [right= of 4] {$\loc{5}$};
+		\node[state] (6) [below= of 1] {$\loc{3}$};
+		\node[state] (7) [right= of 6] {$\loc{4}$};
+		\node[state] (8) [right= of 7] {$\loc{5}$};
+		\node[state] (9) [right= of 8] {$\loc{3}$};
+		\node[state] (10) [right= of 9] {$\loc{4}$};
+		\node[state] (11) [below= of 6] {$\loc{5}$};
+		\node[state] (12) [right= of 11] {$\loc{3}$};
+		\node[state] (13) [right= of 12] {$\loc{6}$};
+		\node[state] (14) [right= of 13] {$\loc{7}$};
 
 
 		\path (1) edge node {\texttt{x := 0}} (2);
@@ -736,10 +736,10 @@ $$
 		\loc{3} & \st{x>50}  & \loc{6} & \st{y!=103} & \loc{7} &             \\
 	\end{tabular}
 \end{center}
-It is noticeable that program location $\ell_3$ appears repeatedly in the trace indicating that it is an entry point for a loop.
+It is noticeable that program location $\loc{3}$ appears repeatedly in the trace indicating that it is an entry point for a loop.
 From this entry point, the so-called loop head, one can extract a loop trace.
 \begin{mydef}
-	Given a program trace $\tau: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$. \\ The sub trace $s_i, s_{i+1}\ldots, s_j$ is called a loop trace if $(\ell_i, s_i, \ell_{i+1}) \in \delta\ $ and $(\ell_{j-1}, s_j, \ell_i) \in \delta $. $\ell_i$ is called the loop head.
+	Given a program trace $\tau: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$. \\ The sub trace $s_i, s_{i+1}\ldots, s_j$ is called a loop trace if $(\loc{i}, s_i, \loc{i+1}) \in \delta\ $ and $(\loc{j-1}, s_j, \loc{i}) \in \delta $. $\loc{i}$ is called the loop head.
 \end{mydef}
 \dd{What is a sub trace? Define or just call it a sequence of statements.}
 
@@ -769,12 +769,12 @@ In $\tau_1$ there are three loop traces of varying length:
 
 These three looping traces represent the same loop but with a different number of iterations.
 
-\ts{The definition of loop trace also includes the traces starting with $\ell_4$ or $\ell_5$. Why do they not appear here? Or do you want to exclude them from the definition?}
+\ts{The definition of loop trace also includes the traces starting with $\loc{4}$ or $\loc{5}$. Why do they not appear here? Or do you want to exclude them from the definition?}
 \dd{Also: It seems unnecessary to have so many pictures of the relatively simple idea (a trace contains loop unwindings)}
 
 
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with $(\ell_i, s_i, \ell_{i+1}) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$ where there is no $k \in [j, n]$ with $(\ell_{k-1}, s_k, \ell_i) \in \delta$. $\tau_L$ is called the maximum loop trace and represents the loop in the program trace.
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with $(\loc{i}, s_i, \loc{i+1}) \in \delta$ and $(\loc{j-1}, s_j, \loc{i}) \in \delta$ where there is no $k \in [j, n]$ with $(\loc{k-1}, s_k, \loc{i}) \in \delta$. $\tau_L$ is called the maximum loop trace and represents the loop in the program trace.
 \end{mydef}
 \ts{In the definition above, a loop trace is a sub trace starting with the loop head.
 	Shouldn't $\tau_L$ then also start with the loop head?
@@ -784,7 +784,7 @@ In the example $\tau_{L_3}$ is the maximum loop trace in $\tau_1$.
 In the following we will use the phrases loops in program trace and maximum loop trace interchangeably.
 
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$, program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with loop $\tau_L: s_i, s_{i+1}, \ldots, s_l, \ldots, s_j$, where $(\ell_i, s_i, \ell_{i+1}) \in \delta$, $(\ell_l, s_l, \ell_i) \in \delta$ and $(\ell_{j-1}, s_j, \ell_i) \in \delta$. The loop trace $\tau_{min}: s_i, \ldots, s_l$ is called minimal loop trace if there is no $m \in [i, l]$ where $(\ell_{m-1}, s_m, \ell_i) \in \delta$.
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$, program trace \\ $\tau_L: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$ with loop $\tau_L: s_i, s_{i+1}, \ldots, s_l, \ldots, s_j$, where $(\loc{i}, s_i, \loc{i+1}) \in \delta$, $(\loc{l}, s_l, \loc{i}) \in \delta$ and $(\loc{j-1}, s_j, \loc{i}) \in \delta$. The loop trace $\tau_{min}: s_i, \ldots, s_l$ is called minimal loop trace if there is no $m \in [i, l]$ where $(\loc{m-1}, s_m, \loc{i}) \in \delta$.
 \end{mydef}
 \ts{Complicated. I don't think you need a loop containing another loop for this definition.}
 
@@ -858,7 +858,7 @@ We will show multiple types of loops, beginning with loops without branching, co
 
 \subsection{Loops Without Branching}
 Reconsider program $P_1$ from the previous chapter.
-To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with $\ell_3$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$.
+To prove its safety trace abstraction finds error trace $\tau_1$, as before, we detect a loop with $\loc{3}$ and minimal loop trace $\tau_{L_1}$ from which we construct the loop relation $\psi_{L_1}$.
 It is evident that there is only one path through the loop, resulting in a loop without branching.
 We consequently compute the loop acceleration $\psi^*_{L_1}$.
 
@@ -866,9 +866,9 @@ The loop acceleration contains every looping trace, meaning it is possible to re
 \dd{Why not explain the idea of meta trace first and then give a definition?}
 
 \begin{mydef}
-	Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$.
+	Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\loc{L}$.
 	A meta trace $\bar{\tau}$ is derived from $\tau$ by replacing $\tau_L$ with the loop acceleration.
-	Furthermore, the last occurrence of $\ell_L$ is replaced by a new loop exit $\ell_L'$.
+	Furthermore, the last occurrence of $\loc{L}$ is replaced by a new loop exit $\loc{L}'$.
 \end{mydef}
 \ts{Now you have a mixture of statements and relations. Do you want to allow this (explanation required) or use transformulas in general?}
 \dd{Which loop acceleration? Will you talk about properties of loop accelerations? What is a loop acceleration? Is it "the closure"? Or is it \emph{some} relation over program states that has some properties relative to a closure?}
@@ -884,17 +884,17 @@ The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
 			smallnode/.style={inner sep=1.4}
 			initial text =]
 
-		\node[state](1){$\ell_1$};
+		\node[state](1){$\loc{1}$};
 
-		\node[state] (2) [right of=1] {$\ell_2$};
+		\node[state] (2) [right of=1] {$\loc{2}$};
 
-		\node[state] (3) [right of=2] {$\ell_3$};
+		\node[state] (3) [right of=2] {$\loc{3}$};
 
-		\node[state] (4) [right of=3] {$\ell_3'$};
+		\node[state] (4) [right of=3] {$\loc{3}'$};
 
-		\node[state] (5) [right of=4, xshift=0.5cm] {$\ell_6$};
+		\node[state] (5) [right of=4, xshift=0.5cm] {$\loc{6}$};
 
-		\node[state] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
+		\node[state] (6) [right of=5, xshift=0.5cm] {$\loc{7}$};
 
 		\path (1) edge node {\texttt{x := 0}} (2); \\
 		\path (2) edge node {\texttt{y := 1}} (3); \\
@@ -910,7 +910,7 @@ The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
 \begin{figure}[H]
 	\begin{center}
 		\begin{tabular}{ccccccccccc}
-			\loc{1} & \st{x:=0} & \loc{2} & \st{y:=1} & \loc{3} & \accel{1} & $\ell_{3}'$ & \st{x>50} & \loc{6} & \st{y!=103} & \loc{7} \\
+			\loc{1} & \st{x:=0} & \loc{2} & \st{y:=1} & \loc{3} & \accel{1} & $\loc{3}'$ & \st{x>50} & \loc{6} & \st{y!=103} & \loc{7} \\
 		\end{tabular}
 	\end{center}
 	\captionof{figure}{Meta trace $\bar{\tau_1}$ Ggenerated from $\tau_1$ using $\psi^*_{L_1}$.}
@@ -956,7 +956,7 @@ To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by appl
 
 Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ 
 containing a loop spanning from $s_i$ to $s_j$ 
-with loop head $\ell_i$, 
+with loop head $\loc{i}$, 
 loop relation $\psi_L$, 
 and corresponding loop acceleration $\psi^*_{L}$ 
 and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ 
@@ -965,7 +965,7 @@ with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}:
 
 To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$.
 
-Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\ell_L}$. 
+Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\loc{L}}$. 
 From there keep applying the post operator with the previous location's interpolant and the following program statement.
 
 We get the inductive interpolant sequence
@@ -993,7 +993,7 @@ We compute the missing interpolants for example program trace $\tau_1$ as follow
 \captionof{figure}{Program trace $\tau_1$ of $P_1$ with inductive infeasibility proof.}
 \label{fig:ex:t0:infproof}
 
-\ts{The simplification of the interpolant at $\ell_6$ is wrong.}
+\ts{The simplification of the interpolant at $\loc{6}$ is wrong.}
 
 \subsection{Loops With Branching}
 The programs shown before contained loops that had only one distinct minimal loop trace. 
@@ -1019,12 +1019,13 @@ This section introduces our technique of dealing with branching loops.
 \captionof{figure}{Example program $P_2$.}\label{fig:ex:p2}
 \end{figure}
 
-To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta_2, \ell_{1}, \ell_{9})$ depicted in Figure~\ref{fig:ex:p2}.
-It is evident that $\ell_2$ is a loop head, it is, however, not possible to apply the technique described in the previous chapter as it is not possible to construct a single minimal loop trace. 
+To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta_2, \loc{1}, \loc{9})$ depicted in Figure~\ref{fig:ex:p2}.
+It is evident that \loc{2} is a loop head.
+However, it is not possible to apply the technique described in the previous chapter as it is not possible to construct a single minimal loop trace. 
 The branching created by the \texttt{if} and \texttt{else} statements in the program code, translated to \texttt{assume} statements in the control-flow graph, implies infinitely many loop traces that cannot be summarized by a single minimal loop trace.
 
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an error trace $\tau: s_0s_1\ldots\ s_n$ with loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. The loop is called branching, if there is a program location $\ell_B$ where there is a statement $s_k \in \tau_L\ \text{with}\ (\ell_B, s_k, \ell_l) \in \delta$ and there is a program statement $s_l \in \tau_L\  \text{with}\ (\ell_B, s_l, \ell_m) \in \delta$.
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an error trace $\tau: s_0s_1\ldots\ s_n$ with loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. The loop is called branching, if there is a program location $\loc{B}$ where there is a statement $s_k \in \tau_L\ \text{with}\ (\loc{B}, s_k, \loc{l}) \in \delta$ and there is a program statement $s_l \in \tau_L\  \text{with}\ (\loc{B}, s_l, \loc{m}) \in \delta$.
 \end{mydef}
 %\ts{Don't use quantifiers as abbreviation in text.}
 To accelerate branching loops we have to separate each loop branch into its own loop, for which it is possible to compute a minimal loop trace. \\ \par
@@ -1041,26 +1042,26 @@ Assume that trace abstraction generated the following error trace $\tau_2$ of pr
 			smallnode/.style={inner sep=2}
 			initial text =]
 
-		\node[state](1){$\ell_1$};
-		\node[state] (2) [right= of 1] {$\ell_2$};
-		\node[state] (3) [right= of 2] {$\ell_3$};
-		\node[state] (4) [right= of 3] {$\ell_5$};
-		\node[state] (5) [right= of 4] {$\ell_6$};
-		\node[state] (6) [below= of 1] {$\ell_2$};
-		\node[state] (7) [right= of 6] {$\ell_3$};
-		\node[state] (8) [right= of 7] {$\ell_5$};
-		\node[state] (9) [right= of 8] {$\ell_6$};
-		\node[state] (10) [right= of 9] {$\ell_2$};
-		\node[state] (11) [below= of 6] {$\ell_3$};
-		\node[state] (12) [right= of 11] {$\ell_4$};
-		\node[state] (13) [right= of 12] {$\ell_6$};
-		\node[state] (14) [right= of 13] {$\ell_2$};
-		\node[state] (15) [right= of 14] {$\ell_3$};
-		\node[state] (16) [below= of 11] {$\ell_4$};
-		\node[state] (17) [right= of 16] {$\ell_6$};
-		\node[state] (18) [right= of 17] {$\ell_2$};
-		\node[state] (19) [right= of 18] {$\ell_7$};
-		\node[state] (20) [right= of 19] {$\ell_9$};
+		\node[state](1){$\loc{1}$};
+		\node[state] (2) [right= of 1] {$\loc{2}$};
+		\node[state] (3) [right= of 2] {$\loc{3}$};
+		\node[state] (4) [right= of 3] {$\loc{5}$};
+		\node[state] (5) [right= of 4] {$\loc{6}$};
+		\node[state] (6) [below= of 1] {$\loc{2}$};
+		\node[state] (7) [right= of 6] {$\loc{3}$};
+		\node[state] (8) [right= of 7] {$\loc{5}$};
+		\node[state] (9) [right= of 8] {$\loc{6}$};
+		\node[state] (10) [right= of 9] {$\loc{2}$};
+		\node[state] (11) [below= of 6] {$\loc{3}$};
+		\node[state] (12) [right= of 11] {$\loc{4}$};
+		\node[state] (13) [right= of 12] {$\loc{6}$};
+		\node[state] (14) [right= of 13] {$\loc{2}$};
+		\node[state] (15) [right= of 14] {$\loc{3}$};
+		\node[state] (16) [below= of 11] {$\loc{4}$};
+		\node[state] (17) [right= of 16] {$\loc{6}$};
+		\node[state] (18) [right= of 17] {$\loc{2}$};
+		\node[state] (19) [right= of 18] {$\loc{7}$};
+		\node[state] (20) [right= of 19] {$\loc{9}$};
 
 
 		\path (1) edge node {\texttt{x := 0}} (2);
@@ -1102,13 +1103,13 @@ Assume that trace abstraction generated the following error trace $\tau_2$ of pr
 \end{figure}
 
 
-Program location $\ell_2$ appears five times making it a loop head with loop trace:
+Program location $\loc{2}$ appears five times making it a loop head with loop trace:
 \begin{align*}
 	\tau_L: & \st{x<=10}\st{x-4<=1}\st{x:=x+2}\st{x:=x+2}\st{x<=10}\st{x-4<=1}\st{x:=x+2}\st{x:=x+2} \\&\st{x<=10}\st{x-4>1}\st{x:=x+1}\st{x:=x+2}\st{x<=10}\st{x-4>1}\st{x:=x+1}\st{x:=x+2}
 \end{align*}
 Because \begin{itemize}
-	\item ($\ell_3$, \st{x-4<=1}, $\ell_5$) $\in \delta_2$ and \st{x-4<=1} $\in \tau_L$
-	\item ($\ell_3$, \st{x-4>1}, $\ell_4$) $\in \delta_2$ and \st{x-4>1} $\in \tau_L$
+	\item ($\loc{3}$, \st{x-4<=1}, $\loc{5}$) $\in \delta_2$ and \st{x-4<=1} $\in \tau_L$
+	\item ($\loc{3}$, \st{x-4>1}, $\loc{4}$) $\in \delta_2$ and \st{x-4>1} $\in \tau_L$
 \end{itemize}
 the loop is branching.
 We separate the loop branches by checking the program statements in the intervals between the loop head repetition and get two minimal loop traces:
@@ -1133,7 +1134,7 @@ As we have now sensible minimal loop traces for both branches of the loop, it is
 To utilize them in accelerated interpolation we firstly need to introduce a meta trace variant for branching loops.
 
 \begin{mydef}
-	Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_i^*$ for $i \in 1 \ldots m$.\ts{use a different index, $i$ is the loophead index} A branching meta trace $\bar{\tau}$ is constructed from $\tau$ by replacing $\tau_L$ with the sequence $\tau_m: \psi_1^*, \varepsilon, \psi_2^*, \varepsilon, \ldots, \psi_n^* $. Where each $\psi_i$ leads to the new loop exit $\ell_L'$ and each $\varepsilon$ from $\ell_L'$ to $\ell_L$.
+	Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\loc{L}$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_i^*$ for $i \in 1 \ldots m$.\ts{use a different index, $i$ is the loophead index} A branching meta trace $\bar{\tau}$ is constructed from $\tau$ by replacing $\tau_L$ with the sequence $\tau_m: \psi_1^*, \varepsilon, \psi_2^*, \varepsilon, \ldots, \psi_n^* $. Where each $\psi_i$ leads to the new loop exit $\loc{L}'$ and each $\varepsilon$ from $\loc{L}'$ to $\loc{L}$.
 \end{mydef}
 A meta trace for branching loops represents the overall effect of the loop on the program state, however, it does not contain every trace through the loop. Traces where, for example, two branches alternate are not contained, as in the meta trace each branch is taken sequentially a finite amount of times. A meta trace for branching loops therefore represents an underapproximation of possible loop traces. \\ \par
 
@@ -1147,19 +1148,19 @@ For the trace $\tau_2$ we get the following branching meta trace:
 			smallnode/.style={inner sep=1.4}
 			initial text =]
 
-		\node[state](1){$\ell_1$};
+		\node[state](1){$\loc{1}$};
 
-		\node[state] (2) [right of=1] {$\ell_2$};
+		\node[state] (2) [right of=1] {$\loc{2}$};
 
-		\node[state] (3) [right of=2, xshift=-0.55cm] {$\ell_2'$};
+		\node[state] (3) [right of=2, xshift=-0.55cm] {$\loc{2}'$};
 
-		\node[state] (4) [right of=3, xshift=-0.55cm] {$\ell_2$};
+		\node[state] (4) [right of=3, xshift=-0.55cm] {$\loc{2}$};
 
-		\node[state] (5) [right of=4, xshift=-0.55cm] {$\ell_2'$};
+		\node[state] (5) [right of=4, xshift=-0.55cm] {$\loc{2}'$};
 
-		\node[state] (6) [right of=5, xshift=0.4cm] {$\ell_7$};
+		\node[state] (6) [right of=5, xshift=0.4cm] {$\loc{7}$};
 
-		\node[state] (7) [right of=6, xshift=0.4cm] {$\ell_9$};
+		\node[state] (7) [right of=6, xshift=0.4cm] {$\loc{9}$};
 
 		\path (1) edge node {\texttt{x := 0}} (2);
 		\path (2) edge node {$\psi^*_{L_{1}}$} (3);
@@ -1181,23 +1182,23 @@ Out of which an SMT-solver generates the following infeasibility proof:
 			smallnode/.style={inner sep=1.4}
 			initial text =]
 
-		\node[state, label=above:{$\top$}](1){$\ell_1$};
+		\node[state, label=above:{$\top$}](1){$\loc{1}$};
 
-		\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
-
-		\node[state, xshift=-0.55cm, label={above:$\begin{aligned}
-							 & (5 \cdot x \leq 56 \\ &\lor x \leq 4) \\ &\land x \leq 9
-						\end{aligned}$}] (3) [right of=2] {$\ell_2'$};
+		\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\loc{2}$};
 
 		\node[state, xshift=-0.55cm, label={above:$\begin{aligned}
 							 & (5 \cdot x \leq 56 \\ &\lor x \leq 4) \\ &\land x \leq 9
-						\end{aligned}$}] (4) [right of=3] {$\ell_2$};
+						\end{aligned}$}] (3) [right of=2] {$\loc{2}'$};
 
-		\node[state,xshift=-0.55cm,  label=above:{$ x \leq 11$}] (5) [right of=4] {$\ell_2'$};
+		\node[state, xshift=-0.55cm, label={above:$\begin{aligned}
+							 & (5 \cdot x \leq 56 \\ &\lor x \leq 4) \\ &\land x \leq 9
+						\end{aligned}$}] (4) [right of=3] {$\loc{2}$};
 
-		\node[state, xshift=0.4cm, label=above:{$x = 11$}] (6) [right of=5] {$\ell_7$};
+		\node[state,xshift=-0.55cm,  label=above:{$ x \leq 11$}] (5) [right of=4] {$\loc{2}'$};
 
-		\node[state, xshift=0.4cm, label=above:{$\bot$}] (7) [right of=6] {$\ell_9$};
+		\node[state, xshift=0.4cm, label=above:{$x = 11$}] (6) [right of=5] {$\loc{7}$};
+
+		\node[state, xshift=0.4cm, label=above:{$\bot$}] (7) [right of=6] {$\loc{9}$};
 
 		\path (1) edge node {\texttt{x := 0}} (2); \\
 		\path (2) edge node {$\psi_{L_{1}}^*$} (3); \\
@@ -1210,7 +1211,7 @@ Out of which an SMT-solver generates the following infeasibility proof:
 	\captionof{figure}{Meta trace $\bar{\tau_2}$ and its infeasibility proof.}
 \end{figure}
 Interpolant sequence $I_{\bar{\tau}_2}: \{ \top,\ x = 0,\ 5 \cdot x \leq 56 \lor x \leq 4,\ 5 \cdot x \leq 56 \lor x \leq 4,\ x \leq 11,\ x = 11,\ \bot\}$ can be used to generate an inductive infeasibility proof for $\tau_2$ by using the post operator as explained before with one modification. \\ \par
-Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\ell_L$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_{i}^*$ for $i \in 1 \ldots m$ with branching meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi_{1}^*, \varepsilon, \ldots, \varepsilon, \psi_{m}^*$ that has infeasibility proof in form of a sequence of interpolants $I_{\bar{\tau}}: \{\top, I_1, \ldots, I_{\psi_{1}}^*, \ldots, I_{\psi_{m}}^*, \ldots, I_{n - 1}, \bar \}$. For computing an inductive infeasibility proof for $\tau$ we use $I_{\bar{\tau}}$ and apply the $post$ operator in a similar fashion as explained before. But instead of applying $post$ to a singular loop entry interpolant and loop acceleration, we need to calculate the $post$ of all loop entry interpolants and loop accelerations. The first interpolant for the loop $I_i$ is then the conjunction of all these: $I_i = \bigwedge_{k=1}^{m} post(I_{\psi_k}^*, \psi_k^*)$. From this first interpolant we can then apply post until the end of the branching loop is reached.
+Given an error trace $\tau: s_0, s_1, \ldots, s_n$ containing a loop $\tau_L: s_i, s_{i+1}, \ldots, s_j$ with loop head $\loc{L}$ that contains $m$ branches which have loop relations $\psi_i$ and loop accelerations $\psi_{i}^*$ for $i \in 1 \ldots m$ with branching meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi_{1}^*, \varepsilon, \ldots, \varepsilon, \psi_{m}^*$ that has infeasibility proof in form of a sequence of interpolants $I_{\bar{\tau}}: \{\top, I_1, \ldots, I_{\psi_{1}}^*, \ldots, I_{\psi_{m}}^*, \ldots, I_{n - 1}, \bar \}$. For computing an inductive infeasibility proof for $\tau$ we use $I_{\bar{\tau}}$ and apply the $post$ operator in a similar fashion as explained before. But instead of applying $post$ to a singular loop entry interpolant and loop acceleration, we need to calculate the $post$ of all loop entry interpolants and loop accelerations. The first interpolant for the loop $I_i$ is then the conjunction of all these: $I_i = \bigwedge_{k=1}^{m} post(I_{\psi_k}^*, \psi_k^*)$. From this first interpolant we can then apply post until the end of the branching loop is reached.
 \ts{Explain why this works.}
 
 
@@ -1219,7 +1220,7 @@ Not only are branching loops a possibility in programs, but it can also be the c
 
 Firstly, we need to define the notion of nested loops in detail.
 \begin{mydef}
-	Given an error trace $\tau: s_0, s_1, \ldots, s_i, \ldots, s_j, \ldots s_n$ containing a loop \\ $\tau_{L_1}: s_i, s_{i+1}, \ldots, s_k, \ldots, s_l, \ldots, s_j$ with loop head $\ell_{L_1}$ which also contains a loop $\tau_{L_2}: s_k, s_{k+1}, \ldots, s_l$ with loop head $\ell_{L_2}$.
+	Given an error trace $\tau: s_0, s_1, \ldots, s_i, \ldots, s_j, \ldots s_n$ containing a loop \\ $\tau_{L_1}: s_i, s_{i+1}, \ldots, s_k, \ldots, s_l, \ldots, s_j$ with loop head $\loc{L_1}$ which also contains a loop $\tau_{L_2}: s_k, s_{k+1}, \ldots, s_l$ with loop head $\loc{L_2}$.
 	Loop $\tau_{L_2}$ is called a nested loop and $\tau_{L_1}$ is called nesting loop.
 \end{mydef}
 
@@ -1250,15 +1251,15 @@ With corresponding control-flow graph $G_{P_3}$:
 			smallnode/.style={inner sep=1.4},
 			initial text =, anchor=center]
 
-		\node[state, initial above](1){$\ell_1$};
-		\node[state] (2) [below of=1] {$\ell_2$};
-		\node[state] (3) [below of=2] {$\ell_3$};
-		\node[state] (4) [left of=3] {$\ell_4$};
-		\node[state] (5) [left of=4, xshift=-15pt] {$\ell_5$};
-		\node[state] (6) [below of=5] {$\ell_6$};
-		\node[state] (8) [right of=3] {$\ell_8$};
-		\node[state] (9) [below of=8] {$\ell_9$};
-		\node[state] (10) [right of=8] {$\ell_{10}$};
+		\node[state, initial above](1){$\loc{1}$};
+		\node[state] (2) [below of=1] {$\loc{2}$};
+		\node[state] (3) [below of=2] {$\loc{3}$};
+		\node[state] (4) [left of=3] {$\loc{4}$};
+		\node[state] (5) [left of=4, xshift=-15pt] {$\loc{5}$};
+		\node[state] (6) [below of=5] {$\loc{6}$};
+		\node[state] (8) [right of=3] {$\loc{8}$};
+		\node[state] (9) [below of=8] {$\loc{9}$};
+		\node[state] (10) [right of=8] {$\loc{10}$};
 
 		\path (1) edge node {\st{x:=0}} (2)
 		(2) edge node {\st{y:=0}} (3)
@@ -1286,23 +1287,23 @@ And suppose we want to check $P_3$ for safety, trace abstraction generates the f
 			smallnode/.style={inner sep=2}
 			initial text =]
 
-		\node[state](1){$\ell_1$};
-		\node[state] (2) [right= of 1] {$\ell_2$};
-		\node[state] (3) [right= of 2] {$\ell_3$};
-		\node[state] (4) [right= of 3] {$\ell_4$};
-		\node[state] (5) [right= of 4] {$\ell_5$};
-		\node[state] (6) [below= of 1] {$\ell_6$};
-		\node[state] (7) [right= of 6] {$\ell_5$};
-		\node[state] (8) [right= of 7] {$\ell_6$};
-		\node[state] (9) [right= of 8] {$\ell_5$};
-		\node[state] (10) [right= of 9] {$\ell_3$};
-		\node[state] (11) [below= of 6] {$\ell_4$};
-		\node[state] (12) [right= of 11] {$\ell_5$};
-		\node[state] (13) [right= of 12] {$\ell_3$};
-		\node[state] (14) [right= of 13] {$\ell_8$};
-		\node[state] (15) [right= of 14] {$\ell_9$};
-		\node[state] (16) [below= of 11] {$\ell_4$};
-		\node[state] (17) [right= of 16] {$\ell_6$};
+		\node[state](1){$\loc{1}$};
+		\node[state] (2) [right= of 1] {$\loc{2}$};
+		\node[state] (3) [right= of 2] {$\loc{3}$};
+		\node[state] (4) [right= of 3] {$\loc{4}$};
+		\node[state] (5) [right= of 4] {$\loc{5}$};
+		\node[state] (6) [below= of 1] {$\loc{6}$};
+		\node[state] (7) [right= of 6] {$\loc{5}$};
+		\node[state] (8) [right= of 7] {$\loc{6}$};
+		\node[state] (9) [right= of 8] {$\loc{5}$};
+		\node[state] (10) [right= of 9] {$\loc{3}$};
+		\node[state] (11) [below= of 6] {$\loc{4}$};
+		\node[state] (12) [right= of 11] {$\loc{5}$};
+		\node[state] (13) [right= of 12] {$\loc{3}$};
+		\node[state] (14) [right= of 13] {$\loc{8}$};
+		\node[state] (15) [right= of 14] {$\loc{9}$};
+		\node[state] (16) [below= of 11] {$\loc{4}$};
+		\node[state] (17) [right= of 16] {$\loc{6}$};
 
 
 		\path (1) edge node {\texttt{x := 0}} (2);
@@ -1345,11 +1346,11 @@ Of which we generate the loop relation:
 This loop relation can now be accelerated as before, resulting in loop acceleration $\psi_{L_{2}}^*$. Because this acceleration contains all loop traces of $\tau_{L_2}$ it mitigates the problem of constructing a minimal loop trace for $\tau_{L_1}$.
 
 \begin{mydef}
-	Given an error trace $\tau: s_0, s_1, \ldots, s_i, \ldots, s_j, \ldots s_n$ containing a loop \\ $\tau_{L_1}: s_i, s_{i+1}, \ldots, s_k, \ldots, s_l, \ldots, s_j$ with loop head $\ell_{L_1}$ with nested loop $\tau_{L_2}: s_k, s_{k+1}, \ldots, s_l$ with loop head $\ell_{L_2}$, that has loop relation $\psi_{L_{2}}$ and loop acceleration $\psi_{L_{2}}^*$. The nested minimal loop trace
+	Given an error trace $\tau: s_0, s_1, \ldots, s_i, \ldots, s_j, \ldots s_n$ containing a loop \\ $\tau_{L_1}: s_i, s_{i+1}, \ldots, s_k, \ldots, s_l, \ldots, s_j$ with loop head $\loc{L_1}$ with nested loop $\tau_{L_2}: s_k, s_{k+1}, \ldots, s_l$ with loop head $\loc{L_2}$, that has loop relation $\psi_{L_{2}}$ and loop acceleration $\psi_{L_{2}}^*$. The nested minimal loop trace
 	\begin{equation*}
 		\tau_{min, {L_1}} : s_i, s_{i+1}, \ldots, \psi_{L_{2}}^*, \ldots, s_l
 	\end{equation*}
-	Is constructed by replacing program statement sequence $\tau_{L_2}$ by its loop acceleration $\psi_{L_{2}}^*$ and creating a new loop exit location $\ell_{L_2}'$ in place of $\ell_{L_2}$.
+	Is constructed by replacing program statement sequence $\tau_{L_2}$ by its loop acceleration $\psi_{L_{2}}^*$ and creating a new loop exit location $\loc{L_2}'$ in place of $\loc{L_2}$.
 \end{mydef}
 
 For $\tau_{L_1}$ we get the nested minimal loop trace $\tau_{min, {L_1}}$:
@@ -1364,11 +1365,11 @@ For $\tau_{L_1}$ we get the nested minimal loop trace $\tau_{min, {L_1}}$:
 			smallnode/.style={inner sep=2}
 			initial text =]
 
-		\node[state] (2) [] {$\ell_3$};
-		\node[state] (3) [right= of 2] {$\ell_4$};
-		\node[state] (4) [right= of 3] {$\ell_5$};
-		\node[state] (5) [right= of 4] {$\ell_5'$};
-		\node[state] (6) [right= of 5] {$\ell_3$};
+		\node[state] (2) [] {$\loc{3}$};
+		\node[state] (3) [right= of 2] {$\loc{4}$};
+		\node[state] (4) [right= of 3] {$\loc{5}$};
+		\node[state] (5) [right= of 4] {$\loc{5}'$};
+		\node[state] (6) [right= of 5] {$\loc{3}$};
 
 		\path (2) edge node {\texttt{x <= 5}} (3);
 		\path (3) edge node {\texttt{x := x + 1}} (4);
