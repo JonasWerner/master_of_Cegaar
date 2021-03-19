@@ -934,21 +934,8 @@ We can now analyse this meta trace for feasibility using an SMT-solver such as S
 }
 
 \begin{figure}[H]
-	\begin{center}
-		\begin{tabular}{ccc}
-			                               & \itp{\top}                                & \loc{1} \\
-			\st{x:=0}                      &                                           &         \\
-			                               & \itp{x=0}                                 & \loc{2} \\
-			\st{y:=1}                      &                                           &         \\
-			                               & \itp{y = 1 \land x = 0}                   & \loc{3} \\
-			\accel{1}                      &                                           &         \\
-			                               & \makecell{\itp{}} & \loc{3'}                                            \\
-			\st{x>50}                      &                                           &         \\
-			                               & \itp{y = 103}                             & \loc{6} \\
-			\st{y!=103}                    &                                           &         \\
-			                               & \itp{\bot}                                & \loc{7} \\
-		\end{tabular}
-	\end{center}
+\centering
+\input{fig/fig_metatrace_and_proof.tex}
 \end{figure}
 \captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
 \label{fig:ex:t0:infproof}
@@ -960,20 +947,36 @@ With interpolant sequence:
 \begin{equation*}
 	I_{\bar{\tau_1}}: \{ \top,\ x = 0, y = 1 \land x = 0,\ ((102 < y\ \lor \ 2x + 1 \leq y)\ \land\ (y \leq 103))\ \lor\ x = 0,\ y = 103,\ \bot \}
 \end{equation*}
-We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace. To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by applying the post operator. \\
+\dd{Do you still need the line above?}
 
-Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ containing a loop spanning from $s_i$ to $s_j$ with loop head $\ell_i$, loop relation $\psi_L$, and corresponding loop acceleration $\psi^*_{L}$ and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$.
-To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$. \\
-Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\ell_L}$. From there keep applying the post operator with the previous location's interpolant and the following program statement. \\
-We get inductive interpolant sequence
+We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace. 
+\dd{say which one is missing ;)}
+To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by applying the post operator.
+
+
+Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ 
+containing a loop spanning from $s_i$ to $s_j$ 
+with loop head $\ell_i$, 
+loop relation $\psi_L$, 
+and corresponding loop acceleration $\psi^*_{L}$ 
+and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ 
+with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$.
+\dd{Given.... with: ... ? Not a complete sentence. Besides, freakishly long}
+
+To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$.
+
+Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\ell_L}$. 
+From there keep applying the post operator with the previous location's interpolant and the following program statement.
+
+We get the inductive interpolant sequence
 \begin{equation*}
 	I_\tau: \{\top,I_1,I_2, \ldots ,\ \underbrace{post(I_{\psi^*_L}, \psi^*_L)}_{I_{i}},\ \ \underbrace{post(I_{i}, s_i)}_{I_{i+1}},\ \ldots ,\ \underbrace{post(I_{j-1}, s_j)}_{I_{j}},I_{j+1}, \ldots ,I_{n-1}, \bot \}
 \end{equation*}
-Which can now be used by trace abstraction to refine the interpolant automaton.
+which can now be used by trace abstraction to refine the interpolant automaton.
 \ts{Explain why this works and why it is necessary.}
 
 We compute the missing interpolants for example program trace $\tau_1$ as follows:
-
+\dd{Strange wording. This is just the continuaton of the example, right?}
 \begin{comment}
 \begin{figure}[H]
 	\centering
@@ -993,86 +996,32 @@ We compute the missing interpolants for example program trace $\tau_1$ as follow
 \ts{The simplification of the interpolant at $\ell_6$ is wrong.}
 
 \subsection{Loops With Branching}
-The programs shown before contained loops that had only one distinct minimal loop trace. However, most programs contain loops with branching paths, caused, for example, by if and else statements. These case distinctions create multiple minimal loop traces that differ from one another. This chapter introduces our technique of dealing with branching loops. \\ \par
+The programs shown before contained loops that had only one distinct minimal loop trace. 
+However, most programs contain loops with branching paths, caused, for example, by \texttt{if} and \texttt{else} statements. 
+These case distinctions create multiple minimal loop traces that differ from one another. 
+This section introduces our technique of dealing with branching loops. 
+
 \ts{``our'' - explain which parts differ from the paper.}
-To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta_2, \ell_{1}, \ell_{9})$ created by the following program code:\\
-
-\begin{comment}
-\begin{figure}[H]
-	\begin{align*}
-		 & \texttt{1: int x := 0};                 \\
-		 & \texttt{2: while x <= 10:}              \\
-		 & \texttt{3: \hspace*{2em} if x - 4 > 1:} \\
-		 & \texttt{4: \hspace*{4em} x := x + 1;}   \\
-		 & \texttt{5: \hspace*{2em} else:}         \\
-		 & \texttt{6: \hspace*{4em} x := x + 2;}   \\
-		 & \texttt{5: \hspace*{2em} x := x + 2}    \\
-		 & \texttt{7: end while}                   \\
-		 & \texttt{8: assert x == 11;}
-	\end{align*}
-	\captionof{figure}{Example program $P_2$.}
-	\label{fig:square}
-\end{figure}
-\end{comment}
 
 \begin{figure}[H]
-	\begin{center}
-		\begin{lstlisting}[]  % Start your code-block
-
-x := 0;
-while x <= 10 {
-    if x - 4 > 1 {
-        x := x + 1;
-    } else {
-        x := x + 2;
-    }
-    x := x + 2;
-}
-assert x == 11;
-	\end{lstlisting}
-		\captionof{figure}{Example program $P_2$.}
-		\label{fig:ex:p2}
-	\end{center}
-\end{figure}
-
-With its control-flow graph $G_{P_2}$: \\
-\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.28\textwidth}
 	\centering
-	\begin{tikzpicture}[%
-			->,
-			>=stealth', shorten >=1pt, auto,
-			node distance=2.5cm, scale=1,
-			transform shape, align=center,
-			smallnode/.style={inner sep=1.4}, initial text =,
-			anchor=center]
-
-		\node[state, initial above](1){$\ell_1$};
-		\node[state] (2) [below of=1] {$\ell_2$};
-		\node[state] (3) [left of=2, xshift=-20pt] {$\ell_3$};
-		\node[state] (8) [below right of=3] {$\ell_4$};
-		\node[state] (9) [below left of=3] {$\ell_5$};
-		\node[state] (10) [below left of=8] {$\ell_6$};
-		\node[state] (11) [right of=2] {$\ell_7$};
-		\node[state] (12) [below right of=11] {$\ell_8$};
-		\node[state] (13) [below left of=11] {$\ell_{9}$};
-
-		\path (1) edge node {\st{x:=0}} (2)
-		(2) edge node[] {\st{x<=10}} (3)
-		(3) edge node[] {\st{x-4>1}} (8)
-		(3) edge node[] {\st{x-4<=1}} (9)
-		(8) edge node[] {\st{x:=x+1}} (10)
-		(9) edge node[] {\st{x:=x+2}} (10)
-		(10) edge [bend angle=55, bend right] node[] {\st{x:=x+2}} (2)
-		(2) edge node[]{\st{x>10}} (11)
-		(11) edge node[]{\st{x==11}} (12)
-		(11) edge node[]{\st{x!=11}} (13)
-		;
-	\end{tikzpicture}
-	\captionof{figure}{Control-flow graph $G_{P_2}$ of program $P_2$.}
-	\label{fig:rect}
+	\input{fig/lst_ex_p2.tex}
+	\caption{Program code.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.7\textwidth}  
+	\centering 
+	\input{fig/fig_ex_p2_cfg.tex}
+	\caption{Control-flow graph $G_{P_2}$.}    
+\end{subfigure}
+\captionof{figure}{Example program $P_2$.}\label{fig:ex:p2}
 \end{figure}
 
-It is evident that $\ell_2$ is a loop head, it is, however, not possible to apply the technique described in the previous chapter as it is not possible to construct a single minimal loop trace. The branching created by the \texttt{if} and \texttt{else} statements in the program code, translated to \texttt{assume} statements in the control-flow graph, implies infinitely many loop traces that cannot be summarized by a single minimal loop trace.
+To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta_2, \ell_{1}, \ell_{9})$ depicted in Figure~\ref{fig:ex:p2}.
+It is evident that $\ell_2$ is a loop head, it is, however, not possible to apply the technique described in the previous chapter as it is not possible to construct a single minimal loop trace. 
+The branching created by the \texttt{if} and \texttt{else} statements in the program code, translated to \texttt{assume} statements in the control-flow graph, implies infinitely many loop traces that cannot be summarized by a single minimal loop trace.
 
 \begin{mydef}
 	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an error trace $\tau: s_0s_1\ldots\ s_n$ with loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. The loop is called branching, if there is a program location $\ell_B$ where there is a statement $s_k \in \tau_L\ \text{with}\ (\ell_B, s_k, \ell_l) \in \delta$ and there is a program statement $s_l \in \tau_L\  \text{with}\ (\ell_B, s_l, \ell_m) \in \delta$.

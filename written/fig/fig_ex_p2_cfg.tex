@@ -1,0 +1,36 @@
+\begin{tikzpicture}[%
+    ->,
+    >=stealth',
+    shorten >=1pt,
+    auto,
+    node distance=2cm,
+    scale=0.9,
+    transform shape,
+    align=center,
+    smallnode/.style={inner sep=1.4},
+    initial text =,
+    anchor=center
+]
+\small
+\node[state, initial above](1){$\ell_1$};
+\node[state] (2) [below of=1] {$\ell_2$};
+\node[state] (3) [left of=2, xshift=-20pt] {$\ell_3$};
+\node[state] (8) [below right of=3] {$\ell_4$};
+\node[state] (9) [below left of=3] {$\ell_5$};
+\node[state] (10) [below left of=8] {$\ell_6$};
+\node[state] (11) [right of=2] {$\ell_7$};
+\node[state] (12) [below right of=11] {$\ell_8$};
+\node[state] (13) [below left of=11] {$\ell_{9}$};
+
+\path (1) edge node {\st{x:=0}} (2)
+(2) edge node[] {\st{x<=10}} (3)
+(3) edge node[] {\st{x-4>1}} (8)
+(3) edge node[] {\st{x-4<=1}} (9)
+(8) edge node[] {\st{x:=x+1}} (10)
+(9) edge node[] {\st{x:=x+2}} (10)
+(10) edge [bend angle=55, bend right] node[] {\st{x:=x+2}} (2)
+(2) edge node[]{\st{x>10}} (11)
+(11) edge node[]{\st{x==11}} (12)
+(11) edge node[]{\st{x!=11}} (13)
+;
+\end{tikzpicture}
