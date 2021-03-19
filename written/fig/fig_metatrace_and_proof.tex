@@ -1,13 +1,19 @@
 \begin{tabular}{ccc}
-                & \itp{\top}              & \loc{1}  \\
-    \st{x:=0}   &                         &          \\
-                & \itp{x=0}               & \loc{2}  \\
-    \st{y:=1}   &                         &          \\
-                & \itp{y = 1 \land x = 0} & \loc{3}  \\
-    \accel{1}   &                         &          \\
-                & \makecell{\itp{}}       & \loc{3'} \\
-    \st{x>50}   &                         &          \\
-                & \itp{y = 103}           & \loc{6}  \\
-    \st{y!=103} &                         &          \\
-                & \itp{\bot}              & \loc{7}  \\
+                & \itp{\top}              & \loc{1} \\
+    \st{x:=0}   &                         &         \\
+                & \itp{x=0}               & \loc{2} \\
+    \st{y:=1}   &                         &         \\
+                & \itp{y = 1 \land x = 0} & \loc{3} \\
+    \accel{1}   &                         &         \\
+                & \itp{                             %
+        \begin{array}{rl}
+                 & x = 0                               \\
+            \lor & ( y \leq 103 \; \land \;  2x + 1 \leq y) \\
+            \lor & y = 103
+        \end{array}
+    }           & \loc{3'}                          \\
+    \st{x>50}   &                         &         \\
+                & \itp{y = 103}           & \loc{6} \\
+    \st{y!=103} &                         &         \\
+                & \itp{\bot}              & \loc{7} \\
 \end{tabular}

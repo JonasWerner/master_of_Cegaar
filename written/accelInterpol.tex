@@ -919,22 +919,6 @@ The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
 \end{figure}
 We can now analyse this meta trace for feasibility using an SMT-solver such as SMTInterpol\cite{Zitat03} or z3\cite{z3}. We get the following labelling:
 
-\begin{comment}
-\begin{figure}[H]
-	\input{fig/fig_metatrace.tex}
-	\caption{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
-\end{figure}
-\end{comment}
-
-\itp{%
-\begin{array}{l}
- 102 < y \\[-1mm]
-\lor   2x + 1 \leq y \\[-1mm]
-\land  y \leq 103 \\[-1mm]
-\lor   x = 0 \\[-1mm]
-\end{array}
-}
-
 \begin{figure}[H]
 \centering
 \input{fig/fig_metatrace_and_proof.tex}
@@ -954,16 +938,18 @@ With interpolant sequence:
 We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace. 
 \dd{say which one is missing ;)}
 To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by applying the post operator.
+\dd{Explain why we need post for the before-location, use the example here}
 
-
-Given an error trace $\tau: s_0, s_1, \ldots , s_i, \ldots , s_j, \ldots , s_n$ 
-containing a loop spanning from $s_i$ to $s_j$ 
-with loop head $\loc{i}$, 
-loop relation $\psi_L$, 
-and corresponding loop acceleration $\psi^*_{L}$ 
-and its derived meta trace $\bar{\tau}: s_0, s_1, \ldots, \psi^*_{L}, \ldots , s_n$ 
-with an infeasibility proof consisting of interpolant sequence: $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$.
-\dd{Given.... with: ... ? Not a complete sentence. Besides, freakishly long}
+\newcommand{\accels}[1]{\ensuremath{\psi^{*}_{#1}}}
+Given 
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+	\item an error trace $\tau: s_0 s_1 \ldots s_i \ldots s_j \ldots s_n$ where \loc{i} is a loop head for the loop $L$ spanning from $s_i$ to $s_j$, 
+	\item a loop relation $\psi_L$ for loop $L$,
+	\item a corresponding loop acceleration \accels{L}, 
+	\item the meta trace $\bar{\tau}: s_0 s_1 \ldots s_{i-1} \ \accels{L} \ s_{j+1} \ldots s_n$ derived from $\tau$ and \accels{L}, and 
+	\item the infeasibility proof $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_i, I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$ for $\bar{\tau}$. 
+\end{itemize}
+\dd{Fix indices s.t. we have the interpolant (sic!) before and after the loop acceleration}
 
 To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$.
 
@@ -972,7 +958,7 @@ From there keep applying the post operator with the previous location's interpol
 
 We get the inductive interpolant sequence
 \begin{equation*}
-	I_\tau: \{\top,I_1,I_2, \ldots ,\ \underbrace{post(I_{\psi^*_L}, \psi^*_L)}_{I_{i}},\ \ \underbrace{post(I_{i}, s_i)}_{I_{i+1}},\ \ldots ,\ \underbrace{post(I_{j-1}, s_j)}_{I_{j}},I_{j+1}, \ldots ,I_{n-1}, \bot \}
+	I_\tau: \{\top,I_1,I_2, \ldots ,\ \underbrace{post(I_i, \accels{L})}_{I_{i}^*},\ \ \underbrace{post(I_{i}^*, s_i)}_{I_{i+1}^*},\ \ldots ,\ \underbrace{post(I_{j-1}^*, s_j)}_{I_{j}^*},I_{j+1}, \ldots ,I_{n-1}, \bot \}
 \end{equation*}
 which can now be used by trace abstraction to refine the interpolant automaton.
 \ts{Explain why this works and why it is necessary.}
@@ -998,6 +984,7 @@ We compute the missing interpolants for example program trace $\tau_1$ as follow
 \ts{The simplification of the interpolant at $\loc{6}$ is wrong.}
 
 \subsection{Loops With Branching}
+\dd{What about the part where we check if we can accelerate with branches?}
 The programs shown before contained loops that had only one distinct minimal loop trace. 
 However, most programs contain loops with branching paths, caused, for example, by \texttt{if} and \texttt{else} statements. 
 These case distinctions create multiple minimal loop traces that differ from one another. 
