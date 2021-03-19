@@ -130,6 +130,8 @@
 \newcommand{\precon}{\ensuremath{\mathit{\stateSet{\varphi}}}}
 \newcommand{\postcon}{\ensuremath{\mathit{\stateSet{\psi}}}}
 \newcommand{\accel}[1]{\ensuremath{\psi^*_{L_{#1}}}}
+\newcommand{\atm}[1]{\ensuremath{\mathcal{A}_{#1}}}
+\newcommand{\prog}[1]{\ensuremath{P_{#1}}}
 
 %%%%%%%%%%%% Numbered example environment
 % \newcounter{example}[section]
@@ -1025,83 +1027,29 @@ However, it is not possible to apply the technique described in the previous cha
 The branching created by the \texttt{if} and \texttt{else} statements in the program code, translated to \texttt{assume} statements in the control-flow graph, implies infinitely many loop traces that cannot be summarized by a single minimal loop trace.
 
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an error trace $\tau: s_0s_1\ldots\ s_n$ with loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. The loop is called branching, if there is a program location $\loc{B}$ where there is a statement $s_k \in \tau_L\ \text{with}\ (\loc{B}, s_k, \loc{l}) \in \delta$ and there is a program statement $s_l \in \tau_L\  \text{with}\ (\loc{B}, s_l, \loc{m}) \in \delta$.
+	Given a 
+	program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an 
+	error trace $\tau: s_0s_1\ldots\ s_n$ with 
+	loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. 
+	The loop is called branching if there is a program location $\loc{B}$ 
+	where there is a statement $s_k \in \tau_L\ \text{with}\ (\loc{B}, s_k, \loc{l}) \in \delta$ 
+	and there is a program statement $s_l \in \tau_L\  \text{with}\ (\loc{B}, s_l, \loc{m}) \in \delta$.
 \end{mydef}
 %\ts{Don't use quantifiers as abbreviation in text.}
-To accelerate branching loops we have to separate each loop branch into its own loop, for which it is possible to compute a minimal loop trace. \\ \par
+\dd{Makes no real sense, because the definition does not talk about a ``loop''}
+To accelerate branching loops we have to separate each loop branch into its own loop, for which it is possible to compute a minimal loop trace. 
+
+
+
 Assume that trace abstraction generated the following error trace $\tau_2$ of program $P_2$:
-
-\begin{comment}
 \begin{figure}[H]
-	\centering
-	\begin{tikzpicture}[%
-			->,
-			>=stealth', shorten >=1pt, auto,
-			node distance=1.25cm and 2.5cm, scale=1,
-			transform shape, align=center,
-			smallnode/.style={inner sep=2}
-			initial text =]
-
-		\node[state](1){$\loc{1}$};
-		\node[state] (2) [right= of 1] {$\loc{2}$};
-		\node[state] (3) [right= of 2] {$\loc{3}$};
-		\node[state] (4) [right= of 3] {$\loc{5}$};
-		\node[state] (5) [right= of 4] {$\loc{6}$};
-		\node[state] (6) [below= of 1] {$\loc{2}$};
-		\node[state] (7) [right= of 6] {$\loc{3}$};
-		\node[state] (8) [right= of 7] {$\loc{5}$};
-		\node[state] (9) [right= of 8] {$\loc{6}$};
-		\node[state] (10) [right= of 9] {$\loc{2}$};
-		\node[state] (11) [below= of 6] {$\loc{3}$};
-		\node[state] (12) [right= of 11] {$\loc{4}$};
-		\node[state] (13) [right= of 12] {$\loc{6}$};
-		\node[state] (14) [right= of 13] {$\loc{2}$};
-		\node[state] (15) [right= of 14] {$\loc{3}$};
-		\node[state] (16) [below= of 11] {$\loc{4}$};
-		\node[state] (17) [right= of 16] {$\loc{6}$};
-		\node[state] (18) [right= of 17] {$\loc{2}$};
-		\node[state] (19) [right= of 18] {$\loc{7}$};
-		\node[state] (20) [right= of 19] {$\loc{9}$};
-
-
-		\path (1) edge node {\texttt{x := 0}} (2);
-		\path (2) edge node {\texttt{x <= 10}} (3);
-		\path (3) edge node {\texttt{!x - 4 > 1}} (4);
-		\path (4) edge node {\texttt{x := x + 2}} (5);
-		\path (5) edge node {\texttt{x := x + 2}} (6);
-		\path (6) edge node[below] {\texttt{x <= 10}} (7);
-		\path (7) edge node[below] {\texttt{!x - 4 > 1}} (8);
-		\path (8) edge node[below] {\texttt{x := x + 2}} (9);
-		\path (9) edge node {\texttt{x := x + 2}} (10);
-		\path (10) edge node {\texttt{x <= 10}} (11);
-		\path (11) edge node[below] {\texttt{x - 4 > 1}} (12);
-		\path (12) edge node[below] {\texttt{x := x + 1}} (13);
-		\path (13) edge node[below] {\texttt{x := x + 2}} (14);
-		\path (14) edge node {\texttt{x <= 10}} (15);
-		\path (15) edge node {\texttt{x - 4 > 1}} (16);
-		\path (16) edge node[below] {\texttt{x := x + 1}} (17);
-		\path (17) edge node[below] {\texttt{x := x + 2}} (18);
-		\path (18) edge node[below] {\texttt{!x <= 10}} (19);
-		\path (19) edge node[below] {\texttt{x != 11}} (20);
-		;
-	\end{tikzpicture}
-	\captionof{figure}{Program trace $\tau_2$ of $P_2$}
+\begin{center}
+\input{fig/fig_ex_p2_tau2.tex}
+\end{center}
+\captionof{figure}{Program trace $\tau_2$ of $P_2$}
 \end{figure}
-\end{comment}
-
-\begin{figure}[H]
-	\begin{center}
-		\begin{tabular}{ccccccccccc}
-			\loc{1} & \st{x:=0}  & \loc{2} & \st{x<=10}  & \loc{3} & \st{x-4<=1} & \loc{5} & \st{x:=x+2} & \loc{6} & \st{x:=x+2} & \\
-			\loc{2} & \st{x<=10} & \loc{3} & \st{x-4<=1} & \loc{5} & \st{x:=x+2} & \loc{6} & \st{x:=x+2} &         &             & \\
-			\loc{2} & \st{x<=10} & \loc{3} & \st{x-4>1}  & \loc{4} & \st{x:=x+1} & \loc{6} & \st{x:=x+2} &         &             & \\
-			\loc{2} & \st{x<=10} & \loc{3} & \st{x-4>1}  & \loc{4} & \st{x:=x+1} & \loc{6} & \st{x:=x+2} &         &             & \\
-			\loc{2} & \st{x>10}  & \loc{7} & \st{x!=11}  & \loc{9} &             &         &             &         &             & \\
-		\end{tabular}
-	\end{center}
-	\captionof{figure}{Program trace $\tau_2$ of $P_2$}
-\end{figure}
-
+\dd{Note that this is not a trace -- a trace is a statement sequence}
+\dd{When you use pictures or tables as text elements, they should not be floating figures and should not have their own captions. For traces, this is sometimes (usually?) appropriate}
 
 Program location $\loc{2}$ appears five times making it a loop head with loop trace:
 \begin{align*}
@@ -1113,6 +1061,7 @@ Because \begin{itemize}
 \end{itemize}
 the loop is branching.
 We separate the loop branches by checking the program statements in the intervals between the loop head repetition and get two minimal loop traces:
+\dd{This seems rather hand-wavey}
 \begin{align*}
 	 & \tau_{L_1}:\ \st{x<=10}\st{x-4<=1}\st{x:=x+2}\st{x:=x+2} \\
 	 & \tau_{L_2}:\ \st{x<=10}\st{x-4>1}\st{x:=x+1}\st{x:=x+2}
@@ -1122,8 +1071,10 @@ With loop relations:
 	\psi_{L_{1}} & : \{(\sigma, \sigma')\ |\ \sigma[x] \leq 5 \land  \sigma'[x] = \sigma[x] + 4 \}                      \\
 	\psi_{L_{2}} & : \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \}
 \end{align*}
+\dd{It might pay of to introduce a shorthand for this, e.g., $x \leq 5 \land x'=x+4 $}
+Using these two relations we can approximate an iteration of the loop as $\tau_{L_1} \lor \tau_{L_2}$. 
+\dd{Approximate in which direction? Up or down? Over or under?}
 
-Using these two relations we can approximate an iteration of the loop as $\tau_{L_1} \lor \tau_{L_2}$. \\ \par
 As we have now sensible minimal loop traces for both branches of the loop, it is possible to compute a loop acceleration the same way as in previous chapters:
 \begin{align*}
 	\psi_{L_{1}}^* & : \{(\sigma, \sigma')\ |\ (\sigma'[x] \leq 9 \lor \sigma[x]' \leq x)\ \land\ 3\cdot \sigma'[x] + \sigma[x]\ (mod\ -4) = 0\ \land\ \sigma[x] \leq \sigma'[x] \} \\

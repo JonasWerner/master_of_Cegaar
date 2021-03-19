@@ -1,0 +1,8 @@
+\begin{tabular}{cccccccc}
+    \loc{1} & \st{x:=0}  &         &             &         &             &         &             \\
+    \loc{2} & \st{x<=10} & \loc{3} & \st{x-4<=1} & \loc{5} & \st{x:=x+2} & \loc{6} & \st{x:=x+2} \\
+    \loc{2} & \st{x<=10} & \loc{3} & \st{x-4<=1} & \loc{5} & \st{x:=x+2} & \loc{6} & \st{x:=x+2} \\
+    \loc{2} & \st{x<=10} & \loc{3} & \st{x-4>1}  & \loc{4} & \st{x:=x+1} & \loc{6} & \st{x:=x+2} \\
+    \loc{2} & \st{x<=10} & \loc{3} & \st{x-4>1}  & \loc{4} & \st{x:=x+1} & \loc{6} & \st{x:=x+2} \\
+    \loc{2} & \st{x>10}  & \loc{7} & \st{x!=11}  & \loc{9} &             &         &             \\
+\end{tabular}
