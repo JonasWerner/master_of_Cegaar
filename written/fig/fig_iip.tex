@@ -1,0 +1,62 @@
+\begin{tikzpicture}[%
+    ->,
+    >=stealth', shorten >=1pt, auto,
+    node distance=3.25cm, scale=1,
+    transform shape, align=center,
+    smallnode/.style={inner sep=2}
+    initial text =]
+
+\node[state, label=above:{$\top$}](1){$\ell_1$};
+\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
+\node[state, label=above:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 51
+    \end{aligned}$}] (3) [right of=2] {$\ell_3$};
+\node[state, label=above:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 50
+    \end{aligned}$}] (4) [right of=3] {$\ell_4$};
+\node[state, label=above:{$\begin{aligned}
+         & y + 1 = 2 \cdot x \\&\land x \leq 51
+    \end{aligned}$}] (5) [right of=4] {$\ell_5$};
+\node[state, label=above:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 51
+    \end{aligned}$}] (6) [below of=1] {$\ell_3$};
+\node[state, label=below:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 50
+    \end{aligned}$}] (7) [right of=6] {$\ell_4$};
+\node[state, label={[xshift=0.7cm]above:{$\begin{aligned}
+         & y + 1 = 2 \cdot x \\&\land x \leq 51
+    \end{aligned}$}}] (8) [right of=7] {$\ell_5$};
+\node[state, label={[xshift=0cm]above:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 51
+    \end{aligned}$}}] (9) [right of=8] {$\ell_3$};
+\node[state, label={[xshift=0cm]above:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 50
+    \end{aligned}$}}] (10) [right of=9] {$\ell_4$};
+\node[state, label=above:{$\begin{aligned}
+         & y + 1 = 2 \cdot x \\&\land x \leq 51
+    \end{aligned}$}] (11) [below of=6] {$\ell_5$};
+\node[state, label={[xshift=0cm]below:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 51
+    \end{aligned}$}}] (12) [right of=11] {$\ell_3$};
+\node[state, label={[xshift=0cm]below:{$\begin{aligned}
+         & y = 2 \cdot x + 1 \\&\land x \leq 51\ \land\ x > 50 \\
+         & \equiv y = 103
+    \end{aligned}$}}] (13) [right of=12] {$\ell_6$};
+\node[state, label=above:{$\bot$}] (14) [right of=13] {$\ell_7$};
+
+
+\path (1) edge node {\texttt{x := 0}} (2);
+\path (2) edge node {\texttt{y := 1}} (3);
+\path (3) edge node {\texttt{x <= 50}} (4);
+\path (4) edge node {\texttt{x := x + 1}} (5);
+\path (5) edge node[left, xshift=-.7cm] {\texttt{y := y + 2}} (6);
+\path (6) edge node[below] {\texttt{x <= 50}} (7);
+\path (7) edge node[below] {\texttt{x := x + 1}} (8);
+\path (8) edge node[below] {\texttt{y := y + 2}} (9);
+\path (9) edge node {\texttt{x <= 50}} (10);
+\path (10) edge node {\texttt{x := x + 1}} (11);
+\path (11) edge node[below] {\texttt{y := y + 2}} (12);
+\path (12) edge node[below] {\texttt{!x <= 50}} (13);
+\path (13) edge node[below] {\texttt{y != 103}} (14);
+;
+\end{tikzpicture}

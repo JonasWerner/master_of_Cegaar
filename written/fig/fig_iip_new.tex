@@ -1,0 +1,33 @@
+\begin{tabular}{ccc}
+                & \itp{\top}                                  & \loc{1} \\
+    \st{x:=0}   &                                             &         \\
+                & \itp{x=0}                                   & \loc{2} \\
+    \st{y:=1}   &                                             &         \\
+    \midrule
+                & \itp{y = 2x + 1 \land x \leq 51}            & \loc{3} \\
+    \st{x<=50}  &                                             &         \\
+                & \makecell{\itp{y = 2x + 1 \land x \leq 50}} & \loc{4} \\
+    \st{x:=x+1} &                                             &         \\
+                & \itp{y + 1 = 2x}                            & \loc{5} \\
+    \st{y:=y+2} &                                             &         \\
+    \midrule
+                & \itp{y = 2x + 1 \land x \leq 51}            & \loc{3} \\
+    \st{x<=50}  &                                             &         \\
+                & \makecell{\itp{y = 2x + 1 \land x \leq 50}} & \loc{4} \\
+    \st{x:=x+1} &                                             &         \\
+                & \itp{y + 1 = 2x}                            & \loc{5} \\
+    \st{y:=y+2} &                                             &         \\
+    \midrule
+                & \itp{y = 2x + 1 \land x \leq 51}            & \loc{3} \\
+    \st{x<=50}  &                                             &         \\
+                & \makecell{\itp{y = 2x + 1 \land x \leq 50}} & \loc{4} \\
+    \st{x:=x+1} &                                             &         \\
+                & \itp{y + 1 = 2x}                            & \loc{5} \\
+    \st{y:=y+2} &                                             &         \\
+    \midrule
+                & \itp{y = 2x + 1 \land x \leq 51}            & \loc{3} \\
+    \st{x>50}   &                                             &         \\
+                & \itp{\begin{array}{ll} & y = 2x + 1 \land x \leq 51 \land x > 50 \\[-1mm] \equiv & y = 103 \land x = 51 \end{array}}             & \loc{6} \\
+    \st{y!=103} &                                             &         \\
+                & \itp{\bot}                                  & \loc{7}
+\end{tabular}

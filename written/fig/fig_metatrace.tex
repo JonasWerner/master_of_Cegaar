@@ -1,0 +1,32 @@
+\begin{tikzpicture}[%
+    ->,
+    >=stealth', shorten >=1pt, auto,
+    node distance=2.5cm, scale=1,
+    transform shape, align=center,
+    smallnode/.style={inner sep=1.4}
+    initial text =]
+
+\node[state, label=above:{$\top$}](1){$\ell_1$};
+
+\node[state, label=above:{$x = 0$}] (2) [right of=1] {$\ell_2$};
+
+\node[state, label={above:$\begin{aligned}
+                     & y = 1 \\ \land\ &x = 0
+                \end{aligned}$}] (3) [right of=2] {$\ell_3$};
+
+\node[state, label={[align=center]above:
+            $\begin{aligned}
+                    ((102 < y\  & \lor \ 2x + 1 \leq y)\ \\ \land\ (y &\leq 103)) \\ \lor \ x &= 0\ \\
+                \end{aligned}$}] (4) [right of=3, xshift=0.5cm] {$\ell_3'$};
+
+\node[state, label=above:{$y = 103$}] (5) [right of=4, xshift=0.5cm] {$\ell_6$};
+
+\node[state, label=above:{$\bot$}] (6) [right of=5, xshift=0.5cm] {$\ell_7$};
+
+\path (1) edge node {\texttt{x := 0}} (2); \\
+\path (2) edge node {\texttt{y := 1}} (3); \\
+\path (3) edge node {$\psi^*_{L_1}$} (4);\\
+\path (4) edge node[] {\texttt{!x <= 50}} (5); \\
+\path (5) edge node {\texttt{y != 103}} (6); \\
+;
+\end{tikzpicture}
