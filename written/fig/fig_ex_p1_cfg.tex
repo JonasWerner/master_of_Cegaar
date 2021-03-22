@@ -1,0 +1,27 @@
+	\begin{tikzpicture}[%
+			->,
+			>=stealth', shorten >=1pt, auto,
+			node distance=1cm and 2cm, scale=1,
+			transform shape, align=center,
+			smallnode/.style={inner sep=1.4},
+			anchor=center]
+
+		\node[state, initial above, initial text =](1){$\loc{1}$};
+		\node[state] (2) [below= of 1] {$\loc{2}$};
+		\node[state] (7) [below= of 2] {$\loc{3}$};
+		\node[state] (3) [left= of 7] {$\loc{4}$};
+		\node[state] (8) [below= of 3] {$\loc{5}$};
+		\node[state] (4) [right= of 7] {$\loc{6}$};
+		\node[state] (5) [below= of 4] {$\loc{7}$};
+		\node[state] (6) [below= of 7] {$\loc{8}$};
+
+		\path (1) edge node {\st{x:=0}} (2)
+		(2) edge node {\st{y:=1}} (7)
+		(7) edge node[] {\st{x<=50}} (3)
+		(3) edge node[] {\st{x:=x+1}} (8)
+		(8) edge[bend right] node[] {\st{y:=y+2}} (7)
+		(7) edge node {\st{!x<=50}} (4)
+		(4) edge node[] {\st{y!=103}} (5)
+		(4) edge node[] {\st{y==103}} (6)
+		;
+	\end{tikzpicture}

@@ -1,0 +1,29 @@
+
+		\begin{tikzpicture}[%
+    ->,
+    >=stealth',
+    shorten >=1pt,
+    auto,
+    node distance=2.5cm,
+    scale=1,
+    transform shape,
+    align=center,
+    smallnode/.style={inner sep=1.4},
+    initial text =,
+    anchor=center]
+
+			\node[state, initial above, initial text =](1){$\loc{1}$};
+			\node[state] (2) [below of=1] {$\loc{2}$};
+			\node[state] (3) [left of=2] {$\loc{3}$};
+			\node[state] (4) [right of=2] {$\loc{4}$};
+			\node[state] (5) [below left of=4] {$\loc{5}$};
+			\node[state, accepting] (6) [below right of=4] {$\loc{6}$};
+
+			\path (1) edge node []{\st{x:=0}} (2)
+			(2) edge [bend right] node []{\st{x<6}} (3)
+			(3) edge [bend right] node []{\st{x:=x+2}} (2)
+			(2) edge node {\st{x>=6}} (4)
+			(4) edge node {\st{x==6}} (5)
+			(4) edge node {\st{x!=6}} (6)
+			;
+		\end{tikzpicture}

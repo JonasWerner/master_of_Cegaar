@@ -291,63 +291,40 @@ For brevity's sake we use \texttt{bexpr} instead of \texttt{assume bexpr}.
 \end{mydef}
 In this paper we will use control-flow graphs to represent programs.
 \begin{example}
-	To illustrate programs and control-flow graphs, consider the following code:
-	\begin{figure}[H]
-		\begin{lstlisting}[]  % Start your code-block
+	To illustrate programs and control-flow graphs, consider the following code: \\
+	\begin{minipage}{0.35\textwidth}
+		\centering
+		\input{fig/lst_ex_p0.tex}
+		\captionof{figure}{Example program $P_0$.}\label{fig:ex:p2}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.55\textwidth}
+		\centering
+		The set of program statements for $P_0$ is:
+		\begin{align*}
+			\Sigma = & \{ \st{x:=0}, \st{x<6}, \st{x:=x+2}, \\ &\st{x>=6}, \st{x==6}, \st{x!=6} \}
+		\end{align*}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.35\textwidth}
+		$P_0$ is represented by the control-flow graph\\  $G_{0} = (Loc_P, \delta_P, \ell_\init, \ell_\err)$ with
+		\begin{itemize}
+			\item $\Loc_0 = \{ \loc{1}, \loc{2}, \loc{3}, \loc{4}, \loc{5}, \loc{6} \}$
+			\item $\begin{aligned}[t]	\delta_0 = \{ &(\loc{1},\st{x:=0},\loc{2}), \\& (\loc{2},\st{x<6},\loc{3}), \\& (\loc{3},\st{x:=x+2},\loc{2}), \\ &(\loc{2},\st{x>=6},\loc{4}), \\& (\loc{4},\st{x==6},\loc{5}), \\& (\loc{4},\st{x!=6},\loc{6})\} \end{aligned}$
+			\item  $\ell_\init = \loc{1}$
+			\item $\loc{err} = \loc{6}$
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.55\textwidth}
+		\centering
+		\input{fig/fig_ex_p0_cfg}
+		\captionof{figure}{Example program $P_2$.}\label{fig:ex:p2}
+	\end{minipage}
 
-x := 0;
-while x < 6 {
-	x := x + 2;
-}
-assert x == 6;
-	\end{lstlisting}
-		\captionof{figure}{Program code $P_0$.}
-		\label{fig:ex:p0}
-	\end{figure}
 	% \dd{If you want I can add the listing code for nice looking Boogie programs}
-
-	Hence, the set of program statements for $P_0$ is:
-	\begin{equation*}
-		\Sigma = \{ \st{x:=0}, \st{x<6}, \st{x:=x+2}, \st{x>=6}, \st{x==6}, \st{x!=6} \}
-	\end{equation*}
-
-	$P_0$ is represented by the control-flow graph $G_{0} = (Loc_P, \delta_P, \ell_\init, \ell_\err)$ with
-	\begin{itemize}
-		\item $\Loc_0 = \{ \loc{1}, \loc{2}, \loc{3}, \loc{4}, \loc{5}, \loc{6} \}$
-		\item $\begin{aligned}[t]	\delta_0 = \{ &(\loc{1},\st{x:=0},\loc{2}), (\loc{2},\st{x<6},\loc{3}), (\loc{3},\st{x:=x+2},\loc{2}), \\ &(\loc{2},\st{x>=6},\loc{4}), (\loc{4},\st{x==6},\loc{5}), (\loc{4},\st{x!=6},\loc{6})\} \end{aligned}$
-		\item  $\ell_\init = \loc{1}$
-		\item $\loc{err} = \loc{6}$
-	\end{itemize}
 	%\dd{Do you want to use our fancy edge labels? I added them, they look like this \protect\stn{x:=0}}
 
-	And the following graphical representation:
-	\begin{figure}[H]
-		\centering
-		\begin{tikzpicture}[%
-				->,
-				>=stealth', shorten >=1pt, auto,
-				node distance=3cm, scale=1,
-				transform shape, align=center,
-				smallnode/.style={inner sep=1.4}, anchor=center]
-
-			\node[state, initial above, initial text =](1){$\loc{1}$};
-			\node[state] (2) [below of=1] {$\loc{2}$};
-			\node[state] (3) [left of=2] {$\loc{3}$};
-			\node[state] (4) [right of=2] {$\loc{4}$};
-			\node[state] (5) [below of=4] {$\loc{5}$};
-			\node[state, accepting] (6) [right of=4] {$\loc{6}$};
-
-			\path (1) edge node []{\st{x:=0}} (2)
-			(2) edge [bend right] node []{\st{x<6}} (3)
-			(3) edge [bend right] node []{\st{x:=x+2}} (2)
-			(2) edge node {\st{x>=6}} (4)
-			(4) edge node {\st{x==6}} (5)
-			(4) edge node {\st{x!=6}} (6)
-			;
-		\end{tikzpicture}
-		\captionof{figure}{Control-flow graph $G_{P_0}$ of program $P_0$.}
-		\label{fig:ex:p0:cfg}
-	\end{figure}
 \end{example}
 
 % \dd{It is useful to wrap all the function symbols in Latex macros}
@@ -374,10 +351,10 @@ Program statements can change the valuation of variables, transitioning one prog
 			\{(\sigma, \sigma')\ |\ \sigma' = \sigma[x \mapsto \mathcal{I}(expr)(\sigma)]\} ,                                                             & \text{if}\ s \equiv \texttt{x := expr}           \\
 			\{(\sigma, \sigma')\ |\ \exists \sigma''\ \text{where}\ (\sigma, \sigma'') \in \rho_{s_1}\ \text{and}\ (\sigma'', \sigma') \in \rho_{s_2} \}, & \text{if}\ s \equiv \texttt{$s_1;s_2$}
 		\end{cases}
-	$$\ts{You already used $\rho$ for valuation.}
-	\ts{What is an interpretation function?}
+	$$
 \end{mydef}
-
+%	\ts{You already used $\rho$ for valuation.}
+\ts{What is an interpretation function?}
 \begin{mydef}
 	\jw{Sets of States.}
 \end{mydef}
@@ -542,41 +519,18 @@ Interpolanten $\rightarrow$ Sequenzinterpolanten \cite{10.1007/11691372_33} $\ri
 \dd{Even if this is todo, the example is not really helpful for an interpolant. And, if you want to be complete, you could add the definition of (binary or sequence) interpolants}
 
 
-\subsection{Interpolating Trace Abstraction}
-\dd{Why is this section called \emph{Interpolating} TA? Why not just TA?}
+\subsection{Trace Abstraction}
+%\dd{Why is this section called \emph{Interpolating} TA? Why not just TA?}
 By combining infeasibility proofs and interpolant computation we can define trace abstraction as a technique for proving or disproving safety for a given program by checking for reachability of an error location.
 \ts{What do you want to say with this phrase?}
 Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and its control-flow graph $G_P$, we can use trace abstraction with interpolation~\cite{10.1007/978-3-642-03237-0_7} to check, whether the error location $\loc{err}$ is reachable or not:
 \begin{itemize}
 	\item[1.] Search $G_P$ for a program trace that starts at $\ell_\init$ and ends in $\ell_\err$:
-		\begin{figure}[H]
-			\centering
-			\begin{tikzpicture}[%
-					->,
-					>=stealth', shorten >=1pt, auto,
-					node distance=2.5cm, scale=1,
-					transform shape, align=center,
-					smallnode/.style={inner sep=2}
-					initial text =]
-
-				\node[state](1){$\ell_\init$};
-
-				\node[state] (2) [right of=1] {$\loc{1}$};
-
-				\node[] (3) [right of=2] {$\cdots$};
-
-				\node[state] (4) [right of=3] {$\loc{n-1}$};
-
-				\node[state] (5) [right of=4] {$\ell_\err$};
-
-
-				\path (1) edge node {\texttt{$s_0$}} (2);
-				\path (2) edge node {$s_1$} (3);
-				\path (3) edge node {$s_{n-1}$} (4);
-				\path (4) edge node {$s_n$} (5);
-				;
-			\end{tikzpicture}
-		\end{figure}
+		\begin{center}
+			\begin{tabular}{ccccccccc}
+				\loc{\init} & \st{$s_0$} & \loc{1} & \st{$s_1$} & $\ldots$ & \st{$s_{n-1}$} & \loc{n-1} & \st{$s_n$} & \loc{\err}
+			\end{tabular}
+		\end{center}
 
 	\item[2.] Prove feasibility. \\
 		In case that the trace is proven feasible, the program is incorrect, if the trace is infeasible construct an infeasibility proof.
@@ -604,142 +558,44 @@ A remedy to that is the computation of a loop acceleration in form of the reflex
 \dd{Why?}
 This chapter introduces loops as traces and relations, and how a loop relation can be used to compute a reflexive transitive closure.
 \ts{Explain why you don't just take the original loops, what is the difference?}
+\begin{example}
+	Assume we are given the program $P_1 = (Loc_1, \delta_1, \loc{1}, \loc{7})$ created from the following program code:
+	\begin{minipage}{0.35\textwidth}
+		\begin{figure}[H]
+			\input{fig/lst_ex_p1}
 
-Assume we are given the program $P_1 = (Loc_1, \delta_1, \loc{1}, \loc{7})$ created from the following program code:
+			\begin{center}
 
-\begin{figure}[H]
+				\captionof{figure}{Example program $P_1$.}
+				\label{fig:ex:p1}
+			\end{center}
+		\end{figure}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.6\textwidth}
+		With its control-flow graph $G_{P_1}$: \\
+		\begin{figure}[H]
+			\centering
+			\input{fig/fig_ex_p1_cfg.tex}
+			\captionof{figure}{Control-flow graph $G_{P_1}$ of program $P_1$.}
+			\label{fig:ex:p1:cfg}
+		\end{figure}
+	\end{minipage}
+	\\
+	Assume trace abstraction generates program trace $\tau_1$:
 	\begin{center}
-		\begin{lstlisting}[]  % Start your code-block
-
-x := 0;
-y := 1;
-while x <= 50 {
-    x := x + 1;
-    y := y + 2;
-}
-assert y == 103;
-	\end{lstlisting}
-		\captionof{figure}{Example program $P_1$.}
-		\label{fig:ex:p1}
+		\begin{tabular}{cccccc}
+			\loc{1} & \st{x:=0}  & \loc{2} & \st{y:=0}   &         &             \\
+			\loc{3} & \st{x<=50} & \loc{4} & \st{x:=x+1} & \loc{5} & \st{y:=y+2} \\
+			\loc{3} & \st{x<=50} & \loc{4} & \st{x:=x+1} & \loc{5} & \st{y:=y+2} \\
+			\loc{3} & \st{x<=50} & \loc{4} & \st{x:=x+1} & \loc{5} & \st{y:=y+2} \\
+			\loc{3} & \st{x>50}  & \loc{6} & \st{y!=103} & \loc{7} &             \\
+		\end{tabular}
 	\end{center}
-\end{figure}
+	It is noticeable that program location $\loc{3}$ appears repeatedly in the trace indicating that it is an entry point for a loop.
+	From this entry point, the so-called loop head, one can extract a loop trace.
+\end{example}
 
-\begin{comment}
-\begin{figure}[H]
-	\begin{align*}
-		 & \texttt{1: int x := 0};               \\
-		 & \texttt{2: int y := 1};               \\
-		 & \texttt{3: while x <= 50:}            \\
-		 & \texttt{4: \hspace*{2em} x := x + 1;} \\
-		 & \texttt{5: \hspace*{2em} y := y + 2;} \\
-		 & \texttt{6: end while}                 \\
-		 & \texttt{7: assert y == 103;}
-	\end{align*}
-\end{figure}
-\end{comment}
-With its control-flow graph $G_{P_1}$: \\
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}[%
-			->,
-			>=stealth', shorten >=1pt, auto,
-			node distance=1cm and 3cm, scale=1,
-			transform shape, align=center,
-			smallnode/.style={inner sep=1.4},
-			anchor=center]
-
-		\node[state, initial above, initial text =](1){$\loc{1}$};
-		\node[state] (2) [below= of 1] {$\loc{2}$};
-		\node[state] (7) [below= of 2] {$\loc{3}$};
-		\node[state] (3) [left= of 7] {$\loc{4}$};
-		\node[state] (8) [below= of 3] {$\loc{5}$};
-		\node[state] (4) [right= of 7] {$\loc{6}$};
-		\node[state] (5) [below= of 4] {$\loc{7}$};
-		\node[state] (6) [right= of 4] {$\loc{8}$};
-
-		\path (1) edge node {\st{x := 0}} (2)
-		(2) edge node {\st{y := 1}} (7)
-		(7) edge node[] {\st{x <= 50}} (3)
-		(3) edge node[] {\st{x := x + 1}} (8)
-		(8) edge[bend right] node[] {\st{y := y + 2}} (7)
-		(7) edge node {\st{!x <= 50}} (4)
-		(4) edge node {\st{y != 103}} (5)
-		(4) edge node {\st{y == 103}} (6)
-		;
-	\end{tikzpicture}
-	\captionof{figure}{Control-flow graph $G_{P_1}$ of program $P_1$.}
-	\label{fig:ex:p1:cfg}
-\end{figure}
-Assume trace abstraction generates program trace $\tau_1$:
-\begin{comment}
-
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}[%
-			->,
-			>=stealth', shorten >=1pt, auto,
-			node distance=1.25cm and 2.5cm, scale=1,
-			transform shape, align=center,
-			smallnode/.style={inner sep=2}
-			initial text =]
-
-		\node[state](1){$\loc{1}$};
-		\node[state] (2) [right= of 1] {$\loc{2}$};
-		\node[state] (3) [right= of 2] {$\loc{3}$};
-		\node[state] (4) [right= of 3] {$\loc{4}$};
-		\node[state] (5) [right= of 4] {$\loc{5}$};
-		\node[state] (6) [below= of 1] {$\loc{3}$};
-		\node[state] (7) [right= of 6] {$\loc{4}$};
-		\node[state] (8) [right= of 7] {$\loc{5}$};
-		\node[state] (9) [right= of 8] {$\loc{3}$};
-		\node[state] (10) [right= of 9] {$\loc{4}$};
-		\node[state] (11) [below= of 6] {$\loc{5}$};
-		\node[state] (12) [right= of 11] {$\loc{3}$};
-		\node[state] (13) [right= of 12] {$\loc{6}$};
-		\node[state] (14) [right= of 13] {$\loc{7}$};
-
-
-		\path (1) edge node {\texttt{x := 0}} (2);
-		\path (2) edge node {\texttt{y := 1}} (3);
-		\path (3) edge node {\texttt{x <= 50}} (4);
-		\path (4) edge node {\texttt{x := x + 1}} (5);
-		\path (5) edge node {\texttt{y := y + 2}} (6);
-		\path (6) edge node[below] {\texttt{x <= 50}} (7);
-		\path (7) edge node[below] {\texttt{x := x + 1}} (8);
-		\path (8) edge node[below] {\texttt{y := y + 2}} (9);
-		\path (9) edge node {\texttt{x <= 50}} (10);
-		\path (10) edge node {\texttt{x := x + 1}} (11);
-		\path (11) edge node[below] {\texttt{y := y + 2}} (12);
-		\path (12) edge node[below] {\texttt{!x <= 50}} (13);
-		\path (13) edge node[below] {\texttt{y != 103}} (14);
-		;
-	\end{tikzpicture}
-	\captionof{figure}{Program Trace $\tau_1$ of $P_1$}
-\end{figure}
-
-
-$$
-	\begin{array}{l}
-		\loc{1}\st{x:=0}\loc{2}\st{y:=1}                      \\
-		\loc{3}\st{x<=50}\loc{4}\st{x:=x+1}\loc{5}\st{y:=y+2} \\
-		\loc{3}\st{x<=50}\loc{4}\st{x:=x+1}\loc{5}\st{y:=y+2} \\
-		\loc{3}\st{x<=50}\loc{4}\st{x:=x+1}\loc{5}\st{y:=y+2} \\
-		\loc{3}\st{x>50}\loc{6}\st{y!=103}\loc{7}             \\
-	\end{array}
-$$
-\end{comment}
-
-\begin{center}
-	\begin{tabular}{cccccc}
-		\loc{1} & \st{x:=0}  & \loc{2} & \st{y:=0}   &         &             \\
-		\loc{3} & \st{x<=50} & \loc{4} & \st{x:=x+1} & \loc{5} & \st{y:=y+2} \\
-		\loc{3} & \st{x<=50} & \loc{4} & \st{x:=x+1} & \loc{5} & \st{y:=y+2} \\
-		\loc{3} & \st{x<=50} & \loc{4} & \st{x:=x+1} & \loc{5} & \st{y:=y+2} \\
-		\loc{3} & \st{x>50}  & \loc{6} & \st{y!=103} & \loc{7} &             \\
-	\end{tabular}
-\end{center}
-It is noticeable that program location $\loc{3}$ appears repeatedly in the trace indicating that it is an entry point for a loop.
-From this entry point, the so-called loop head, one can extract a loop trace.
 \begin{mydef}
 	Given a program trace $\tau: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$. \\ The sub trace $s_i, s_{i+1}\ldots, s_j$ is called a loop trace if $(\loc{i}, s_i, \loc{i+1}) \in \delta\ $ and $(\loc{j-1}, s_j, \loc{i}) \in \delta $. $\loc{i}$ is called the loop head.
 \end{mydef}
@@ -805,7 +661,7 @@ With the minimal loop trace it is possible to formulate the effect one iteration
 
 For $\tau_{L_1}$ we get the following loop relation:
 \begin{align*}
-	\psi_{L_1} & :	\st{x <= 50}; \st{x := x + 1}; \st{y := y + 2} \                                                                 \\
+	\psi_{L_1} & :	\st{x<=50}; \st{x:=x+1}; \st{y:=y+ 2} \                                                                          \\
 	           & = \{(\sigma, \sigma')\ |\ \sigma[x] \leq 50 \land \sigma'[x] = \sigma[x] + 1 \land \sigma'[y] = \sigma'[y] + 2 \}
 \end{align*}
 The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces.
@@ -920,12 +776,11 @@ The error trace $\tau_1$ creates the meta trace $\bar{\tau_1}$:
 We can now analyse this meta trace for feasibility using an SMT-solver such as SMTInterpol\cite{Zitat03} or z3\cite{z3}. We get the following labelling:
 
 \begin{figure}[H]
-\centering
-\input{fig/fig_metatrace_and_proof.tex}
+	\centering
+	\input{fig/fig_metatrace_and_proof.tex}
 \end{figure}
 \captionof{figure}{Meta trace $\bar{\tau_1}$ generated from $\tau_1$ and $\psi^*_{L_1}$ and its infeasibility proof.}
 \label{fig:ex:t0:infproof}
-\jw{itp does not linebreak :(}
 %\dd{Do not capitalize captions. They are just normal sentences.}
 
 
@@ -935,25 +790,25 @@ With interpolant sequence:
 \end{equation*}
 \dd{Do you still need the line above?}
 
-We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace. 
+We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace.
 \dd{say which one is missing ;)}
 To remedy this, we derive an inductive interpolant sequence $I_{\tau_1}$ by applying the post operator.
 \dd{Explain why we need post for the before-location, use the example here}
 
 \newcommand{\accels}[1]{\ensuremath{\psi^{*}_{#1}}}
-Given 
+Given
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
-	\item an error trace $\tau: s_0 s_1 \ldots s_i \ldots s_j \ldots s_n$ where \loc{i} is a loop head for the loop $L$ spanning from $s_i$ to $s_j$, 
+	\item an error trace $\tau: s_0 s_1 \ldots s_i \ldots s_j \ldots s_n$ where \loc{i} is a loop head for the loop $L$ spanning from $s_i$ to $s_j$,
 	\item a loop relation $\psi_L$ for loop $L$,
-	\item a corresponding loop acceleration \accels{L}, 
-	\item the meta trace $\bar{\tau}: s_0 s_1 \ldots s_{i-1} \ \accels{L} \ s_{j+1} \ldots s_n$ derived from $\tau$ and \accels{L}, and 
-	\item the infeasibility proof $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_i, I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$ for $\bar{\tau}$. 
+	\item a corresponding loop acceleration \accels{L},
+	\item the meta trace $\bar{\tau}: s_0 s_1 \ldots s_{i-1} \ \accels{L} \ s_{j+1} \ldots s_n$ derived from $\tau$ and \accels{L}, and
+	\item the infeasibility proof $I_{\bar{\tau}}: \{\top, I_1, I_2, \ldots , I_i, I_{\psi^*_{L}}, \ldots , I_{n-1}, \bot \}$ for $\bar{\tau}$.
 \end{itemize}
 \dd{Fix indices s.t. we have the interpolant (sic!) before and after the loop acceleration}
 
 To construct an inductive proof of infeasibility for $\tau$ we need inductive interpolants for the loop statements $s_i, \ldots , s_j$ that were replaced by $\psi^*_{L}$.
 
-Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\loc{L}}$. 
+Firstly, compute post($I_{\psi^*_L}$, $\psi^*_L$) as the loop entry interpolant $I_{\loc{L}}$.
 From there keep applying the post operator with the previous location's interpolant and the following program statement.
 
 We get the inductive interpolant sequence
@@ -975,65 +830,65 @@ We compute the missing interpolants for example program trace $\tau_1$ as follow
 
 \begin{figure}[H]
 	\begin{center}
-	\input{fig/fig_iip_new.tex}
+		\input{fig/fig_iip_new.tex}
 	\end{center}
 \end{figure}
 \captionof{figure}{Program trace $\tau_1$ of $P_1$ with inductive infeasibility proof.}
 \label{fig:ex:t0:infproof}
 
-\ts{The simplification of the interpolant at $\loc{6}$ is wrong.}
+% \ts{The simplification of the interpolant at $\loc{6}$ is wrong.}
 
 \subsection{Loops With Branching}
 \dd{What about the part where we check if we can accelerate with branches?}
-The programs shown before contained loops that had only one distinct minimal loop trace. 
-However, most programs contain loops with branching paths, caused, for example, by \texttt{if} and \texttt{else} statements. 
-These case distinctions create multiple minimal loop traces that differ from one another. 
-This section introduces our technique of dealing with branching loops. 
+The programs shown before contained loops that had only one distinct minimal loop trace.
+However, most programs contain loops with branching paths, caused, for example, by \texttt{if} and \texttt{else} statements.
+These case distinctions create multiple minimal loop traces that differ from one another.
+This section introduces our technique of dealing with branching loops.
 
 \ts{``our'' - explain which parts differ from the paper.}
 
 \begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.28\textwidth}
 	\centering
-	\input{fig/lst_ex_p2.tex}
-	\caption{Program code.}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.7\textwidth}  
-	\centering 
-	\input{fig/fig_ex_p2_cfg.tex}
-	\caption{Control-flow graph $G_{P_2}$.}    
-\end{subfigure}
-\captionof{figure}{Example program $P_2$.}\label{fig:ex:p2}
+	\begin{subfigure}{0.3\textwidth}
+		\centering
+		\input{fig/lst_ex_p2.tex}
+		\caption{Program code.}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.6\textwidth}
+		\centering
+		\input{fig/fig_ex_p2_cfg.tex}
+		\caption{Control-flow graph $G_{P_2}$.}
+	\end{subfigure}
+	\captionof{figure}{Example program $P_2$.}\label{fig:ex:p2}
 \end{figure}
 
 To illustrate branching loops, assume we are given program $P_2 = (Loc_2, \delta_2, \loc{1}, \loc{9})$ depicted in Figure~\ref{fig:ex:p2}.
 It is evident that \loc{2} is a loop head.
-However, it is not possible to apply the technique described in the previous chapter as it is not possible to construct a single minimal loop trace. 
+However, it is not possible to apply the technique described in the previous chapter as it is not possible to construct a single minimal loop trace.
 The branching created by the \texttt{if} and \texttt{else} statements in the program code, translated to \texttt{assume} statements in the control-flow graph, implies infinitely many loop traces that cannot be summarized by a single minimal loop trace.
 
 \begin{mydef}
-	Given a 
-	program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an 
-	error trace $\tau: s_0s_1\ldots\ s_n$ with 
-	loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$. 
-	The loop is called branching if there is a program location $\loc{B}$ 
-	where there is a statement $s_k \in \tau_L\ \text{with}\ (\loc{B}, s_k, \loc{l}) \in \delta$ 
+	Given a
+	program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and an
+	error trace $\tau: s_0s_1\ldots\ s_n$ with
+	loop trace $\tau_L: s_i, s_{i+1}, \ldots, s_j$.
+	The loop is called branching if there is a program location $\loc{B}$
+	where there is a statement $s_k \in \tau_L\ \text{with}\ (\loc{B}, s_k, \loc{l}) \in \delta$
 	and there is a program statement $s_l \in \tau_L\  \text{with}\ (\loc{B}, s_l, \loc{m}) \in \delta$.
 \end{mydef}
 %\ts{Don't use quantifiers as abbreviation in text.}
 \dd{Makes no real sense, because the definition does not talk about a ``loop''}
-To accelerate branching loops we have to separate each loop branch into its own loop, for which it is possible to compute a minimal loop trace. 
+To accelerate branching loops we have to separate each loop branch into its own loop, for which it is possible to compute a minimal loop trace.
 
 
 
 Assume that trace abstraction generated the following error trace $\tau_2$ of program $P_2$:
 \begin{figure}[H]
-\begin{center}
-\input{fig/fig_ex_p2_tau2.tex}
-\end{center}
-\captionof{figure}{Program trace $\tau_2$ of $P_2$}
+	\begin{center}
+		\input{fig/fig_ex_p2_tau2.tex}
+	\end{center}
+	\captionof{figure}{Program trace $\tau_2$ of $P_2$}
 \end{figure}
 \dd{Note that this is not a trace -- a trace is a statement sequence}
 \dd{When you use pictures or tables as text elements, they should not be floating figures and should not have their own captions. For traces, this is sometimes (usually?) appropriate}
@@ -1059,7 +914,7 @@ With loop relations:
 	\psi_{L_{2}} & : \{(\sigma, \sigma')\ |\ \sigma[x] \leq 10 \land \sigma[x] > 5 \land  \sigma'[x] = \sigma[x] + 3 \}
 \end{align*}
 \dd{It might pay of to introduce a shorthand for this, e.g., $x \leq 5 \land x'=x+4 $}
-Using these two relations we can approximate an iteration of the loop as $\tau_{L_1} \lor \tau_{L_2}$. 
+Using these two relations we can approximate an iteration of the loop as $\tau_{L_1} \lor \tau_{L_2}$.
 \dd{Approximate in which direction? Up or down? Over or under?}
 
 As we have now sensible minimal loop traces for both branches of the loop, it is possible to compute a loop acceleration the same way as in previous chapters:
@@ -1164,56 +1019,21 @@ Firstly, we need to define the notion of nested loops in detail.
 
 To illustrate this definition further, assume we are given the following program $P_3$: \\
 \begin{figure}[H]
-	\begin{align*}
-		 & \texttt{1: int x := 0};                \\
-		 & \texttt{2: int y := 0};                \\
-		 & \texttt{3: while x < 5:}               \\
-		 & \texttt{4: \hspace*{2em} x := x + 1;}  \\
-		 & \texttt{5: \hspace*{2em} while y < 4:} \\
-		 & \texttt{6: \hspace*{4em} y := y + 2;}  \\
-		 & \texttt{7: \hspace*{2em} end while}    \\
-		 & \texttt{8: end while}                  \\
-		 & \texttt{9: assert y == 4;}
-	\end{align*}
-	\captionof{figure}{example program $P_3$.}
-	\label{fig:square}
-\end{figure}
-With corresponding control-flow graph $G_{P_3}$:
-\begin{figure}[H]
 	\centering
-	\begin{tikzpicture}[%
-			->,
-			>=stealth', shorten >=1pt, auto,
-			node distance=2.5cm, scale=1,
-			transform shape, align=center,
-			smallnode/.style={inner sep=1.4},
-			initial text =, anchor=center]
-
-		\node[state, initial above](1){$\loc{1}$};
-		\node[state] (2) [below of=1] {$\loc{2}$};
-		\node[state] (3) [below of=2] {$\loc{3}$};
-		\node[state] (4) [left of=3] {$\loc{4}$};
-		\node[state] (5) [left of=4, xshift=-15pt] {$\loc{5}$};
-		\node[state] (6) [below of=5] {$\loc{6}$};
-		\node[state] (8) [right of=3] {$\loc{8}$};
-		\node[state] (9) [below of=8] {$\loc{9}$};
-		\node[state] (10) [right of=8] {$\loc{10}$};
-
-		\path (1) edge node {\st{x:=0}} (2)
-		(2) edge node {\st{y:=0}} (3)
-		(3) edge node {\st{x<5}} (4)
-		(4) edge[] node {\st{x:=x+1}} (5)
-		(5) edge[bend right] node[] {\st{y<4}} (6)
-		(6) edge[bend right] node[above]{\st{y:=y+2}} (5)
-		(5) edge[bend left] node[] {\st{y>=4}} (3)
-		(3) edge[] node[] {\st{x>=5}} (8)
-		(8) edge[] node[] {\st{y!=4}} (9)
-		(8) edge[] node[] {\st{y==4}} (10)
-		;
-	\end{tikzpicture}
-	\captionof{figure}{control-flow graph $G_{P_3}$ of program $P_3$.}
-	\label{fig:rect}
+	\begin{subfigure}{0.3\textwidth}
+		\centering
+		\input{fig/lst_ex_p3.tex}
+		\caption{Program code.}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.6\textwidth}
+		\centering
+		\input{fig/fig_ex_p3_cfg.tex}
+		\caption{Control-flow graph $G_{P_3}$.}
+	\end{subfigure}
+	\captionof{figure}{Example program $P_3$.}\label{fig:ex:p3}
 \end{figure}
+
 And suppose we want to check $P_3$ for safety, trace abstraction generates the following error trace $\tau_3$:
 \begin{figure}[H]
 	\centering
