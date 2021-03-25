@@ -39,6 +39,7 @@
 \tcbuselibrary{skins,breakable}
 \usepackage{comment}
 \usepackage{makecell}
+\usepackage{stmaryrd}
 
 \DeclareSymbolFont{matha}{OML}{txmi}{m}{it}% txfonts
 \DeclareMathSymbol{\varv}{\mathord}{matha}{118}
@@ -132,6 +133,9 @@
 \newcommand{\accel}[1]{\ensuremath{\psi^*_{L_{#1}}}}
 \newcommand{\atm}[1]{\ensuremath{\mathcal{A}_{#1}}}
 \newcommand{\prog}[1]{\ensuremath{P_{#1}}}
+
+\newcommand{\interpret}{\ensuremath{\mathcal{I}}}
+\newcommand{\eval}[1]{\ensuremath{\llbracket #1 \rrbracket}}
 
 %%%%%%%%%%%% Numbered example environment
 % \newcounter{example}[section]
@@ -271,12 +275,13 @@ This project aims at combining loop acceleration and interpolant calculation, ba
 This section will introduce the basic ideas behind trace abstraction, loop acceleration, and finally accelerated interpolants.
 
 \subsection{Programs}
+
 Assume we are given a program and want to verify its safety by checking reachability of an error location.
 To apply trace abstraction one firstly needs to know what a program is~\cite{DBLP:journals/corr/GreitschusDP17} and how to represent it.
 
-In this paper, we consider a programming language consisting of the basic program statements assignment, assume, havoc, and sequential composition.
-\dd{What about havoc?}
-Its syntax is denoted by the following grammar, where, given a finite set of program variables \Var, \texttt{expr} is an expression over \Var, \texttt{bexpr} is a Boolean expression over \Var.
+In this paper, we consider a programming language consisting of the basic program statements \texttt{assignment}, \texttt{assume}, \texttt{havoc}, and \texttt{sequential composition}.
+%\dd{What about havoc?}
+Its syntax is denoted by the following grammar, where, given a finite set of program variables \Var, \texttt{expr} is an expression over \Var, and \texttt{bexpr} is a Boolean expression over \Var.
 \begin{equation*}
 	\texttt{s := assume bexpr | x := expr | havoc x | s;s}
 \end{equation*}
@@ -291,7 +296,7 @@ For brevity's sake we use \texttt{bexpr} instead of \texttt{assume bexpr}.
 \end{mydef}
 In this paper we will use control-flow graphs to represent programs.
 \begin{example}
-	To illustrate programs and control-flow graphs, consider the following code: \\
+	To illustrate the notion of programs and control-flow graphs, consider the following program code: \\
 	\begin{minipage}{0.35\textwidth}
 		\centering
 		\input{fig/lst_ex_p0.tex}
@@ -302,12 +307,12 @@ In this paper we will use control-flow graphs to represent programs.
 		\centering
 		The set of program statements for $P_0$ is:
 		\begin{align*}
-			\Sigma = & \{ \st{x:=0}, \st{x<6}, \st{x:=x+2}, \\ &\st{x>=6}, \st{x==6}, \st{x!=6} \}
+			\Sigma = \{ & \st{x:=0}, \st{x<6}, \st{x:=x+2}, \\ &\st{x>=6}, \st{x==6}, \st{x!=6} \}
 		\end{align*}
 	\end{minipage}
 	\hfill
 	\begin{minipage}{0.35\textwidth}
-		$P_0$ is represented by the control-flow graph\\  $G_{0} = (Loc_P, \delta_P, \ell_\init, \ell_\err)$ with
+		Using $\Sigma$, we can represent $P_0$ as the control-flow graph: \\  $G_{0} = (Loc_P, \delta_P, \ell_\init, \ell_\err)$ with
 		\begin{itemize}
 			\item $\Loc_0 = \{ \loc{1}, \loc{2}, \loc{3}, \loc{4}, \loc{5}, \loc{6} \}$
 			\item $\begin{aligned}[t]	\delta_0 = \{ &(\loc{1},\st{x:=0},\loc{2}), \\& (\loc{2},\st{x<6},\loc{3}), \\& (\loc{3},\st{x:=x+2},\loc{2}), \\ &(\loc{2},\st{x>=6},\loc{4}), \\& (\loc{4},\st{x==6},\loc{5}), \\& (\loc{4},\st{x!=6},\loc{6})\} \end{aligned}$
@@ -319,7 +324,7 @@ In this paper we will use control-flow graphs to represent programs.
 	\begin{minipage}{0.55\textwidth}
 		\centering
 		\input{fig/fig_ex_p0_cfg}
-		\captionof{figure}{Example program $P_2$.}\label{fig:ex:p2}
+		\captionof{figure}{Example program $G_0$.}\label{fig:ex:p2}
 	\end{minipage}
 
 	% \dd{If you want I can add the listing code for nice looking Boogie programs}
@@ -329,9 +334,10 @@ In this paper we will use control-flow graphs to represent programs.
 
 % \dd{It is useful to wrap all the function symbols in Latex macros}
 % \ts{And to use mathit for identifiers consisting of several letters (like $\mathit{Var}$)}
-Each program variable has a domain $D$ defining the set of all possible values.
+Program variables are typed, e.g. integer or boolean variables, there exists \\
+an interpretation domain $D$ defining the set of all possible variable values.
 \begin{mydef}
-	A variable valuation of a program variable $v \in \Var$ is a function $\varv: v \rightarrow D$  assigning it a value from its domain.
+	A variable valuation of a program variable $v \in \Var$ is a function $\varv: v \rightarrow D$  assigning it a value from its domain $D$.
 \end{mydef}
 Assigning every program variable a valuation creates a program state.
 
@@ -341,26 +347,34 @@ Assigning every program variable a valuation creates a program state.
 	Assume a program $P$ is defined over $n$ variables, a program state $\sigma$ is a function assigning each variable $v_i \in \Var$, \ $0 \leq i \leq n$ a variable valuation $\rho_i$. The set $S$ denotes the set of all program states.
 \end{mydef}
 
+
+\begin{mydef}
+	Given the set of all expressions over program variables $\mathit{Expr}$, an interpretation function $\interpret: Expr \times \sigma \rightarrow D$ is a function assigning each expression $expr \in \mathit{Expr}$ a value in its domain $D$ with regard to the program state $\sigma$.
+\end{mydef}
+
+
+\ts{What is an interpretation function?}
+\dd{Perhaps you should explain what your interpretation function is :p}
+
 Program statements can change the valuation of variables, transitioning one program state to another.
 
 \begin{mydef}
-	Each program statement $\texttt{s} \in \stmt$ defines a binary relation $\rho \subseteq S \times S$ over the set of program states $S$, called successor relation. Which is, given an interpretation function $\mathcal{I}$, inductively defined as
+	Each program statement $\texttt{s} \in \stmt$ defines a binary relation $\rho \subseteq S \times S$ over the set of program states $S$, called successor relation. Which is, given interpretation function $\mathcal{I}$, inductively defined as
 	$$ \rho =
 		\begin{cases}
-			\{(\sigma, \sigma')\ |\ \mathcal{I}(\text{bexpr})(\sigma)\ =\ true\ \text{and}\ \sigma = \sigma'\} ,                                          & \text{if}\ s \equiv \text{\texttt{assume bexpr}} \\
-			\{(\sigma, \sigma')\ |\ \sigma' = \sigma[x \mapsto \mathcal{I}(expr)(\sigma)]\} ,                                                             & \text{if}\ s \equiv \texttt{x := expr}           \\
-			\{(\sigma, \sigma')\ |\ \exists \sigma''\ \text{where}\ (\sigma, \sigma'') \in \rho_{s_1}\ \text{and}\ (\sigma'', \sigma') \in \rho_{s_2} \}, & \text{if}\ s \equiv \texttt{$s_1;s_2$}
+			\{(\sigma, \sigma')\ |\ \mathcal{I}(\text{bexpr})(\sigma)\ =\ true\ \text{and}\ \sigma = \sigma'\} ,                                        & \text{if}\ s \equiv \text{\texttt{assume bexpr}} \\
+			\{(\sigma, \sigma')\ |\ \sigma' = \sigma[x \mapsto \mathcal{I}(expr)(\sigma)]\} ,                                                           & \text{if}\ s \equiv \texttt{x := expr}           \\
+			\{(\sigma, \sigma')\ |\ \exists \sigma''\ \text{where}\ (\sigma, \sigma'') \in \rho(s_1)\ \text{and}\ (\sigma'', \sigma') \in \rho(s_2) \}, & \text{if}\ s \equiv \texttt{$s_1;s_2$}
 		\end{cases}
 	$$
 \end{mydef}
 %	\ts{You already used $\rho$ for valuation.}
-\ts{What is an interpretation function?}
 \begin{mydef}
 	\jw{Sets of States.}
 \end{mydef}
 
 \begin{mydef}
-	Given sets of states \precon, \postcon, and program statement s, a Hoare-Triple\cite{10.1145/363235.363259} is the triple \precon s\postcon, where \precon\ is called the precondition, and \postcon\ postcondition. A Hoare-Triple is valid if and only if, given $\rho(s) = (\sigma, \sigma')$, $\sigma \in \precon$ and $\sigma' \in \postcon$.
+	Let \precon, \postcon be sets of states, and $s$ a program statement, a Hoare-Triple\cite{10.1145/363235.363259} is the triple \precon s\postcon, where \precon\ is called the precondition, and \postcon\ postcondition. A Hoare-Triple is valid if and only if, given $\rho(s) = (\sigma, \sigma')$, $\sigma \in \precon$ and $\sigma' \in \postcon$.
 \end{mydef}
 
 \begin{mydef}
@@ -411,17 +425,18 @@ Program statements can change the valuation of variables, transitioning one prog
 	\end{comment}
 \end{example}
 
-Because a program trace is rather abstract, the question arises whether the program can actually take the defined sequence of statements.
-\dd{``Take'' seems like a strange word here. You want to say: Is a trace executable?}
+The question now arises whether this trace is executable or not, to check that we firstly need to define executions.
 \begin{mydef}
-	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and a program trace $\tau:\ s_0, s_1, s_2, ..., s_n$ of $P$, a sequence of program states $\pi:\ \sigma_0, \sigma_1, \sigma_2,..., \sigma_n$ is a program execution of $\tau$, if $(\sigma_i, \sigma_{i+1}) \in \rho(s) for 0 \leq i \leq n$.
-
-	$\tau$ is called feasible if it has at least one program execution, otherwise it is infeasible.
+	Given a program $P = (\Loc, \delta, \ell_\init, \ell_\err)$ and a program trace $\tau:\ s_0, s_1, s_2, ..., s_n$ of $P$, a sequence of program states $\pi:\ \sigma_0, \sigma_1, \sigma_2,..., \sigma_n$ is a program execution of $\tau$ if $(\sigma_i, \sigma_{i+1}) \in \rho(s)$ for $0 \leq i \leq n$.
 \end{mydef}
-\dd{You have restricted yourself to finite traces. Is there a reason? }
+With program executions we can formulate the notion of feasible and infeasible traces.
+\begin{mydef}
+	Given an error trace $\tau:\ s_0s_1s_2 \ldots s_n$ of program $P$, $\tau$ is feasible if there is at least one program execution otherwise it is infeasible.
+\end{mydef}
+
+% \dd{You have restricted yourself to finite traces. Is there a reason? }
 
 $\tau_0$ from before is infeasible, because for $\st{x>=6}$, the interpretation function $\mathcal{I}(\texttt{x >= 6})(x = 2)$ evaluates to false and is, with that, not part of the successor relation.
-\dd{Perhaps you should explain what your interpretation function is :p}
 %Are there annotations of the nodes correct?
 \dd{Explain what the following picture shows}
 %\dd{You can use the mighty trace abstration color scheme for interpolants if you are inclined: \protect\itp{\top}}
@@ -550,8 +565,8 @@ In the following sections, we introduce a way to exclude a large number of trace
 
 \section{Loop Acceleration}\label{sec:loopaccel}
 Programs often contain loops, like \texttt{while} or \texttt{for} loops.
-These can create up to infinitely many distinct program traces.
-\dd{``Up to infinity'' seems like a strange bound ;)}
+These can create infinitely many distinct program traces.
+%\dd{``Up to infinity'' seems like a strange bound ;)}
 Trace abstraction has then, in the worst case when the generated Craig interpolants are only general enough to disprove one trace, to refute every program trace generated by the loop.
 \dd{i.e., infinitely many.}
 A remedy to that is the computation of a loop acceleration in form of the reflexive transitive closure.
@@ -581,7 +596,7 @@ This chapter introduces loops as traces and relations, and how a loop relation c
 			\label{fig:ex:p1:cfg}
 		\end{figure}
 	\end{minipage}
-	\\
+	\hfill \\
 	Assume trace abstraction generates program trace $\tau_1$:
 	\begin{center}
 		\begin{tabular}{cccccc}
@@ -597,9 +612,9 @@ This chapter introduces loops as traces and relations, and how a loop relation c
 \end{example}
 
 \begin{mydef}
-	Given a program trace $\tau: s_0, s_1, \ldots, s_i, s_{i+1}, \ldots, s_j, \ldots, s_n$. \\ The sub trace $s_i, s_{i+1}\ldots, s_j$ is called a loop trace if $(\loc{i}, s_i, \loc{i+1}) \in \delta\ $ and $(\loc{j-1}, s_j, \loc{i}) \in \delta $. $\loc{i}$ is called the loop head.
+	Given a program trace $\tau: s_0s_1 \ldots s_i s_{i+1} \ldots s_j \ldots s_n$. \\ The sequence of statements $s_i, s_{i+1}\ldots, s_j$ is called a loop trace if $(\loc{i}, s_i, \loc{i+1}) \in \delta\ $ and $(\loc{j-1}, s_j, \loc{i}) \in \delta $. $\loc{i}$ is called the loop head.
 \end{mydef}
-\dd{What is a sub trace? Define or just call it a sequence of statements.}
+% \dd{What is a sub trace? Define or just call it a sequence of statements.}
 
 
 In $\tau_1$ there are three loop traces of varying length:
@@ -652,17 +667,17 @@ In this example $\tau_{L_1}$ is the minimal loop trace.
 With the minimal loop trace it is possible to formulate the effect one iteration of the loop has on the program state.
 \begin{mydef}
 	The loop relation $\psi_L$ describes the effect a loop has on the program state.
-	Given the minimal looping trace $\tau_{min}: s_0, s_1, \ldots, s_{n}$ the loop relation can be constructed by using the composition of all program statements $s_i$.
+	Given the minimal loop trace $\tau_{min}: s_0, s_1, \ldots, s_{n}$ the loop relation can be constructed by using the composition of all program statements $s_i$.
 	\begin{equation*}
 		\psi_L = s_0; s_1; \ldots; s_n
 	\end{equation*}
 \end{mydef}
-\dd{Dont switch between ``loop trace'' and ``looping trace''}
+%\dd{Dont switch between ``loop trace'' and ``looping trace''}
 
 For $\tau_{L_1}$ we get the following loop relation:
 \begin{align*}
-	\psi_{L_1} & :	\st{x<=50}; \st{x:=x+1}; \st{y:=y+ 2} \                                                                          \\
-	           & = \{(\sigma, \sigma')\ |\ \sigma[x] \leq 50 \land \sigma'[x] = \sigma[x] + 1 \land \sigma'[y] = \sigma'[y] + 2 \}
+	\psi(\st{x<=50}; \st{x:=x+1}; \st{y:=y+ 2}) \\
+	= \{(\sigma, \sigma')\ |\ \sigma[x] \leq 50 \land \sigma'[x] = \sigma[x] + 1 \land \sigma'[y] = \sigma'[y] + 2 \}
 \end{align*}
 The loop relation can appear in a program trace an infinite amount of times, leading to infinitely many program traces.
 \ts{How can a relation appear in a trace? You mean the sequence of statements forming the loop.}
@@ -784,10 +799,6 @@ We can now analyse this meta trace for feasibility using an SMT-solver such as S
 %\dd{Do not capitalize captions. They are just normal sentences.}
 
 
-With interpolant sequence:
-\begin{equation*}
-	I_{\bar{\tau_1}}: \{ \top,\ x = 0, y = 1 \land x = 0,\ ((102 < y\ \lor \ 2x + 1 \leq y)\ \land\ (y \leq 103))\ \lor\ x = 0,\ y = 103,\ \bot \}
-\end{equation*}
 \dd{Do you still need the line above?}
 
 We cannot, however, use $I_{\bar{\tau_1}}$ to disprove $\tau_1$ as we need an interpolant for each location in the original trace.
@@ -965,6 +976,41 @@ For the trace $\tau_2$ we get the following branching meta trace:
 	\end{tikzpicture}
 	\captionof{figure}{Branching meta trace $\bar{\tau_2}$ generated from $\tau_2$.}
 \end{figure}
+
+\begin{figure}[H]
+	\begin{tikzpicture}[%
+			->,
+			>=stealth', shorten >=1pt, auto,
+			node distance=2.5cm, scale=1,
+			transform shape, align=center,
+			smallnode/.style={inner sep=1.4}
+			initial text =]
+
+		\node[state](1){$\loc{1}$};
+
+		\node[state] (2) [right of=1] {$\loc{2}$};
+
+		\node[state] (3) [right of=2, xshift=-0.55cm] {$\loc{2}'$};
+
+		\node[state] (4) [right of=3, xshift=-0.55cm] {$\loc{2}$};
+
+		\node[state] (5) [right of=4, xshift=-0.55cm] {$\loc{2}'$};
+
+		\node[state] (6) [right of=5, xshift=0.4cm] {$\loc{7}$};
+
+		\node[state] (7) [right of=6, xshift=0.4cm] {$\loc{9}$};
+
+		\path (1) edge node {\texttt{x := 0}} (2);
+		\path (2) edge node {$\psi^*_{L_{1}}$} (3);
+		\path (3) edge node {$\varepsilon$} (4);
+		\path (4) edge node {$\psi^*_{L_{2}}$} (5);
+		\path (5) edge node {\texttt{!x <= 10}} (6);
+		\path (6) edge node {\texttt{x != 11}} (7);
+		;
+	\end{tikzpicture}
+	\captionof{figure}{Branching meta trace $\bar{\tau_2}$ generated from $\tau_2$.}
+\end{figure}
+
 Out of which an SMT-solver generates the following infeasibility proof:
 \begin{figure}[H]
 	\begin{tikzpicture}[%
@@ -1084,7 +1130,12 @@ And suppose we want to check $P_3$ for safety, trace abstraction generates the f
 	\end{tikzpicture}
 	\captionof{figure}{program trace $\tau_3$ of $P_3$}
 \end{figure}
-We see there is a loop:
+
+\begin{comment}
+\input{fig/fig_ex_p3_tau3.tex}
+\end{comment}
+
+We extract loop:
 \begin{align*}
 	\tau_{L_1}:\  & \texttt{x < 5},\ \texttt{x := x + 1},\ \texttt{x < 5},\ \texttt{y < 4},\ \texttt{y := y + 2},\ \texttt{y < 4},\ \texttt{y := y + 2}, \\ &\texttt{!y < 4},\
 	\texttt{x < 5},\ \texttt{x := x + 1},\ \texttt{!y < 10},\ \texttt{x := x + 1},\ \texttt{! y < 4},\ \texttt{!x < 5}
