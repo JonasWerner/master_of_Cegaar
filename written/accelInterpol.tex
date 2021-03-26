@@ -136,7 +136,7 @@
 \newcommand{\prog}[1]{\ensuremath{P_{#1}}\xspace}
 
 \newcommand{\interpret}{\ensuremath{\mathcal{I}}\xspace}
-\newcommand{\eval}[1]{\ensuremath{\llbracket #1 \rrbracket}\xspace}
+\newcommand{\eval}[1]{\ensuremath{\llbracket #1 \rrbracket}_{M, \varv}\xspace}
 
 %%%%%%%%%%%% Numbered example environment
 % \newcounter{example}[section]
@@ -275,7 +275,7 @@ This project aims at combining loop acceleration and interpolant calculation, ba
 
 This section will introduce the basic ideas behind trace abstraction, loop acceleration, and finally accelerated interpolants.
 
-\subsection{Logical Framework}
+\subsection{Logic Fundamentals}
 We model programs using first order logic, this chapter will introduce the basic notions used in this paper.
 \begin{mydef}
 	Given a vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, with countable sets \\ $\vocab{\Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred}$ representing the sets of variables, constant symbols, function symbols, and predicate symbols respectively, we define terms inductively as follows:
@@ -299,14 +299,25 @@ Using the definitions of terms, we can introduce first-order logic formulas.
 \end{mydef}
 
 \begin{mydef}
-Given vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, a model $\mathcal{M} = (D, \interpret)$ is a tuple consisting of a nonempty set $D$, called interpretation domain, and an interpretation function \interpret that assigns constants, functions, and predicates over $D$ to symbols in $V$.
+	Given vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, a model $\mathcal{M} = (D, \interpret)$ is a tuple consisting of a nonempty set $D$, called interpretation domain, and an interpretation function \interpret that assigns constants, functions, and predicates over $D$ to symbols in $V$.
 \end{mydef}
 
 \begin{mydef}
-Given vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, and domain $D$, an assignment of variable $v \in \vocab{Var}$ is a function $\varv: v \rightarrow D$.
+	Given vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, and domain $D$, an assignment of variable $v \in \vocab{Var}$ is a function $\varv: v \rightarrow D$.
+\end{mydef}
+
+\begin{mydef}
+	Let $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$ be a vocabulary, $\mathcal{M} = (D, \interpret)$ a model, and $\varv$ a variable assignment, the evaluation of terms is a function $\eval{\cdot}$ that is inductively defined as:
+	\begin{itemize}
+		\item For each $x \in \vocab{Var}$, $\eval{x} = \varv(x)$
+		\item For each $c \in \vocab{Const}$, $\eval{c} = \interpret(c)$
+		\item If $t_0, \ldots, t_n$ are terms, $f \in \vocab{Fun}$, and f has arity $n$ then \\ $\eval{f(t_0, \cdots, t_n)}$ is $\interpret(f)(\eval{t_0}, \ldots, \eval{t_n})$
+	\end{itemize}
 \end{mydef}
 
 \subsection{Programs}
+
+\jw{TODO: Bring this chapter in harmony with the previous.}
 
 Assume we are given a program and want to verify its safety by checking reachability of an error location.
 To apply trace abstraction one firstly needs to know what a program is~\cite{DBLP:journals/corr/GreitschusDP17} and how to represent it.
