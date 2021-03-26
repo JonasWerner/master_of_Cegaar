@@ -30,7 +30,6 @@
 \usepackage{pdflscape}
 \usepackage{xcolor}
 \usepackage{xparse}
-\usepackage{txfonts}
 \usepackage[%disable,%
   colorinlistoftodos,%
   color=cyan!50!white,%
@@ -124,20 +123,20 @@
 
 
 %The [1] means one parameter, which is then referenced in the #1
-\newcommand{\loc}[1]{\ensuremath{\ell_{#1}}}
-\newcommand{\trans}[1]{\ensuremath{\xrightarrow{\st{#1}}}}
-\newcommand{\stateSet}[1]{\ensuremath{\{#1\}}}
-\newcommand{\vocab}[1]{\ensuremath{\nuup_{\mathit{#1}}}}
+\newcommand{\loc}[1]{\ensuremath{\ell_{#1}}\xspace}
+\newcommand{\trans}[1]{\ensuremath{\xrightarrow{\st{#1}}}\xspace}
+\newcommand{\stateSet}[1]{\ensuremath{\{#1\}}\xspace}
+\newcommand{\vocab}[1]{\ensuremath{V_{\mathit{#1}}}\xspace}
 
 
-\newcommand{\precon}{\ensuremath{\mathit{\stateSet{\varphi}}}}
-\newcommand{\postcon}{\ensuremath{\mathit{\stateSet{\psi}}}}
-\newcommand{\accel}[1]{\ensuremath{\psi^*_{L_{#1}}}}
-\newcommand{\atm}[1]{\ensuremath{\mathcal{A}_{#1}}}
-\newcommand{\prog}[1]{\ensuremath{P_{#1}}}
+\newcommand{\precon}{\ensuremath{\mathit{\stateSet{\varphi}}\xspace}}
+\newcommand{\postcon}{\ensuremath{\mathit{\stateSet{\psi}}}\xspace}
+\newcommand{\accel}[1]{\ensuremath{\psi^*_{L_{#1}}}\xspace}
+\newcommand{\atm}[1]{\ensuremath{\mathcal{A}_{#1}}\xspace}
+\newcommand{\prog}[1]{\ensuremath{P_{#1}}\xspace}
 
-\newcommand{\interpret}{\ensuremath{\mathcal{I}}}
-\newcommand{\eval}[1]{\ensuremath{\llbracket #1 \rrbracket}}
+\newcommand{\interpret}{\ensuremath{\mathcal{I}}\xspace}
+\newcommand{\eval}[1]{\ensuremath{\llbracket #1 \rrbracket}\xspace}
 
 %%%%%%%%%%%% Numbered example environment
 % \newcounter{example}[section]
@@ -277,10 +276,9 @@ This project aims at combining loop acceleration and interpolant calculation, ba
 This section will introduce the basic ideas behind trace abstraction, loop acceleration, and finally accelerated interpolants.
 
 \subsection{Logical Framework}
-We model programs using first order logic, this chapter will introduce the basic notions used in the verification approach. \\ \\
-
+We model programs using first order logic, this chapter will introduce the basic notions used in this paper.
 \begin{mydef}
-	Given a vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, with countable sets $\vocab{\Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred}$ representing the sets of variables, constant symbols, function symbols, and predicate symbols respectively, we define terms inductively as follows:
+	Given a vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, with countable sets \\ $\vocab{\Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred}$ representing the sets of variables, constant symbols, function symbols, and predicate symbols respectively, we define terms inductively as follows:
 	\begin{itemize}
 		\item Every $x \in \vocab{Var}$ is a term.
 		\item Every $c \in \vocab{Const}$ is a term.
@@ -298,6 +296,14 @@ Using the definitions of terms, we can introduce first-order logic formulas.
 		\item If $\varphi$ and $\psi$ are formulas, then $\varphi \land \psi$ are formulas.
 		\item If $\varphi$ is a formula, and $x \ in \vocab{Var}$ then $\exists x. \varphi$ is a formula.
 	\end{itemize}
+\end{mydef}
+
+\begin{mydef}
+Given vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, a model $\mathcal{M} = (D, \interpret)$ is a tuple consisting of a nonempty set $D$, called interpretation domain, and an interpretation function \interpret that assigns constants, functions, and predicates over $D$ to symbols in $V$.
+\end{mydef}
+
+\begin{mydef}
+Given vocabulary $V = (\vocab{Var}, \vocab{Const}, \vocab{Fun}, \vocab{pred})$, and domain $D$, an assignment of variable $v \in \vocab{Var}$ is a function $\varv: v \rightarrow D$.
 \end{mydef}
 
 \subsection{Programs}
@@ -362,9 +368,7 @@ In this paper we will use control-flow graphs to represent programs.
 % \ts{And to use mathit for identifiers consisting of several letters (like $\mathit{Var}$)}
 Program variables are typed, e.g. integer or boolean variables, there exists \\
 an interpretation domain $D$ defining the set of all possible variable values.
-\begin{mydef}
-	A variable valuation of a program variable $v \in \Var$ is a function $\varv: v \rightarrow D$  assigning it a value from its domain $D$.
-\end{mydef}
+\jw{TODO}
 Assigning every program variable a valuation creates a program state.
 
 %the n may be wrong, because traces can be infinite in theory? no, because a program can only have finitely many variable declarations. The source code is finite.
