@@ -34,6 +34,18 @@ This work proposes a combination of multiple acceleration techniques used in a M
 - CAV 2019 https://link.springer.com/chapter/10.1007%2F978-3-030-25543-5_7
 - https://dblp.org/rec/conf/cav/SilvermanK19.html?view=bibtex
 
+	#### "Integer Vector Addition Systems with States"
+	- Christoph Haase, Simon Halfon
+	- https://arxiv.org/abs/1406.2590
+	- https://dblp.org/rec/journals/corr/HaaseH14.bib
+	(Used for reachability analysis)
+	
+	#### "Counting in trees for free"
+	- Helmut Seidl, Thomas Schwentick, Anca Muscholl, Peter Habermehl
+	- https://hal.archives-ouvertes.fr/hal-00159525/document
+	- https://dblp.org/rec/conf/icalp/SeidlSMH04.bib
+	(In Appendix for construction of NFA formula)
+
 #### Idea:
 Loop acceleration (again its a loop summary) using a rational vector addition system, which then simulates the input loop,
 to over-approximate the loop's behaviour. (They even cited Ultimate ;) )
